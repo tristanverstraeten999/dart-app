@@ -11,44 +11,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#08080b;
-  --bg-2:#0d0d13;
-  --surface:#111119;
-  --surface-2:#15151e;
-  --ink:#eef1f8;
-  --ink-2:#aeb3c2;
-  --muted:#71768a;
-  --line:rgba(255,255,255,.08);
-  --line-2:rgba(255,255,255,.15);
-  --red:#ff2436;
-  --red-bright:#ff4452;
-  --red-soft:rgba(255,36,54,.12);
-  --gold:#ffd23a;
-  --gold-glow:rgba(255,210,58,.4);
-  --radius:16px;
-  --radius-sm:11px;
-  --disp:'Orbitron',sans-serif;
-  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --bg:#08080b;--bg-2:#0d0d13;--surface:#111119;--surface-2:#15151e;
+  --ink:#eef1f8;--ink-2:#aeb3c2;--muted:#71768a;
+  --line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.15);
+  --red:#ff2436;--red-bright:#ff4452;--red-soft:rgba(255,36,54,.12);
+  --gold:#ffd23a;--gold-glow:rgba(255,210,58,.4);
+  --radius:16px;--radius-sm:11px;
+  --disp:'Orbitron',sans-serif;--font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
-body{
-  background:var(--bg);color:var(--ink);font-family:var(--font);
-  -webkit-font-smoothing:antialiased;font-feature-settings:"tnum";line-height:1.45;
-  background-image:
-    radial-gradient(900px 600px at 85% -5%, rgba(255,36,54,.10), transparent 60%),
-    radial-gradient(700px 600px at 5% 20%, rgba(70,90,160,.10), transparent 55%);
-  background-attachment:fixed;
-}
-/* starfield */
+body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;
+  font-feature-settings:"tnum";line-height:1.45;
+  background-image:radial-gradient(900px 600px at 85% -5%, rgba(255,36,54,.10), transparent 60%),
+    radial-gradient(700px 600px at 5% 20%, rgba(70,90,160,.10), transparent 55%);background-attachment:fixed;}
 #stars,#stars2{position:fixed;top:0;left:0;width:1px;height:1px;z-index:0;border-radius:50%;background:transparent;pointer-events:none}
 #stars{animation:tw 4s ease-in-out infinite alternate}
 #stars2{animation:tw 6s ease-in-out infinite alternate}
 @keyframes tw{from{opacity:.55}to{opacity:1}}
-.wrap{position:relative;z-index:2;max-width:600px;margin:0 auto;padding:0 18px 110px}
+.wrap{position:relative;z-index:2;max-width:600px;margin:0 auto;padding:0 18px 60px}
 .tnum{font-variant-numeric:tabular-nums}
 
-/* ===== HEADER ===== */
 header{padding:26px 2px 14px;display:flex;align-items:flex-start;gap:12px}
 .h-main{flex:1;min-width:0}
 .eyebrow{font-family:var(--disp);font-size:10.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);text-shadow:0 0 14px var(--gold-glow)}
@@ -60,7 +43,6 @@ h1.team{font-family:var(--disp);font-size:25px;font-weight:800;letter-spacing:.5
   font-family:var(--font);font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:9px;cursor:pointer;transition:.15s}
 .reset:active{transform:scale(.96);border-color:var(--red);color:var(--red)}
 
-/* ===== TABS ===== */
 .tabs{display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:13px;padding:4px;
   position:sticky;top:10px;z-index:20;backdrop-filter:blur(12px)}
 .tab{flex:1;border:none;background:none;font-family:var(--disp);font-size:11.5px;font-weight:600;letter-spacing:.5px;
@@ -70,13 +52,11 @@ h1.team{font-family:var(--disp);font-size:25px;font-weight:800;letter-spacing:.5
   background:var(--red);box-shadow:0 0 10px var(--red),0 0 4px var(--red)}
 .tab:disabled{opacity:.35;cursor:default}
 
-/* ===== CARDS ===== */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin:14px 0;
   box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px -16px rgba(0,0,0,.8)}
 .card-h{font-family:var(--disp);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);
   margin:0;display:flex;align-items:center;gap:8px}
 .card-h .right{margin-left:auto;letter-spacing:0;text-transform:none;font-size:13px;color:var(--gold);font-family:var(--font);font-weight:600}
-/* lightsaber divider */
 .saber{height:2px;border-radius:2px;margin:13px 0 16px;width:100%;
   background:linear-gradient(90deg,var(--red),var(--red-bright));box-shadow:0 0 12px var(--red),0 0 4px var(--red-bright);transform-origin:left}
 .view.anim .saber{animation:ignite .55s cubic-bezier(.2,.9,.3,1)}
@@ -99,13 +79,13 @@ button{cursor:pointer;font-family:var(--font)}
 .btn:active{transform:translateY(1px) scale(.995);box-shadow:0 0 30px -2px var(--red)}
 .btn.gold{background:linear-gradient(180deg,#ffe070,var(--gold));color:#241c00;box-shadow:0 0 22px -4px var(--gold-glow)}
 .btn.ghost{background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--line-2);box-shadow:none}
+.btn.danger{background:rgba(255,36,54,.08);border:1px solid var(--red);color:var(--red-bright);box-shadow:none}
 .btn.small{width:auto;padding:9px 16px;font-size:11.5px;border-radius:9px}
 
 .row{display:flex;gap:12px}.row>*{flex:1}
 .muted{color:var(--muted);font-size:13px;line-height:1.6}
 .center{text-align:center}.hidden{display:none!important}
 
-/* players */
 .prow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line)}
 .prow:last-of-type{border-bottom:none}
 .prow .seed{flex:0 0 26px;height:26px;border-radius:8px;background:var(--bg-2);border:1px solid var(--line);color:var(--gold);
@@ -119,12 +99,6 @@ button{cursor:pointer;font-family:var(--font)}
 .addrow .add{flex:0 0 48px;border:none;background:var(--red);color:#fff;border-radius:var(--radius-sm);font-size:24px;font-weight:500;
   box-shadow:0 0 18px -4px var(--red)}
 
-.check{display:flex;align-items:center;gap:11px;margin-top:16px;padding:12px 13px;border:1px solid var(--line);
-  border-radius:var(--radius-sm);background:var(--bg-2);cursor:pointer}
-.check input{width:19px;height:19px;flex:0 0 auto;accent-color:var(--red)}
-.check span{font-size:14px;font-weight:500;color:var(--ink-2)}
-
-/* progress = lightsaber */
 .pbar{height:6px;border-radius:99px;background:rgba(255,255,255,.06);overflow:visible;margin-bottom:16px;position:relative}
 .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--red-bright));border-radius:99px;
   box-shadow:0 0 12px var(--red);transition:width .6s cubic-bezier(.3,.85,.3,1);position:relative}
@@ -132,11 +106,11 @@ button{cursor:pointer;font-family:var(--font)}
   background:#fff;box-shadow:0 0 12px 3px var(--red-bright);opacity:.9}
 .pbar i[style*="width: 0%"]::after{opacity:0}
 
-/* matches */
 .match{display:flex;align-items:center;gap:13px;padding:14px;border:1px solid var(--line);border-radius:var(--radius-sm);
-  margin-bottom:10px;transition:.15s;background:var(--surface);animation:rise .4s ease backwards}
-.match:not(.played){cursor:pointer}
-.match:not(.played):active{border-color:var(--red);transform:scale(.99);box-shadow:0 0 18px -8px var(--red)}
+  margin-bottom:10px;transition:.15s;background:var(--surface);cursor:pointer;animation:rise .4s ease backwards}
+.match:active{border-color:var(--red);transform:scale(.99);box-shadow:0 0 18px -8px var(--red)}
+.match.locked{cursor:default}
+.match.locked:active{transform:none;border-color:var(--line);box-shadow:none}
 .match .no{flex:0 0 24px;font-family:var(--disp);font-size:13px;font-weight:700;color:var(--muted);text-align:center}
 .match .who{flex:1;min-width:0}
 .match .who .lbl{font-family:var(--disp);font-size:9.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
@@ -144,18 +118,15 @@ button{cursor:pointer;font-family:var(--font)}
 .match .nm.win{font-weight:700;color:var(--gold)}
 .match .nm .mk{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--line-2)}
 .match .nm.win .mk{background:var(--gold);box-shadow:0 0 8px var(--gold)}
-.match .sep{font-size:11px;color:var(--muted);margin:1px 0 1px 15px}
 .match .meta{flex:0 0 auto;text-align:right}
-.match .score{font-family:var(--disp);font-size:22px;font-weight:700;letter-spacing:0}
+.match .score{font-family:var(--disp);font-size:22px;font-weight:700}
 .match .play{display:inline-flex;align-items:center;gap:5px;color:#fff;background:linear-gradient(180deg,var(--red-bright),var(--red));
   font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:8px 13px;border-radius:9px;
   box-shadow:0 0 16px -5px var(--red)}
 .match .done{font-size:11px;font-weight:600;color:var(--gold);margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:flex-end}
-.match .togo{font-size:10.5px;color:var(--muted);margin-top:4px}
-.match.played{background:var(--bg-2);opacity:.92}
+.match.played{background:var(--bg-2)}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* standings */
 table{width:100%;border-collapse:collapse}
 th,td{padding:11px 6px;text-align:center;border-bottom:1px solid var(--line)}
 th{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
@@ -172,7 +143,6 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#241c00;border-color:var
 .legend{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.7}
 .legend b{color:var(--gold);font-weight:600}
 
-/* finale */
 .bround{margin-bottom:22px}
 .bround .htag{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
 .champ{text-align:center;padding:34px 20px;border:1px solid var(--gold);border-radius:var(--radius);position:relative;overflow:hidden;
@@ -193,60 +163,28 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#241c00;border-color:var
 .view.anim{animation:fade .35s ease}
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ===== 501 COUNTER ===== */
-.overlay{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;
-  padding:calc(14px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom));
-  background-image:radial-gradient(700px 400px at 50% -5%, rgba(255,36,54,.12), transparent 60%);animation:fade .3s ease}
-.ovh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.ovh .ot{font-family:var(--disp);font-size:18px;font-weight:800;letter-spacing:1px}
-.ovh .ol{font-size:11.5px;color:var(--muted);margin-top:2px}
-.ovh .oc{width:38px;height:38px;border:1px solid var(--line-2);background:var(--surface);border-radius:10px;font-size:17px;color:var(--ink-2);
-  display:flex;align-items:center;justify-content:center}
-.players2{display:flex;gap:11px;margin-bottom:11px}
-.pl{flex:1;min-width:0;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:15px 12px 13px;
-  text-align:center;position:relative;transition:.25s;overflow:hidden}
-.pl.active{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 0 30px -8px var(--red);animation:hum 2.2s ease-in-out infinite}
-@keyframes hum{0%,100%{box-shadow:0 0 0 1px var(--red),0 0 26px -10px var(--red)}50%{box-shadow:0 0 0 1px var(--red),0 0 40px -6px var(--red)}}
-.pl.active::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 70% at 50% 0%,var(--red-soft),transparent 70%);pointer-events:none}
-.pl .turn{font-family:var(--disp);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red-bright);height:13px;visibility:hidden}
-.pl.active .turn{visibility:visible}
-.pl .pn{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
-.pl .legs{display:flex;gap:5px;justify-content:center;height:9px;margin:8px 0 3px;position:relative}
-.pl .legs i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12)}
-.pl .legs i.on{background:var(--gold);box-shadow:0 0 8px var(--gold)}
-.pl .big{font-family:var(--disp);font-size:60px;font-weight:800;letter-spacing:0;line-height:.95;margin:3px 0 1px;position:relative}
-.pl.active .big{color:#fff;text-shadow:0 0 24px rgba(255,36,54,.5)}
-.pl .big.flash{animation:numFlash .5s ease}
-@keyframes numFlash{0%{text-shadow:0 0 30px var(--red-bright);transform:scale(1.06)}100%{text-shadow:0 0 24px rgba(255,36,54,.5);transform:none}}
-.pl .avg{font-size:11px;color:var(--muted);position:relative}
-.pl .last{position:absolute;top:13px;right:12px;font-family:var(--disp);font-size:15px;font-weight:700;color:var(--gold);opacity:0;z-index:2}
-.pl .last.show{animation:floatUp 1.1s ease}
-.pl .last.bust{color:var(--red-bright)}
-@keyframes floatUp{0%{opacity:0;transform:translateY(6px)}25%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+/* ===== RESULTAAT MODAL ===== */
+.modal-back{position:fixed;inset:0;z-index:80;background:rgba(4,4,7,.74);backdrop-filter:blur(7px);
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .22s ease}
+.modal{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);
+  padding:22px;box-shadow:0 0 60px -16px var(--red),0 24px 60px -20px #000;animation:champIn .32s cubic-bezier(.2,.9,.3,1)}
+.m-h{font-family:var(--disp);font-size:16px;font-weight:800;letter-spacing:.5px;text-align:center}
+.m-sub{font-size:12px;color:var(--muted);text-align:center;margin-top:3px;margin-bottom:18px}
+.m-players{display:flex;align-items:stretch;gap:10px}
+.m-pl{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:14px 8px 12px;text-align:center;transition:.2s}
+.m-pl.win{border-color:var(--gold);background:linear-gradient(180deg,rgba(255,210,58,.10),transparent)}
+.m-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:20px}
+.m-pl.win .m-name{color:var(--gold)}
+.legbig{font-family:var(--disp);font-size:46px;font-weight:800;line-height:1;margin:8px 0}
+.steps{display:flex;gap:8px;justify-content:center}
+.steps button{width:42px;height:42px;border-radius:11px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);
+  font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:.12s}
+.steps button:active{background:var(--red-soft);border-color:var(--red);transform:scale(.94)}
+.m-vs{align-self:center;font-family:var(--disp);font-size:14px;color:var(--muted)}
+.m-win-line{text-align:center;font-size:13px;color:var(--ink-2);margin:16px 0;min-height:18px}
+.m-win-line b{color:var(--gold);font-family:var(--disp);font-weight:700}
+.modal .btn{margin-top:9px}
 
-.cohint{text-align:center;font-size:13px;color:var(--muted);min-height:19px;margin-bottom:9px}
-.cohint b{font-family:var(--disp);color:var(--gold);font-weight:700;letter-spacing:.5px}
-.disp{background:var(--surface);border:1.5px solid var(--line-2);border-radius:var(--radius-sm);text-align:center;
-  font-family:var(--disp);font-size:38px;font-weight:800;padding:11px;margin-bottom:9px;min-height:62px}
-.disp.empty-in{color:var(--muted)}
-.disp.bust{color:var(--red-bright);border-color:var(--red);box-shadow:0 0 22px -6px var(--red);animation:shake .35s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:9px}
-.quick button{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:11px 2px;
-  font-family:var(--disp);font-size:16px;font-weight:700;transition:.12s}
-.quick button:active{background:var(--red-soft);border-color:var(--red);transform:scale(.95)}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;flex:1;min-height:0}
-.pad button{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);border-radius:var(--radius-sm);
-  font-family:var(--disp);font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:.1s}
-.pad button:active{background:var(--surface-2);transform:scale(.97)}
-.pad .back{font-size:22px;color:var(--ink-2)}
-.pad .enter{background:linear-gradient(180deg,var(--red-bright),var(--red));color:#fff;border-color:var(--red);font-size:15px;letter-spacing:1px;
-  box-shadow:0 0 18px -5px var(--red)}
-.pad .bust{background:rgba(255,210,58,.06);border-color:var(--gold);color:var(--gold);font-size:14px;letter-spacing:.5px}
-.pad .undo{grid-column:span 3;background:none;border:1px solid var(--line);color:var(--muted);font-family:var(--font);font-size:14px;font-weight:600;padding:13px}
-
-/* toast = HUD */
 .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:120;
   background:rgba(17,17,25,.95);border:1px solid var(--line-2);color:var(--ink);padding:13px 20px;border-radius:12px;
   font-size:14.5px;font-weight:600;backdrop-filter:blur(10px);box-shadow:0 0 30px -8px var(--red);max-width:88vw;text-align:center;
@@ -256,7 +194,6 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#241c00;border-color:var
 
 footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 0;line-height:1.7;font-family:var(--disp);letter-spacing:.5px}
 
-/* ===== INTRO CRAWL ===== */
 .intro{position:fixed;inset:0;z-index:500;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .intro.gone{animation:introOut 1.2s ease forwards}
 @keyframes introOut{to{opacity:0;visibility:hidden}}
@@ -266,8 +203,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 0;line
 .intro .stage{position:absolute;top:0;left:0;right:0;bottom:0;perspective:300px;overflow:hidden;opacity:0;animation:stageOn .1s linear 3s forwards}
 @keyframes stageOn{to{opacity:1}}
 .intro .crawl{position:absolute;left:50%;bottom:-30%;width:100%;max-width:440px;margin-left:max(-220px,-50%);
-  transform:rotateX(58deg);transform-origin:50% 100%;color:var(--gold);text-align:justify;
-  animation:crawl 16s linear 3s forwards}
+  transform:rotateX(58deg);transform-origin:50% 100%;color:var(--gold);text-align:justify;animation:crawl 16s linear 3s forwards}
 @keyframes crawl{0%{top:100%;opacity:1}95%{opacity:1}100%{top:-140%;opacity:0}}
 .intro .crawl .ep{font-family:var(--disp);text-align:center;font-size:15px;letter-spacing:3px;margin-bottom:10px;font-weight:600}
 .intro .crawl h2{font-family:var(--disp);text-align:center;font-size:34px;font-weight:800;margin:0 0 26px;line-height:1.1}
@@ -279,7 +215,6 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 0;line
 <body>
 <div id="stars"></div><div id="stars2"></div>
 
-<!-- INTRO CRAWL -->
 <div id="intro" class="intro hidden">
   <div class="along">In een café hier niet ver vandaan…</div>
   <div class="stage"><div class="crawl">
@@ -324,23 +259,18 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 0;line
       </div>
     </div>
     <div class="card">
-      <div class="card-h">Instellingen</div><div class="saber"></div>
+      <div class="card-h">Opzet</div><div class="saber"></div>
       <div class="row">
-        <div><label>Startscore</label>
-          <select id="startScore"><option value="501">501</option><option value="301">301</option><option value="170">170 — kort</option></select></div>
         <div><label>Poule · legs</label>
           <select id="pouleLegs"><option value="1">1 leg</option><option value="2">Best of 3</option><option value="3">Best of 5</option></select></div>
-      </div>
-      <div class="row" style="margin-top:14px">
-        <div><label>Finalisten</label>
-          <select id="finalists"><option value="2">Top 2 → finale</option><option value="4" selected>Top 4 → ½ finales</option></select></div>
         <div><label>Finale · legs</label>
           <select id="finaleLegs"><option value="1">1 leg</option><option value="2" selected>Best of 3</option><option value="3">Best of 5</option></select></div>
       </div>
-      <label class="check"><input type="checkbox" id="doubleOut"><span>Double-out (uitgooien op een dubbel)</span></label>
+      <div style="margin-top:14px"><label>Finalisten</label>
+        <select id="finalists"><option value="2">Top 2 → finale</option><option value="4" selected>Top 4 → ½ finales</option></select></div>
     </div>
     <button class="btn" onclick="startTournament()">Start tornooi</button>
-    <p class="muted center" style="margin-top:11px">Minstens 3 spelers nodig</p>
+    <p class="muted center" style="margin-top:11px">Minstens 3 spelers nodig · jullie tellen via DartCounter, hier vul je enkel de uitslag in</p>
   </section>
 
   <!-- POULE -->
@@ -373,11 +303,11 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 0;line
   <footer>Werkt offline · alles wordt bewaard op dit toestel</footer>
 </div>
 
-<div id="overlay" class="overlay hidden"></div>
+<div id="modalBack" class="hidden"></div>
 
 <script>
 /* ============ STATE ============ */
-const KEY='dartSWv1';
+const KEY='dartSWv2';
 let S=load();
 function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return null;}
 function fresh(){return{phase:'setup',team:'',players:[],config:{},pouleMatches:[],finaleMatches:[],activeView:'setup'};}
@@ -401,18 +331,14 @@ function genStars(){
 }
 
 /* ============ INTRO ============ */
-function maybeIntro(){
-  if(sessionStorage.getItem('swIntro')){return;}
-  sessionStorage.setItem('swIntro','1');
-  const team=(S.team&&S.team.trim())?S.team.toUpperCase():'DE PIJLEN';
-  document.getElementById('crawlTeam').textContent=team;
-  const intro=document.getElementById('intro');intro.classList.remove('hidden');
-  introTimer=setTimeout(endIntro,18500);
-}
 let introTimer=null;
+function maybeIntro(){
+  if(sessionStorage.getItem('swIntro'))return;sessionStorage.setItem('swIntro','1');
+  document.getElementById('crawlTeam').textContent=(S.team&&S.team.trim())?S.team.toUpperCase():'DE PIJLEN';
+  const intro=document.getElementById('intro');intro.classList.remove('hidden');introTimer=setTimeout(endIntro,18500);
+}
 function endIntro(){clearTimeout(introTimer);const intro=document.getElementById('intro');
-  if(intro.classList.contains('hidden'))return;intro.classList.add('gone');
-  setTimeout(()=>intro.classList.add('hidden'),1200);}
+  if(intro.classList.contains('hidden'))return;intro.classList.add('gone');setTimeout(()=>intro.classList.add('hidden'),1200);}
 
 /* ============ SETUP ============ */
 function onTeamName(v){S.team=v;save();renderHero();}
@@ -429,8 +355,7 @@ function renderPlayers(){
   document.getElementById('playerCount').textContent=S.players.length?S.players.length+(S.players.length===1?' speler':' spelers'):'';
 }
 function startTournament(){
-  S.config={startScore:+gv('startScore'),pouleLegs:+gv('pouleLegs'),finalists:+gv('finalists'),finaleLegs:+gv('finaleLegs'),
-    doubleOut:document.getElementById('doubleOut').checked};
+  S.config={pouleLegs:+gv('pouleLegs'),finalists:+gv('finalists'),finaleLegs:+gv('finaleLegs')};
   if(S.players.length<3){toast('Voeg minstens 3 spelers toe');return;}
   if(S.config.finalists>S.players.length)S.config.finalists=2;
   S.pouleMatches=roundRobin(S.players).map(([a,b])=>({id:uid(),p1:a,p2:b,legsTarget:S.config.pouleLegs,legs1:0,legs2:0,winner:null}));
@@ -459,9 +384,7 @@ function render(){
   ['poule','stand'].forEach(t=>{document.querySelector(`.tab[data-tab="${t}"]`).disabled=!started;});
   document.querySelector('.tab[data-tab="finale"]').disabled=!(S.finaleMatches.length>0||pouleComplete());
   renderHero();renderPlayers();renderPoule();renderStand();renderFinale();
-  if(S.config.startScore){setV('startScore',S.config.startScore);setV('pouleLegs',S.config.pouleLegs);
-    setV('finalists',S.config.finalists);setV('finaleLegs',S.config.finaleLegs);
-    document.getElementById('doubleOut').checked=!!S.config.doubleOut;}
+  if(S.config.pouleLegs){setV('pouleLegs',S.config.pouleLegs);setV('finalists',S.config.finalists);setV('finaleLegs',S.config.finaleLegs);}
   document.getElementById('teamName').value=S.team||'';
 }
 function setV(id,val){const el=document.getElementById(id);if(el)el.value=val;}
@@ -487,14 +410,14 @@ function renderPoule(){
 }
 function matchRow(m,kind,i){
   const played=!!m.winner,w1=m.winner===m.p1,w2=m.winner===m.p2;
-  return `<div class="match ${played?'played':''}" style="animation-delay:${(i||0)*.04}s" onclick="openCounter('${kind}','${m.id}')">
+  return `<div class="match ${played?'played':''}" style="animation-delay:${(i||0)*.04}s" onclick="openResult('${kind}','${m.id}')">
     <div class="no">${i!=null?i+1:''}</div>
     <div class="who">
       <div class="nm ${w1?'win':''}"><span class="mk"></span>${esc(name(m.p1))}</div>
       <div class="nm ${w2?'win':''}"><span class="mk"></span>${esc(name(m.p2))}</div>
     </div>
     <div class="meta">${played?`<div class="score tnum">${m.legs1}–${m.legs2}</div><div class="done">${check()} Gespeeld</div>`
-      :`<div class="play">Spelen</div><div class="togo">tot ${m.legsTarget} leg${m.legsTarget>1?'s':''}</div>`}</div></div>`;
+      :`<div class="play">Invullen</div>`}</div></div>`;
 }
 function check(){return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;}
 function emptyBox(t){return `<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg><div>${t}</div></div>`;}
@@ -532,7 +455,10 @@ function buildFinale(){
 }
 function advanceFinale(){
   const sfs=S.finaleMatches.filter(m=>m.round==='sf'),fin=S.finaleMatches.find(m=>m.round==='final');
-  if(sfs.length===2&&fin){if(sfs[0].winner&&!fin.p1)fin.p1=sfs[0].winner;if(sfs[1].winner&&!fin.p2)fin.p2=sfs[1].winner;save();}
+  if(sfs.length===2&&fin){
+    fin.p1=sfs[0].winner||null;fin.p2=sfs[1].winner||null;
+    if(fin.winner&&fin.winner!==fin.p1&&fin.winner!==fin.p2){fin.winner=null;fin.legs1=0;fin.legs2=0;}
+  }
 }
 function renderFinale(){
   const area=document.getElementById('finaleArea');
@@ -555,104 +481,60 @@ function renderFinale(){
   area.innerHTML=html;
 }
 function finRow(m,i){
-  if(!m.p1||!m.p2)return `<div class="match"><div class="who"><div class="lbl">${m.label}</div><div class="nm" style="color:var(--muted)">Wacht op spelers</div></div></div>`;
+  if(!m.p1||!m.p2)return `<div class="match locked"><div class="who"><div class="lbl">${m.label}</div><div class="nm" style="color:var(--muted)">Wacht op spelers</div></div></div>`;
   const played=!!m.winner,w1=m.winner===m.p1,w2=m.winner===m.p2;
-  return `<div class="match ${played?'played':''}" style="animation-delay:${i*.05}s" onclick="openCounter('finale','${m.id}')">
+  return `<div class="match ${played?'played':''}" style="animation-delay:${i*.05}s" onclick="openResult('finale','${m.id}')">
     <div class="who"><div class="lbl">${m.label}${m.seedTxt?' · '+m.seedTxt:''}</div>
       <div class="nm ${w1?'win':''}"><span class="mk"></span>${esc(name(m.p1))}</div>
       <div class="nm ${w2?'win':''}"><span class="mk"></span>${esc(name(m.p2))}</div></div>
     <div class="meta">${played?`<div class="score tnum">${m.legs1}–${m.legs2}</div><div class="done">${check()} Gespeeld</div>`
-      :`<div class="play">Spelen</div><div class="togo">tot ${m.legsTarget} leg${m.legsTarget>1?'s':''}</div>`}</div></div>`;
+      :`<div class="play">Invullen</div>`}</div></div>`;
 }
 
-/* ============ 501 COUNTER ============ */
-let CO=null;
+/* ============ RESULTAAT INVOEREN ============ */
+let RES=null;
 function findMatch(kind,id){return(kind==='poule'?S.pouleMatches:S.finaleMatches).find(m=>m.id===id);}
-function openCounter(kind,id){
-  const m=findMatch(kind,id);if(!m||m.winner||!m.p1||!m.p2)return;const start=S.config.startScore;
-  CO={kind,id,p:[m.p1,m.p2],legsWon:[m.legs1,m.legs2],legsTarget:m.legsTarget,starter:0,cur:0,
-    rem:[start,start],shown:[start,start],last:[null,null],history:[],darts:[0,0],input:'',start};
-  document.getElementById('overlay').classList.remove('hidden');renderCounter(true);
+function openResult(kind,id){
+  const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;
+  RES={kind,id,legs:[m.legs1||0,m.legs2||0],played:!!m.winner};renderResult();
+  document.getElementById('modalBack').classList.remove('hidden');
 }
-function closeCounter(){CO=null;document.getElementById('overlay').classList.add('hidden');render();}
-function renderCounter(full){
-  if(!CO)return;const ov=document.getElementById('overlay');const m=findMatch(CO.kind,CO.id);
-  const co0=checkoutHint(CO.rem[0]),co1=checkoutHint(CO.rem[1]);const curCo=CO.cur===0?co0:co1;
-  const empty=CO.input==='',disp=empty?'0':CO.input,legNum=CO.legsWon[0]+CO.legsWon[1]+1;
-  ov.innerHTML=`
-    <div class="ovh"><div><div class="ot tnum">${CO.start}</div><div class="ol">Leg ${legNum} · first to ${CO.legsTarget} · ${m&&m.round?m.label:'Poule'}</div></div>
-      <button class="oc" onclick="closeCounter()">✕</button></div>
-    <div class="players2">${pl(0)}${pl(1)}</div>
-    <div class="cohint">${curCo?('Uitgooien: <b>'+curCo+'</b>'):'&nbsp;'}</div>
-    <div class="disp tnum ${empty?'empty-in':''}" id="disp">${disp}</div>
-    <div class="quick">${[26,41,45,60,81,85,100,140].map(q=>`<button class="tnum" onclick="quick(${q})">${q}</button>`).join('')}</div>
-    <div class="pad">
-      ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="key('${n}')">${n}</button>`).join('')}
-      <button class="back" onclick="key('back')">⌫</button>
-      <button onclick="key('0')">0</button>
-      <button class="enter" onclick="submitScore()">OK</button>
-      <button class="bust" onclick="bust()">BUST</button>
-      <button class="undo" onclick="undo()">Laatste worp ongedaan maken</button>
-    </div>`;
-  [0,1].forEach(i=>{const el=document.getElementById('big'+i);if(!el)return;const from=CO.shown[i],to=CO.rem[i];
-    if(full){el.textContent=to;}else{tweenNum(el,from,to);if(from!==to){el.classList.add('flash');setTimeout(()=>el&&el.classList.remove('flash'),500);}}
-    CO.shown[i]=to;});
+function closeResult(){RES=null;document.getElementById('modalBack').classList.add('hidden');}
+function stepLeg(i,d){if(!RES)return;const m=findMatch(RES.kind,RES.id);const max=m.legsTarget||7;
+  RES.legs[i]=Math.max(0,Math.min(max,RES.legs[i]+d));renderResult();}
+function renderResult(){
+  if(!RES)return;const m=findMatch(RES.kind,RES.id);const a=RES.legs[0],b=RES.legs[1];const w=a===b?-1:(a>b?0:1);
+  let line=a+b===0?'Vul de stand in':(w<0?'Gelijk kan niet — kies een winnaar':'Winnaar: <b>'+esc(name(w===0?m.p1:m.p2))+'</b>');
+  document.getElementById('modalBack').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeResult()"><div class="modal">
+    <div class="m-h">${m.label?m.label:'Wedstrijd'}</div>
+    <div class="m-sub">first to ${m.legsTarget} leg${m.legsTarget>1?'s':''} · vul de eindstand in</div>
+    <div class="m-players">${plCard(0,m.p1,a,w===0)}<div class="m-vs">–</div>${plCard(1,m.p2,b,w===1)}</div>
+    <div class="m-win-line">${line}</div>
+    <button class="btn" onclick="saveResult()">Opslaan</button>
+    ${RES.played?'<button class="btn danger" onclick="clearResult()">Uitslag wissen</button>':''}
+    <button class="btn ghost" onclick="closeResult()">Annuleren</button>
+  </div></div>`;
 }
-function pl(i){
-  const active=CO.cur===i;const avg=CO.darts[i]>0?((CO.start-CO.rem[i])/CO.darts[i]*3).toFixed(1):'0.0';
-  const last=CO.last[i];const lt=last===0?'BUST':last!=null?('+'+last):'';
-  let legs='';for(let k=0;k<CO.legsTarget;k++)legs+=`<i class="${k<CO.legsWon[i]?'on':''}"></i>`;
-  return `<div class="pl ${active?'active':''}">
-    <div class="turn">Aan zet</div>
-    <div class="last ${last!=null?'show':''} ${last===0?'bust':''}">${lt}</div>
-    <div class="pn">${esc(name(CO.p[i]))}</div>
-    <div class="legs">${legs}</div>
-    <div class="big tnum" id="big${i}">${CO.shown[i]}</div>
-    <div class="avg">gem/beurt ${avg}</div></div>`;
+function plCard(i,pid,val,win){
+  return `<div class="m-pl ${win?'win':''}">
+    <div class="m-name">${esc(name(pid))}</div>
+    <div class="legbig tnum">${val}</div>
+    <div class="steps"><button onclick="stepLeg(${i},-1)">−</button><button onclick="stepLeg(${i},1)">+</button></div></div>`;
 }
-function tweenNum(el,from,to){
-  if(from===to){el.textContent=to;return;}
-  const t0=performance.now(),dur=420;
-  function step(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=Math.round(from+(to-from)*e);
-    if(k<1)requestAnimationFrame(step);else el.textContent=to;}
-  requestAnimationFrame(step);
+function saveResult(){
+  if(!RES)return;const m=findMatch(RES.kind,RES.id);const a=RES.legs[0],b=RES.legs[1];
+  if(a===b){toast('Gelijkspel kan niet — kies een winnaar');return;}
+  m.legs1=a;m.legs2=b;m.winner=a>b?m.p1:m.p2;
+  const champ=RES.kind==='finale'&&m.round==='final';
+  save();advanceFinale();save();closeResult();render();
+  if(champ){confetti(200);toast(name(m.winner)+' is kampioen');}else toast(name(m.winner)+' wint');
 }
-function key(k){if(!CO)return;
-  if(k==='back')CO.input=CO.input.slice(0,-1);
-  else{if(CO.input.length>=3)return;CO.input=(CO.input+k).replace(/^0+(?=\d)/,'');}
-  const d=document.getElementById('disp');d.textContent=CO.input===''?'0':CO.input;
-  d.classList.toggle('empty-in',CO.input==='');d.classList.remove('bust');}
-function quick(val){CO.input=String(val);submitScore();}
-function submitScore(){if(!CO)return;const val=parseInt(CO.input||'0',10);if(isNaN(val))return;
-  if(val>180){flashBust('MAX 180');return;}
-  const cur=CO.cur,before=CO.rem[cur],after=before-val;
-  if(after<0||after===1){doBust(val);return;}
-  CO.history.push({player:cur,score:val,remBefore:before});CO.rem[cur]=after;CO.darts[cur]+=3;CO.last[cur]=val;CO.input='';
-  if(after===0){legWon(cur);return;}CO.cur=1-cur;renderCounter(false);}
-function bust(){doBust(parseInt(CO.input||'0',10)||0);}
-function doBust(val){const cur=CO.cur;CO.history.push({player:cur,score:0,remBefore:CO.rem[cur],wasBust:true});
-  CO.darts[cur]+=3;CO.last[cur]=0;CO.input='';flashBust('BUST');CO.cur=1-cur;setTimeout(()=>renderCounter(false),520);}
-function flashBust(t){const d=document.getElementById('disp');if(d){d.textContent=t;d.classList.add('bust');d.classList.remove('empty-in');}}
-function legWon(winner){
-  CO.legsWon[winner]++;toast(name(CO.p[winner])+' wint de leg');
-  if(CO.legsWon[winner]>=CO.legsTarget){finishMatch(winner);return;}
-  CO.starter=1-CO.starter;CO.cur=CO.starter;CO.rem=[CO.start,CO.start];CO.shown=[CO.start,CO.start];
-  CO.last=[null,null];CO.history=[];CO.darts=[0,0];CO.input='';setTimeout(()=>renderCounter(true),700);}
-function finishMatch(winnerIdx){
-  const m=findMatch(CO.kind,CO.id);m.legs1=CO.legsWon[0];m.legs2=CO.legsWon[1];m.winner=CO.p[winnerIdx];save();
-  const champ=CO.kind==='finale'&&m.round==='final';const wn=name(m.winner);closeCounter();
-  if(champ){advanceFinale();save();confetti(200);toast(wn+' is kampioen');}
-  else{toast(wn+' wint de partij');}
-  advanceFinale();save();render();
+function clearResult(){
+  if(!RES)return;const m=findMatch(RES.kind,RES.id);
+  m.legs1=0;m.legs2=0;m.winner=null;save();advanceFinale();save();closeResult();render();toast('Uitslag gewist');
 }
-function undo(){if(!CO||!CO.history.length)return;const last=CO.history.pop();
-  CO.rem[last.player]=last.remBefore;CO.shown[last.player]=last.remBefore;CO.darts[last.player]=Math.max(0,CO.darts[last.player]-3);
-  CO.last[last.player]=null;CO.cur=last.player;CO.input='';renderCounter(true);}
 
-const FIN={170:'T20 T20 Bull',167:'T20 T19 Bull',164:'T20 T18 Bull',161:'T20 T17 Bull',160:'T20 T20 D20',158:'T20 T20 D19',157:'T20 T19 D20',156:'T20 T20 D18',155:'T20 T19 D19',154:'T20 T18 D20',153:'T20 T19 D18',152:'T20 T20 D16',151:'T20 T17 D20',150:'T20 T18 D18',149:'T20 T19 D16',148:'T20 T16 D20',147:'T20 T17 D18',146:'T20 T18 D16',145:'T20 T15 D20',144:'T20 T20 D12',143:'T20 T17 D16',142:'T20 T14 D20',141:'T20 T19 D12',140:'T20 T16 D16',139:'T19 T14 D20',138:'T20 T18 D12',137:'T19 T16 D16',136:'T20 T20 D8',135:'T20 T17 D12',134:'T20 T14 D16',133:'T20 T19 D8',132:'T20 T16 D12',131:'T20 T13 D16',130:'T20 T18 D8',129:'T19 T16 D12',128:'T18 T14 D16',127:'T20 T17 D8',126:'T19 T19 D6',125:'25 T20 D20',124:'T20 T16 D8',123:'T19 T16 D9',122:'T18 T20 D4',121:'T20 T11 D14',120:'T20 20 D20',119:'T19 T12 D13',118:'T20 18 D20',117:'T20 17 D20',116:'T20 16 D20',115:'T20 15 D20',114:'T20 14 D20',113:'T20 13 D20',112:'T20 12 D20',111:'T20 19 D16',110:'T20 Bull',109:'T20 9 D20',108:'T20 16 D16',107:'T19 Bull',106:'T20 14 D16',105:'T20 13 D16',104:'T18 Bull',103:'T19 6 D20',102:'T20 10 D16',101:'T17 Bull',100:'T20 D20',99:'T19 10 D16',98:'T20 D19',97:'T19 D20',96:'T20 D18',95:'T19 D19',94:'T18 D20',93:'T19 D18',92:'T20 D16',91:'T17 D20',90:'T18 D18',89:'T19 D16',88:'T16 D20',87:'T17 D18',86:'T18 D16',85:'T15 D20',84:'T20 D12',83:'T17 D16',82:'Bull D16',81:'T19 D12',80:'T20 D10',79:'T19 D11',78:'T18 D12',77:'T19 D10',76:'T20 D8',75:'T17 D12',74:'T14 D16',73:'T19 D8',72:'T16 D12',71:'T13 D16',70:'T18 D8',69:'T19 D6',68:'T20 D4',67:'T17 D8',66:'T10 D18',65:'T19 D4',64:'T16 D8',63:'T13 D12',62:'T10 D16',61:'T15 D8',60:'20 D20',58:'18 D20',56:'16 D20',54:'14 D20',52:'12 D20',50:'Bull',40:'D20',36:'D18',32:'D16',24:'D12',20:'D10',16:'D8',8:'D4',4:'D2',2:'D1'};
-function checkoutHint(rem){if(rem>170||rem<2)return '';if(FIN[rem])return FIN[rem];if(rem<=40&&rem%2===0)return 'D'+(rem/2);if(rem<=98)return 'finish mogelijk';return '';}
-
-/* ============ CONFETTI (champion) ============ */
+/* ============ CONFETTI ============ */
 function confetti(amount){
   let c=document.getElementById('cfC');
   if(!c){c=document.createElement('canvas');c.id='cfC';c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:600';document.body.appendChild(c);}
