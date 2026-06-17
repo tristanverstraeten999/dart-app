@@ -436,6 +436,28 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 .tvt-p .tvt-big{font-family:var(--disp);font-size:clamp(46px,8vw,96px);font-weight:800;line-height:1;color:var(--gold);margin:6px 0}
 .tvt-p .tvt-sub{font-size:clamp(12px,1.4vw,17px);color:var(--ink-2)}
 @media(max-width:780px){.tr-menu{grid-template-columns:1fr}}
+
+/* walk-on / entrance op de TV */
+.tv-fx .walkon{text-align:center;opacity:0;background:radial-gradient(60% 60% at 50% 50%, rgba(8,10,13,.92), rgba(8,10,13,.6));padding:clamp(26px,7vh,80px) clamp(30px,12vw,150px);border-radius:30px}
+.tv-fx .walkon.go{animation:tvwin .8s cubic-bezier(.2,.9,.3,1) forwards}
+.tv-fx .walkon .wo-top{font-size:clamp(12px,1.6vw,17px);letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:800}
+.tv-fx .walkon .wo-vs{display:flex;align-items:center;justify-content:center;gap:clamp(14px,3vw,40px);margin:10px 0 6px}
+.tv-fx .walkon .wo-vs span{font-family:var(--disp);font-size:clamp(34px,7vw,86px);font-weight:800;color:#fff;text-shadow:0 0 50px rgba(240,180,41,.4)}
+.tv-fx .walkon .wo-vs b{font-family:var(--disp);font-size:clamp(18px,2.4vw,30px);color:var(--red-bright)}
+.tv-fx .walkon .wo-go{font-size:clamp(14px,1.7vw,20px);color:var(--ink-2);letter-spacing:2px;text-transform:uppercase}
+/* geluid-knop op de TV */
+.tv-mute{position:absolute;top:6px;left:6px;z-index:6;width:38px;height:38px;border:1px solid var(--line-2);background:rgba(0,0,0,.35);color:var(--ink-2);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tv-mute svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tv-mute .off{display:none}
+.tv-mute.muted{color:var(--red-bright);border-color:rgba(226,59,70,.4)}
+.tv-mute.muted .on{display:none}.tv-mute.muted .off{display:block}
+.tv-mute:focus{outline:2px solid var(--green);outline-offset:2px}
+/* records (Onderling) */
+.recgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px}
+.rec{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px;text-align:center}
+.rec-l{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-bottom:7px}
+.rec-v{font-family:var(--disp);font-size:26px;font-weight:800;color:var(--gold);line-height:1}
+.rec-n{font-size:13px;color:var(--ink-2);font-weight:600;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -465,6 +487,7 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
       <button class="tab" data-ctab="overview" onclick="goc('overview')"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3zM13 21h8v-10h-8zM13 3v6h8V3zM3 21h8v-4H3z"/></svg><span>Overzicht</span></button>
       <button class="tab" data-ctab="stats" onclick="goc('stats')"><svg viewBox="0 0 24 24"><path d="M5 21v-6M12 21V9M19 21v-9"/><path d="M3 21h18"/></svg><span>Stats</span></button>
       <button class="tab" data-ctab="history" onclick="goc('history')"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4M12 8v4l3 2"/></svg><span>Historiek</span></button>
+      <button class="tab" data-ctab="rivalry" onclick="goc('rivalry')"><svg viewBox="0 0 24 24"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20a5 5 0 0 1 10 0M12 20a5 5 0 0 1 10 0"/></svg><span>Onderling</span></button>
       <button class="tab" data-ctab="hall" onclick="goc('hall')"><svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0Z"/><path d="M7 5H4.5v1.5A3 3 0 0 0 7.5 10"/><path d="M17 5h2.5v1.5A3 3 0 0 1 16.5 10"/><path d="M10 13.5V16h4v-2.5M8.5 20h7M10 20v-1.5h4V20"/></svg><span>Erelijst</span></button>
     </nav>
     <div class="side-foot"><span id="syncDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);vertical-align:middle;margin-right:6px"></span>Live-sync<br>Werkt ook offline</div>
@@ -531,6 +554,10 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 
     <section id="cview-history" class="view cview page hidden">
       <h2 class="page-h">Historiek</h2><div class="page-sub">Onderling overzicht en alle gespeelde partijen.</div><div id="compHistory"></div>
+    </section>
+
+    <section id="cview-rivalry" class="view cview page hidden">
+      <h2 class="page-h">Onderling</h2><div class="page-sub">Wie heeft de overhand? Onderlinge duels, records en zegereeksen.</div><div id="compRivalry"></div>
     </section>
 
     <section id="cview-hall" class="view cview page hidden">
@@ -759,7 +786,7 @@ function renderComp(){
     `<div class="banner"><div class="medal">${trophy()}</div><div><div class="bt">Leider · ${monthLabel(curMonth())}</div><div class="bl">${esc(cname(leader.id))}</div>
       <div class="bs">${leader.pts} punten · ${leader.won} ${leader.won===1?'winst':'winsten'} · gem ${avg3(leader.scored,leader.darts)}</div></div></div>`
     :`<div class="banner"><div class="medal">${trophy()}</div><div><div class="bt">${monthLabel(curMonth())}</div><div class="bl">Nog geen partijen</div><div class="bs">Speel de eerste partij van de maand!</div></div></div>`;
-  renderCompStats();renderCompHistory();renderCompHall();}
+  renderCompStats();renderCompHistory();renderCompHall();renderRivalry();}
 function renderCompStats(){const el=document.getElementById('compStats');
   if(!C.matches.length){el.innerHTML=`<div class="card"><div class="empty">${statIcon()}<div>Nog geen partijen gespeeld.</div></div></div>`;return;}
   const all=compStand(C.matches);
@@ -789,6 +816,33 @@ function renderCompHistory(){const el=document.getElementById('compHistory');
       <div class="meta"><div class="score tnum">${m.legs1}–${m.legs2}</div><div class="sub">${m.startScore}</div></div></div>`;}).join('')+`</div>`;
   el.innerHTML=html;}
 function compStreaks(){const s={};const cur={};C.matches.slice().sort((a,b)=>a.ts-b.ts).forEach(m=>{const w=m.winner,l=w===m.p1?m.p2:m.p1;cur[w]=(cur[w]||0)+1;s[w]=Math.max(s[w]||0,cur[w]);cur[l]=0;});return s;}
+function h2hPairs(){const map={};C.matches.forEach(m=>{const ids=[m.p1,m.p2].sort();const key=ids.join('|');
+  const o=map[key]||(map[key]={a:ids[0],b:ids[1],wa:0,wb:0,la:0,lb:0,n:0,ms:[]});o.n++;o.ms.push(m);
+  const aP1=m.p1===o.a;if(m.winner===o.a)o.wa++;else o.wb++;o.la+=aP1?m.legs1:m.legs2;o.lb+=aP1?m.legs2:m.legs1;});
+  return Object.values(map).sort((x,y)=>y.n-x.n);}
+function recordHolder(rows,field,minDarts){let best=null;rows.forEach(r=>{if(minDarts&&r.darts<minDarts)return;const v=field==='avg'?(r.darts?r.scored/r.darts*3:0):r[field];if(v>0&&(!best||v>best.v))best={id:r.id,v};});return best;}
+function renderRivalry(){const el=document.getElementById('compRivalry');if(!el)return;
+  if(!C.matches.length){el.innerHTML=`<div class="card"><div class="empty">${statIcon()}<div>Nog geen partijen gespeeld — speel een paar potjes en de onderlinge stand verschijnt hier.</div></div></div>`;return;}
+  const rows=compStand(C.matches),streaks=compStreaks();
+  const hc=recordHolder(rows,'hi'),avg=recordHolder(rows,'avg',30),t180=recordHolder(rows,'t180'),wins=recordHolder(rows,'won');
+  let bestStreak=null;Object.keys(streaks).forEach(id=>{if(!bestStreak||streaks[id]>bestStreak.v)bestStreak={id,v:streaks[id]};});
+  const rec=(lbl,h,fmt)=>`<div class="rec"><div class="rec-l">${lbl}</div>`+(h?`<div class="rec-v">${fmt(h.v)}</div><div class="rec-n">${esc(cname(h.id))}</div>`:`<div class="rec-v">—</div><div class="rec-n">nog geen</div>`)+`</div>`;
+  let html=`<div class="card"><div class="card-h">Records</div><div class="saber"></div><div class="recgrid">
+    ${rec('Hoogste uitgooi',hc,v=>v)}
+    ${rec('Beste gemiddelde',avg,v=>v.toFixed(1))}
+    ${rec("Meeste 180's",t180,v=>v)}
+    ${rec('Langste zegereeks',bestStreak,v=>v+'×')}
+    ${rec('Meeste winsten',wins,v=>v)}
+  </div></div>`;
+  const pairs=h2hPairs();
+  html+=`<div class="card-h" style="margin:4px 2px 12px">Onderlinge duels <span class="right">${pairs.length} ${pairs.length===1?'rivaliteit':'rivaliteiten'}</span></div>`;
+  html+=pairs.map(o=>{const na=cname(o.a),nb=cname(o.b);const lead=o.wa===o.wb?null:(o.wa>o.wb?o.a:o.b);
+    let st=0;const lastW=o.ms[0].winner;for(const m of o.ms){if(m.winner===lastW)st++;else break;}
+    const streakTxt=lead?(st+'× op rij voor '+esc(cname(lastW))):'gelijke stand';
+    return `<div class="card"><div class="h2h"><div class="side ${o.wa>=o.wb?'lead':''}"><div class="hw tnum">${o.wa}</div><div class="hn">${esc(na)}</div></div>
+      <div class="mid">—</div><div class="side ${o.wb>o.wa?'lead':''}"><div class="hw tnum">${o.wb}</div><div class="hn">${esc(nb)}</div></div></div>
+      <div class="muted center">${o.n} ${o.n===1?'duel':'duels'} · legs ${o.la}–${o.lb} · ${streakTxt}</div></div>`;}).join('');
+  el.innerHTML=html;}
 function monthWinners(){const by={};C.matches.forEach(m=>{(by[m.month]=by[m.month]||[]).push(m);});
   const out=[];Object.keys(by).sort().reverse().forEach(month=>{const rows=compStand(by[month]);const top=rows.find(r=>r.played>0);if(top)out.push({month,id:top.id,pts:top.pts,completed:month!==curMonth()});});return out;}
 const ACH=[{k:'first_match',t:'Debuut',d:'Eerste partij',ic:'target'},{k:'first_win',t:'Eerste zege',d:'Win een partij',ic:'trophy'},
@@ -829,8 +883,10 @@ function startNM(){if(NM.p1===NM.p2){toast('Kies twee verschillende spelers');re
 
 /* ============ 501 COUNTER ============ */
 let CO=null;
-function startCounter(p1,p2,start,legsTarget){CO={p:[p1,p2],start,legsTarget,starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:''};
+function startCounter(p1,p2,start,legsTarget){CO={p:[p1,p2],start,legsTarget,starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
+  CO.ev={seq:1,kind:'walkon',names:[cname(p1),cname(p2)],start,legsTarget};
   IAMCTRL=true;document.getElementById('overlay').classList.remove('hidden');renderCounter(true);}
+function coEvent(kind,player,score,bust){if(!CO)return;CO.evSeq=(CO.evSeq||0)+1;CO.ev={seq:CO.evSeq,kind,player,score:score||0,bust:!!bust,name:cname(CO.p[player]),opp:cname(CO.p[1-player])};}
 function closeCounter(){CO=null;IAMCTRL=false;fbClearLive();document.getElementById('overlay').classList.add('hidden');render();}
 function renderCounter(full){if(!CO)return;const ov=document.getElementById('overlay');
   const co0=checkoutHint(CO.rem[0]),co1=checkoutHint(CO.rem[1]);const curCo=CO.cur===0?co0:co1;
@@ -860,18 +916,20 @@ function ckey(type,val){if(!CO)return;
 function submitScore(){if(!CO)return;const val=parseInt(CO.input||'0',10);if(isNaN(val))return;if(val>180){flashBust('MAX 180');return;}
   const cur=CO.cur,before=CO.rem[cur],after=before-val;if(after<0||after===1){doBust(val);return;}
   CO.history.push({player:cur,score:val,remBefore:before});CO.rem[cur]=after;CO.darts[cur]+=3;CO.scored[cur]+=val;if(val===180)CO.t180[cur]++;CO.last[cur]=val;CO.input='';
-  if(after===0){CO.hi[cur]=Math.max(CO.hi[cur],val);legWon(cur);return;}CO.cur=1-cur;renderCounter(false);}
+  if(after===0){CO.hi[cur]=Math.max(CO.hi[cur],val);legWon(cur);return;}
+  coEvent('throw',cur,val,false);CO.cur=1-cur;renderCounter(false);}
 function bust(){doBust(parseInt(CO.input||'0',10)||0);}
-function doBust(val){const cur=CO.cur;CO.history.push({player:cur,score:0,remBefore:CO.rem[cur],bust:true});CO.darts[cur]+=3;CO.last[cur]=0;CO.input='';flashBust('BUST');CO.cur=1-cur;setTimeout(()=>renderCounter(false),520);}
+function doBust(val){const cur=CO.cur;CO.history.push({player:cur,score:0,remBefore:CO.rem[cur],bust:true});CO.darts[cur]+=3;CO.last[cur]=0;CO.input='';flashBust('BUST');coEvent('throw',cur,0,true);CO.cur=1-cur;setTimeout(()=>renderCounter(false),520);}
 function flashBust(t){const d=document.getElementById('disp');if(d){d.textContent=t;d.classList.add('bust');d.classList.remove('empty-in');}}
-function legWon(winner){CO.legsWon[winner]++;fbPushLive();toast(cname(CO.p[winner])+' wint de leg');
-  if(CO.legsWon[winner]>=CO.legsTarget){finishCounter(winner);return;}
+function legWon(winner){CO.legsWon[winner]++;const matchOver=CO.legsWon[winner]>=CO.legsTarget;
+  coEvent(matchOver?'match':'leg',winner);fbPushLive();toast(cname(CO.p[winner])+' wint de leg');
+  if(matchOver){finishCounter(winner);return;}
   CO.starter=1-CO.starter;CO.cur=CO.starter;CO.rem=[CO.start,CO.start];CO.shown=[CO.start,CO.start];CO.last=[null,null];CO.history=[];CO.input='';setTimeout(()=>renderCounter(true),750);}
 function undoThrow(){if(!CO||!CO.history.length)return;const last=CO.history.pop();const p=last.player;CO.rem[p]=last.remBefore;CO.shown[p]=last.remBefore;CO.darts[p]=Math.max(0,CO.darts[p]-3);
   if(!last.bust){CO.scored[p]-=last.score;if(last.score===180)CO.t180[p]=Math.max(0,CO.t180[p]-1);}CO.last[p]=null;CO.cur=p;CO.input='';renderCounter(true);}
 function abortCounter(){if(!confirm('Partij afbreken? De stand wordt niet bewaard.'))return;closeCounter();}
 function finishCounter(winnerIdx){const now=new Date();const month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:winnerIdx,names:[cname(CO.p[0]),cname(CO.p[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts});}catch(e){}}
+  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:winnerIdx,names:[cname(CO.p[0]),cname(CO.p[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
   const rec={id:uid(),ts:Date.now(),month,p1:CO.p[0],p2:CO.p[1],startScore:CO.start,legsTarget:CO.legsTarget,legs1:CO.legsWon[0],legs2:CO.legsWon[1],winner:CO.p[winnerIdx],
     stats:{[CO.p[0]]:{darts:CO.darts[0],scored:CO.scored[0],t180:CO.t180[0],hi:CO.hi[0]},[CO.p[1]]:{darts:CO.darts[1],scored:CO.scored[1],t180:CO.t180[1],hi:CO.hi[1]}}};
   C.matches.unshift(rec);const newly=evalAchievements();saveC();const wn=cname(CO.p[winnerIdx]);
@@ -899,7 +957,7 @@ addEventListener('resize',()=>{const c=document.getElementById('cfC');if(c){c.wi
 
 /* ============ FIREBASE LIVE SYNC ============ */
 const firebaseConfig={apiKey:"AIzaSyA2ROasz31AAPBBeTWvgCy2nMfprxWaAuk",authDomain:"dart-app-5a19c.firebaseapp.com",databaseURL:"https://dart-app-5a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"dart-app-5a19c",storageBucket:"dart-app-5a19c.firebasestorage.app",messagingSenderId:"38748326773",appId:"1:38748326773:web:294b6a41b5986ee3d3613c"};
-let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null,FBCONN=false;
+let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null,FBCONN=false,callerSeq=null;
 function setSyncDot(on){const el=document.getElementById('syncDot');if(el){el.style.background=on?'var(--green)':'var(--muted)';el.title=on?'Live verbonden':'Offline (lokaal)';}}
 function fbInit(){try{
   if(!window.firebase||!firebase.initializeApp){setSyncDot(false);return;}
@@ -911,14 +969,14 @@ function fbInit(){try{
   if(C.updatedAt)fbPushComp();
 }catch(e){console.warn('Firebase init faalde',e);setSyncDot(false);}}
 function fbPushComp(){if(!fbReady)return;clearTimeout(compPushTimer);compPushTimer=setTimeout(()=>{try{DB.ref('comp').set(C);}catch(e){}},250);}
-function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:CO.cur,names:[cname(CO.p[0]),cname(CO.p[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts});}catch(e){}}
+function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:CO.cur,names:[cname(CO.p[0]),cname(CO.p[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
 function fbClearLive(){if(!fbReady)return;try{DB.ref('live').set({active:false,ts:Date.now()});}catch(e){}}
 function dismissMirror(){mirrorDismissTs=LIVEDATA?LIVEDATA.ts:0;renderLiveMirror();}
 function tvSideHtml(i,d){return `<div class="tv-side" id="tvSide${i}"><div class="tv-tag">Aan zet</div>
   <div class="tv-name">${esc(d.names[i])}</div><div class="tv-rem tnum" id="tvRem${i}">${d.rem[i]}</div>
   <div class="tv-legs" id="tvLegs${i}"></div><div class="tv-avg" id="tvAvg${i}"></div><div class="tv-throw" id="tvThrow${i}"></div></div>`;}
 function tvLegsHtml(i,d,justWon){let s='';for(let k=0;k<d.legsTarget;k++)s+=`<i class="${k<d.legsWon[i]?'on':''} ${justWon&&k===d.legsWon[i]-1?'justwon':''}"></i>`;return s;}
-function buildTv(host,d){host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>
+function buildTv(host,d){host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>${muteBtnHtml()}
   <div class="tv-top"><div class="tv-game">${d.start} <span>· first to ${d.legsTarget}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
   <div class="tv-board">${tvSideHtml(0,d)}<div class="tv-vs">VS</div>${tvSideHtml(1,d)}</div>
   <div class="tv-checkout" id="tvCo"></div><div class="tv-fx" id="tvFx"></div></div>`;}
@@ -935,7 +993,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
   host.classList.remove('hidden');
   if(d.kind==='training'){renderTvTraining(host,d);return;}
   const key=(d.names||[]).join('|')+'|'+d.start+'|'+d.legsTarget;
-  if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;}
+  if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;callerSeq=null;}
   [0,1].forEach(i=>{
     const side=document.getElementById('tvSide'+i);if(side)side.classList.toggle('active',d.cur===i&&!d.over);
     const remEl=document.getElementById('tvRem'+i);const prevRem=LIVEPREV?LIVEPREV.rem[i]:d.rem[i];
@@ -947,6 +1005,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
   const coEl=document.getElementById('tvCo');
   if(coEl){if(d.over)coEl.innerHTML='';else{const co=checkoutHint(d.rem[d.cur]);coEl.innerHTML=co?('Uitgooien: <b>'+co+'</b>'):'';}}
   if(d.over&&(!LIVEPREV||!LIVEPREV.over))tvWinner(d.names[d.winner]);
+  if(d.ev){if(callerSeq===null){callerSeq=d.ev.seq;if(d.ev.kind==='walkon')tvHandleEvent(d.ev,d);}else if(d.ev.seq!==callerSeq){callerSeq=d.ev.seq;tvHandleEvent(d.ev,d);}}
   LIVEPREV=JSON.parse(JSON.stringify(d));}
 function tvThrow(i,delta){const e=document.getElementById('tvThrow'+i);if(e){e.textContent='+'+delta;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
   const r=document.getElementById('tvRem'+i);if(r){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');}}
@@ -1107,11 +1166,60 @@ function trPushLive(){if(!fbReady||!IAMCTRL||!TR.game)return;const g=TR.game;
     players:g.players.map((id,i)=>{const val=trVal(id);return{name:trName(id),big:String(val.v),sub:val.sub,active:!g.over&&i===g.idx};}),
     winner:g.over?trName(trRank()[0].id):null});}catch(e){}}
 function renderTvTraining(host,d){const wins=d.over&&d.winner;
-  host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>
+  host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>${muteBtnHtml()}
     <div class="tv-top"><div class="tv-game">Training <span>· ${esc(d.game||'')}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
     <div class="tv-board"><div class="tvt-players">${(d.players||[]).map(p=>`<div class="tvt-p ${p.active?'active':''}"><div class="tvt-nm">${esc(p.name)}</div><div class="tvt-big tnum">${esc(p.big)}</div><div class="tvt-sub">${esc(p.sub||'')}</div></div>`).join('')}</div></div>
     ${wins?`<div class="tv-fx"><div class="winner go"><div class="wt">Winnaar</div><div class="wn">${esc(d.winner)}</div><div class="wsub">${esc(d.game||'')}</div></div></div>`:'<div class="tv-checkout">&nbsp;</div>'}</div>`;
   tvKey='__training__';}
+
+/* ============ TV-OMROEPER + WALK-ON ============ */
+function callerMuted(){try{return localStorage.getItem('dartCallerMute')==='1';}catch(e){return false;}}
+function toggleCallerMute(e){if(e){e.stopPropagation();}const m=callerMuted();try{localStorage.setItem('dartCallerMute',m?'0':'1');}catch(e2){}if(m){unlockAudio();}else{try{if('speechSynthesis'in window)speechSynthesis.cancel();}catch(e3){}}
+  document.querySelectorAll('.tv-mute').forEach(b=>b.classList.toggle('muted',!m));}
+function muteBtnHtml(){return `<button class="tv-mute ${callerMuted()?'muted':''}" onclick="toggleCallerMute(event)" title="Geluid aan/uit">
+  <svg class="on" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>
+  <svg class="off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6M21 9l-4 6"/></svg></button>`;}
+
+/* spraak */
+let _voices=[];
+function loadVoices(){try{_voices=(window.speechSynthesis&&speechSynthesis.getVoices())||[];}catch(e){_voices=[];}}
+if('speechSynthesis'in window){loadVoices();try{speechSynthesis.onvoiceschanged=loadVoices;}catch(e){}}
+function pickVoice(){if(!_voices.length)loadVoices();
+  const pref=['Google UK English Male','Daniel','Arthur (Enhanced)','Arthur','Google UK English'];
+  for(const p of pref){const v=_voices.find(v=>v.name===p);if(v)return v;}
+  return _voices.find(v=>v.lang&&v.lang.toLowerCase().indexOf('en-gb')===0)||_voices.find(v=>v.lang&&v.lang.toLowerCase().indexOf('en')===0)||_voices[0]||null;}
+function speak(text,opts){opts=opts||{};try{if(callerMuted()||!('speechSynthesis'in window)||!text)return;
+  const u=new SpeechSynthesisUtterance(text);const v=pickVoice();if(v)u.voice=v;u.lang='en-GB';
+  u.rate=opts.rate||1;u.pitch=opts.pitch||1;u.volume=1;speechSynthesis.speak(u);}catch(e){}}
+const _ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+const _TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function numWords(n){n=Math.round(n);if(n<0)n=0;if(n<20)return _ONES[n];if(n<100){const t=_TENS[Math.floor(n/10)],o=n%10;return o?t+'-'+_ONES[o]:t;}const h=Math.floor(n/100),r=n%100;let s=_ONES[h]+' hundred';if(r)s+=' and '+numWords(r);return s;}
+
+/* audio (fanfare + unlock) */
+let _actx=null;
+function audioCtx(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!_actx)_actx=new AC();if(_actx.state==='suspended')_actx.resume();return _actx;}catch(e){return null;}}
+function fanfare(){if(callerMuted())return;const ctx=audioCtx();if(!ctx)return;const t0=ctx.currentTime,notes=[523.25,659.25,783.99,1046.5];
+  notes.forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;
+    const s=t0+i*0.12;g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(0.22,s+0.03);g.gain.exponentialRampToValueAtTime(0.0001,s+0.3);
+    o.connect(g);g.connect(ctx.destination);o.start(s);o.stop(s+0.32);});}
+let _spkUnlocked=false;
+function unlockAudio(){if(_spkUnlocked)return;_spkUnlocked=true;try{audioCtx();}catch(e){}try{if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}}catch(e){}}
+document.addEventListener('click',unlockAudio,{once:true});document.addEventListener('keydown',unlockAudio,{once:true});
+
+/* events -> beeld + stem */
+function tvHandleEvent(ev,d){
+  if(ev.kind==='walkon'){tvWalkon(ev.names||[]);callerWalkon(ev.names||[]);}
+  else if(ev.kind==='throw'){callerThrow(ev);}
+  else if(ev.kind==='leg'){speak('Game shot! '+ev.name+'.',{pitch:1.08});}
+  else if(ev.kind==='match'){speak('Game, shot, and the match! '+ev.name+'!',{pitch:1.12,rate:.98});}}
+function callerThrow(ev){if(ev.bust){speak('Bust!');return;}if(!ev.score){speak('No score.');return;}
+  if(ev.score===180){speak('One hundred and eighty!',{pitch:1.18,rate:.97});return;}
+  speak(numWords(ev.score),{pitch:1.03});}
+function callerWalkon(names){const a=names[0]||'',b=names[1]||'';speak('Welcome to the oche. '+a+'. versus. '+b+'. Game on!',{pitch:1.05});}
+function tvWalkon(names){const fx=document.getElementById('tvFx');if(!fx)return;
+  fx.innerHTML=`<div class="walkon"><div class="wo-top">Walk-on</div><div class="wo-vs"><span>${esc(names[0]||'')}</span><b>VS</b><span>${esc(names[1]||'')}</span></div><div class="wo-go">Game on</div></div>`;
+  const e=fx.querySelector('.walkon');if(e){void e.offsetWidth;e.classList.add('go');}fanfare();
+  setTimeout(()=>{if(fx.querySelector('.walkon'))fx.innerHTML='';},4200);}
 
 /* ============ BOOT ============ */
 if(TV){
