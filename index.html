@@ -993,6 +993,7 @@ function toast(msg,gold){if(toastEl)toastEl.remove();toastEl=document.createElem
   document.body.appendChild(toastEl);requestAnimationFrame(()=>toastEl.classList.add('show'));clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>{if(toastEl){toastEl.classList.remove('show');setTimeout(()=>toastEl&&toastEl.remove(),350);}},2600);}
 function resetAll(){if(MODE==='competition'){if(!confirm('Hele competitie wissen (spelers, partijen, achievements)?'))return;C=freshC();saveC();goc('overview');toast('Competitie gewist');return;}
+  if(MODE==='training'){if(!confirm('Training wissen (spelers en huidige oefening)?'))return;TR=freshTR();saveTR();IAMCTRL=false;fbClearLive();gotr('menu');toast('Training gereset');return;}
   if(!confirm('Tornooi wissen en opnieuw beginnen?'))return;S=freshT();save();go('setup');toast('Tornooi gereset');}
 addEventListener('resize',()=>{const c=document.getElementById('cfC');if(c){c.width=innerWidth;c.height=innerHeight;}});
 
@@ -1060,7 +1061,7 @@ function tvTournamentHtml(t){
         <span class="tm-n r ${m.w2?'w':''}">${esc(m.p2)}</span></div>`).join('')+`</div></div>`;
   }
   const champ=t.champion?`<div class="tt-champ"><div class="medal">${trophy()}</div><div class="tc-x"><div class="tc-l">Kampioen</div><div class="tc-n">${esc(t.champion)}</div></div></div>`:'';
-  return `<div class="tv tv-tour"><button class="tv-close" onclick="dismissMirror()">✕</button>${muteBtnHtml()}
+  return `<div class="tv tv-tour">${muteBtnHtml()}
     <div class="tv-top"><div class="tv-game">${esc(t.team||'Tornooi')} <span>· ${tourPhaseLabel(t)}</span></div><div class="tv-live"><span class="livebadge gold">● TORNOOI</span></div></div>
     ${champ}
     <div class="tt-grid">${stand}${right}</div></div>`;}
@@ -1273,7 +1274,7 @@ function pickVoice(){if(!_voices.length)loadVoices();
   const pref=['Google UK English Male','Daniel','Arthur (Enhanced)','Arthur','Google UK English'];
   for(const p of pref){const v=_voices.find(v=>v.name===p);if(v)return v;}
   return _voices.find(v=>v.lang&&v.lang.toLowerCase().indexOf('en-gb')===0)||_voices.find(v=>v.lang&&v.lang.toLowerCase().indexOf('en')===0)||_voices[0]||null;}
-function speak(text,opts){opts=opts||{};try{if(callerMuted()||!('speechSynthesis'in window)||!text)return;
+function speak(text,opts){opts=opts||{};try{if(!TV||callerMuted()||!('speechSynthesis'in window)||!text)return;
   const u=new SpeechSynthesisUtterance(text);const v=pickVoice();if(v)u.voice=v;u.lang='en-GB';
   u.rate=opts.rate||1;u.pitch=opts.pitch||1;u.volume=1;speechSynthesis.speak(u);}catch(e){}}
 const _ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
@@ -1283,7 +1284,7 @@ function numWords(n){n=Math.round(n);if(n<0)n=0;if(n<20)return _ONES[n];if(n<100
 /* audio (fanfare + unlock) */
 let _actx=null;
 function audioCtx(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!_actx)_actx=new AC();if(_actx.state==='suspended')_actx.resume();return _actx;}catch(e){return null;}}
-function fanfare(){if(callerMuted())return;const ctx=audioCtx();if(!ctx)return;const t0=ctx.currentTime,notes=[523.25,659.25,783.99,1046.5];
+function fanfare(){if(!TV||callerMuted())return;const ctx=audioCtx();if(!ctx)return;const t0=ctx.currentTime,notes=[523.25,659.25,783.99,1046.5];
   notes.forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;
     const s=t0+i*0.12;g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(0.22,s+0.03);g.gain.exponentialRampToValueAtTime(0.0001,s+0.3);
     o.connect(g);g.connect(ctx.destination);o.start(s);o.stop(s+0.32);});}
