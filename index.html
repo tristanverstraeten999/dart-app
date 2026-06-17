@@ -360,6 +360,29 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
   .bracket{flex-direction:column}.conn{display:none}.round{min-width:0;padding-top:26px}
   .h2h .side .hw{font-size:42px}
 }
+
+/* ===== TV-ONLY MODE (eigen TV-app, ?tv) ===== */
+body.tvmode{overflow:hidden}
+body.tvmode .app,body.tvmode #overlay{display:none!important}
+body.tvmode #liveMirror{display:flex!important}
+body.tvmode #liveMirror.hidden{display:flex!important}
+body.tvmode .tv-close{display:none!important}
+body.tvmode .tv{max-width:none;padding:clamp(20px,3vw,46px) clamp(24px,4vw,70px)}
+body.tvmode .tv-rem{font-size:clamp(120px,20vw,320px)}
+body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
+.tv-idle{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px}
+.tv-idle .ti-board{width:clamp(120px,16vw,210px);height:clamp(120px,16vw,210px);border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#1a212c 0 38%,var(--red) 38% 41%,#1a212c 41% 60%,var(--green) 60% 63%,#1a212c 63% 100%);
+  box-shadow:0 0 0 6px #0c0f14,0 40px 90px -40px rgba(0,0,0,.9);position:relative;animation:tiSpin 30s linear infinite}
+.tv-idle .ti-board::after{content:"";position:absolute;inset:46%;border-radius:50%;background:var(--red)}
+@keyframes tiSpin{to{transform:rotate(360deg)}}
+.tv-idle .ti-title{font-family:var(--disp);font-size:clamp(40px,6vw,86px);font-weight:800;letter-spacing:-1px;margin-top:8px}
+.tv-idle .ti-sub{font-size:clamp(16px,2vw,26px);color:var(--ink-2)}
+.tv-idle .ti-dot{display:inline-flex;align-items:center;gap:10px;color:var(--muted);font-size:clamp(13px,1.5vw,18px);font-weight:600;
+  border:1px solid var(--line-2);padding:9px 18px;border-radius:999px;margin-top:6px}
+.tv-idle .ti-dot i{width:11px;height:11px;border-radius:50%;background:var(--muted);transition:.3s}
+.tv-idle.online .ti-dot i{background:var(--green);box-shadow:0 0 12px var(--green);animation:tiPulse 2s ease-in-out infinite}
+@keyframes tiPulse{0%,100%{opacity:.5}50%{opacity:1}}
 </style>
 </head>
 <body>
@@ -474,6 +497,7 @@ const MONTHS=['januari','februari','maart','april','mei','juni','juli','augustus
 function curMonth(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function monthLabel(m){const [y,mo]=m.split('-');return MONTHS[(+mo)-1]+' '+y;}
 let MODE=localStorage.getItem('dartMode')||'tournament';
+const TV=(function(){try{return new URLSearchParams(location.search).has('tv')||location.hash.replace('#','')==='tv';}catch(e){return false;}})();
 
 /* ============ TOURNAMENT STATE ============ */
 const KEY='dartSWv2';
@@ -809,7 +833,7 @@ addEventListener('resize',()=>{const c=document.getElementById('cfC');if(c){c.wi
 
 /* ============ FIREBASE LIVE SYNC ============ */
 const firebaseConfig={apiKey:"AIzaSyA2ROasz31AAPBBeTWvgCy2nMfprxWaAuk",authDomain:"dart-app-5a19c.firebaseapp.com",databaseURL:"https://dart-app-5a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"dart-app-5a19c",storageBucket:"dart-app-5a19c.firebasestorage.app",messagingSenderId:"38748326773",appId:"1:38748326773:web:294b6a41b5986ee3d3613c"};
-let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null;
+let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null,FBCONN=false;
 function setSyncDot(on){const el=document.getElementById('syncDot');if(el){el.style.background=on?'var(--green)':'var(--muted)';el.title=on?'Live verbonden':'Offline (lokaal)';}}
 function fbInit(){try{
   if(!window.firebase||!firebase.initializeApp){setSyncDot(false);return;}
@@ -817,7 +841,7 @@ function fbInit(){try{
   DB.ref('comp').on('value',s=>{const v=s.val();if(!v||!v.updatedAt)return;
     if(!C.updatedAt||v.updatedAt>C.updatedAt){applyingRemote=true;const av=C.activeView;C=Object.assign(freshC(),v);C.activeView=av;localStorage.setItem(CKEY,JSON.stringify(C));applyingRemote=false;if(MODE==='competition')render();}});
   DB.ref('live').on('value',s=>{LIVEDATA=s.val();renderLiveMirror();});
-  DB.ref('.info/connected').on('value',s=>setSyncDot(!!s.val()));
+  DB.ref('.info/connected').on('value',s=>{FBCONN=!!s.val();setSyncDot(FBCONN);if(TV&&tvKey==='__idle__')setIdleConn(FBCONN);});
   if(C.updatedAt)fbPushComp();
 }catch(e){console.warn('Firebase init faalde',e);setSyncDot(false);}}
 function fbPushComp(){if(!fbReady)return;clearTimeout(compPushTimer);compPushTimer=setTimeout(()=>{try{DB.ref('comp').set(C);}catch(e){}},250);}
@@ -832,8 +856,16 @@ function buildTv(host,d){host.innerHTML=`<div class="tv"><button class="tv-close
   <div class="tv-top"><div class="tv-game">${d.start} <span>· first to ${d.legsTarget}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
   <div class="tv-board">${tvSideHtml(0,d)}<div class="tv-vs">VS</div>${tvSideHtml(1,d)}</div>
   <div class="tv-checkout" id="tvCo"></div><div class="tv-fx" id="tvFx"></div></div>`;}
+function tvIdleHtml(){return `<div class="tv"><div class="tv-idle" id="tvIdle">
+  <div class="ti-board"></div>
+  <div class="ti-title">Darts</div>
+  <div class="ti-sub">Wacht op een partij…</div>
+  <div class="ti-dot"><i></i><span id="tvConnTxt">Verbinden…</span></div></div></div>`;}
+function setIdleConn(on){const idle=document.getElementById('tvIdle');if(idle){idle.classList.toggle('online',on);const t=document.getElementById('tvConnTxt');if(t)t.textContent=on?'Verbonden · klaar':'Verbinden…';}}
 function renderLiveMirror(){const host=document.getElementById('liveMirror');const d=LIVEDATA;
-  if(!d||!d.active||IAMCTRL||(d.ts&&d.ts===mirrorDismissTs)){host.classList.add('hidden');host.innerHTML='';tvKey=null;LIVEPREV=null;return;}
+  if(!d||!d.active||IAMCTRL||(d.ts&&d.ts===mirrorDismissTs)){
+    if(TV){host.classList.remove('hidden');if(tvKey!=='__idle__'){host.innerHTML=tvIdleHtml();tvKey='__idle__';setIdleConn(fbReady&&!!FBCONN);}LIVEPREV=null;return;}
+    host.classList.add('hidden');host.innerHTML='';tvKey=null;LIVEPREV=null;return;}
   host.classList.remove('hidden');
   const key=(d.names||[]).join('|')+'|'+d.start+'|'+d.legsTarget;
   if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;}
@@ -858,7 +890,14 @@ function tvWinner(nm){const fx=document.getElementById('tvFx');if(!fx)return;
   const w=fx.querySelector('.winner');void w.offsetWidth;w.classList.add('go');confetti(240);setTimeout(()=>confetti(160),450);}
 
 /* ============ BOOT ============ */
-if(MODE==='competition'){syncModeUI();goc(C.activeView||'overview');}else{syncModeUI();go(S.activeView||'setup');}
+if(TV){
+  document.body.classList.add('tvmode');
+  renderLiveMirror();
+  /* scherm wakker houden (best-effort; de TV-app forceert dit ook native) */
+  (function keepAwake(){try{if('wakeLock'in navigator){let wl=null;const req=()=>navigator.wakeLock.request('screen').then(l=>{wl=l;}).catch(()=>{});req();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')req();});}}catch(e){}})();
+}else{
+  if(MODE==='competition'){syncModeUI();goc(C.activeView||'overview');}else{syncModeUI();go(S.activeView||'setup');}
+}
 fbInit();
 </script>
 </body>
