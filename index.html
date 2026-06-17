@@ -383,6 +383,59 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 .tv-idle .ti-dot i{width:11px;height:11px;border-radius:50%;background:var(--muted);transition:.3s}
 .tv-idle.online .ti-dot i{background:var(--green);box-shadow:0 0 12px var(--green);animation:tiPulse 2s ease-in-out infinite}
 @keyframes tiPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* ===== TRAINING ===== */
+.tr-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.tr-game{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;cursor:pointer;transition:.14s;display:flex;flex-direction:column;gap:8px;box-shadow:var(--sh)}
+.tr-game:hover{border-color:var(--green);transform:translateY(-2px)}
+.tr-game .tg-ic{width:42px;height:42px;border-radius:11px;background:var(--green-soft);display:flex;align-items:center;justify-content:center}
+.tr-game .tg-ic svg{width:24px;height:24px;stroke:var(--green-bright);fill:none;stroke-width:1.8}
+.tr-game .tg-t{font-family:var(--disp);font-size:17px;font-weight:800}
+.tr-game .tg-d{font-size:13px;color:var(--ink-2);line-height:1.5}
+.tr-roster{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.tr-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:999px;padding:7px 8px 7px 14px;font-weight:600;font-size:14px}
+.tr-chip button{border:none;background:rgba(255,255,255,.06);color:var(--ink-2);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1}
+.tr-chip button:hover{background:var(--red-soft);color:var(--red-bright)}
+.tr-addrow{display:flex;gap:9px;margin-top:6px}
+.tr-addrow input{flex:1}
+.tr-opt{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 2px}
+.tr-opt button{flex:1;min-width:64px;background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:10px;padding:11px 6px;font-family:var(--disp);font-weight:700;font-size:15px;cursor:pointer}
+.tr-opt button.on{background:var(--green-soft);border-color:var(--green);color:var(--green-bright)}
+.tr-play{display:flex;flex-direction:column;flex:1;min-height:0}
+.tr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tr-head .th-t{font-family:var(--disp);font-size:20px;font-weight:800}
+.tr-head .th-s{font-size:13px;color:var(--muted)}
+.tr-active{text-align:center;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);padding:18px;margin-bottom:12px}
+.tr-active .ta-who{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.tr-active .ta-name{font-family:var(--disp);font-size:26px;font-weight:800;margin:2px 0 10px}
+.tr-active .ta-lbl{font-size:13px;color:var(--ink-2);text-transform:uppercase;letter-spacing:1.5px}
+.tr-active .ta-big{font-family:var(--disp);font-size:clamp(62px,16vw,104px);font-weight:800;line-height:1;letter-spacing:-3px;color:var(--gold)}
+.tr-active .ta-sub{font-size:14px;color:var(--ink-2);margin-top:6px}
+.tr-hits{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:9px}
+.tr-hits.five{grid-template-columns:repeat(5,1fr)}
+.tr-hits button{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);border-radius:var(--radius-sm);padding:20px 4px;font-family:var(--disp);font-size:24px;font-weight:800;cursor:pointer;transition:.1s}
+.tr-hits button:hover{border-color:var(--green);background:var(--surface-2)}
+.tr-hits button:active{transform:scale(.96)}
+.tr-hits button.miss{color:var(--red-bright);border-color:rgba(226,59,70,.4)}
+.tr-hits button.miss:hover{background:var(--red-soft)}
+.tr-stand{margin-top:4px}
+.tr-stand .ts-row{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--surface)}
+.tr-stand .ts-row.lead{border-color:var(--gold);background:var(--gold-soft)}
+.tr-stand .ts-row.active{border-color:var(--green)}
+.tr-stand .ts-rank{font-family:var(--disp);font-weight:800;color:var(--muted);width:20px}
+.tr-stand .ts-nm{font-weight:700;flex:1}
+.tr-stand .ts-val{font-family:var(--disp);font-weight:800;font-size:18px}
+.tr-stand .ts-sub{font-size:12px;color:var(--muted);min-width:74px;text-align:right}
+.tr-result .trophy svg{width:46px;height:46px;stroke:var(--gold);fill:none;stroke-width:1.6}
+
+/* TV training-weergave */
+.tvt-players{display:flex;gap:clamp(10px,2vw,26px);justify-content:center;flex-wrap:wrap;position:relative;z-index:2}
+.tvt-p{flex:1;min-width:160px;max-width:300px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:clamp(14px,2vw,26px);text-align:center;transition:.2s}
+.tvt-p.active{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 30px 80px -40px rgba(226,59,70,.7)}
+.tvt-p .tvt-nm{font-family:var(--disp);font-size:clamp(20px,2.6vw,34px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvt-p .tvt-big{font-family:var(--disp);font-size:clamp(46px,8vw,96px);font-weight:800;line-height:1;color:var(--gold);margin:6px 0}
+.tvt-p .tvt-sub{font-size:clamp(12px,1.4vw,17px);color:var(--ink-2)}
+@media(max-width:780px){.tr-menu{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -400,6 +453,7 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
     <div class="modesw">
       <button id="mode-tournament" class="on" onclick="setMode('tournament')">Tornooi</button>
       <button id="mode-competition" onclick="setMode('competition')">Competitie</button>
+      <button id="mode-training" onclick="setMode('training')">Training</button>
     </div>
     <nav class="tabs" id="nav-tournament">
       <button class="tab" data-tab="setup" onclick="go('setup')"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16.5 7.5a2.8 2.8 0 0 1 0 5"/><path d="M19 20a4.7 4.7 0 0 0-2.8-4.4"/></svg><span>Spelers</span></button>
@@ -482,6 +536,10 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
     <section id="cview-hall" class="view cview page hidden">
       <h2 class="page-h">Erelijst</h2><div class="page-sub">Maandkampioenen en behaalde achievements.</div><div id="compHall"></div>
     </section>
+
+    <section id="view-training" class="view trview page hidden">
+      <div id="trRoot"></div>
+    </section>
   </main>
 </div>
 
@@ -518,19 +576,26 @@ if(!C)C=freshC();
 function cname(id){const p=C.players.find(x=>x.id===id);return p?p.name:'?';}
 
 /* ============ MODE / NAV ============ */
-function setMode(m){MODE=m;localStorage.setItem('dartMode',m);if(m==='tournament')go(S.activeView||'setup');else goc(C.activeView||'overview');}
+function setMode(m){MODE=m;localStorage.setItem('dartMode',m);if(m==='tournament')go(S.activeView||'setup');else if(m==='training')gotr(TR.view||'menu');else goc(C.activeView||'overview');}
+function hideAllViews(){document.querySelectorAll('.tview').forEach(s=>s.classList.add('hidden'));document.querySelectorAll('.cview').forEach(s=>s.classList.add('hidden'));document.querySelectorAll('.trview').forEach(s=>s.classList.add('hidden'));}
 function go(v){MODE='tournament';localStorage.setItem('dartMode','tournament');S.activeView=v;save();
-  document.querySelectorAll('.tview').forEach(s=>s.classList.add('hidden'));document.querySelectorAll('.cview').forEach(s=>s.classList.add('hidden'));
+  hideAllViews();
   document.getElementById('view-'+v).classList.remove('hidden');
   document.querySelectorAll('#nav-tournament .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===v));
   syncModeUI();render();window.scrollTo({top:0,behavior:'smooth'});}
 function goc(v){MODE='competition';localStorage.setItem('dartMode','competition');C.activeView=v;saveC();
-  document.querySelectorAll('.tview').forEach(s=>s.classList.add('hidden'));document.querySelectorAll('.cview').forEach(s=>s.classList.add('hidden'));
+  hideAllViews();
   document.getElementById('cview-'+v).classList.remove('hidden');
   document.querySelectorAll('#nav-comp .tab').forEach(b=>b.classList.toggle('active',b.dataset.ctab===v));
   syncModeUI();render();window.scrollTo({top:0,behavior:'smooth'});}
+function gotr(v){MODE='training';localStorage.setItem('dartMode','training');TR.view=v;saveTR();
+  hideAllViews();
+  document.getElementById('view-training').classList.remove('hidden');
+  IAMCTRL=!!(TR.game&&!TR.game.over);
+  syncModeUI();renderTraining();renderHero();window.scrollTo({top:0,behavior:'smooth'});}
 function syncModeUI(){document.getElementById('mode-tournament').classList.toggle('on',MODE==='tournament');
   document.getElementById('mode-competition').classList.toggle('on',MODE==='competition');
+  document.getElementById('mode-training').classList.toggle('on',MODE==='training');
   document.getElementById('nav-tournament').classList.toggle('hidden',MODE!=='tournament');
   document.getElementById('nav-comp').classList.toggle('hidden',MODE!=='competition');}
 function render(){
@@ -542,7 +607,8 @@ function render(){
   setVal('teamName',S.team||'');renderComp();}
 function setVal(id,val){const el=document.getElementById(id);if(el)el.value=val;}
 function renderHero(){document.getElementById('heroTitle').textContent=(S.team&&S.team.trim())?S.team:'De Pijlen';let st;
-  if(MODE==='competition'){const rows=compStand(monthMatches(curMonth()));const leader=rows[0];
+  if(MODE==='training'){st=(TR.game&&!TR.game.over)?('Training · <b>'+esc(TR_GAMES[TR.game.type].name)+'</b>'):'Training · kies een oefening';}
+  else if(MODE==='competition'){const rows=compStand(monthMatches(curMonth()));const leader=rows[0];
     st=leader&&leader.played?('Competitie · leider <b>'+esc(cname(leader.id))+'</b>'):'Competitie · '+monthLabel(curMonth());}
   else if(S.phase==='poule'){const d=S.pouleMatches.filter(m=>m.winner).length;st=`Poule · <b>${d}/${S.pouleMatches.length}</b>`;}
   else if(S.phase==='finale'||S.finaleMatches.length){const fin=S.finaleMatches.find(m=>m.round==='final');st=(fin&&fin.winner)?('Kampioen · <b>'+esc(nameT(fin.winner))+'</b>'):'Finale bezig';}
@@ -867,6 +933,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
     if(TV){host.classList.remove('hidden');if(tvKey!=='__idle__'){host.innerHTML=tvIdleHtml();tvKey='__idle__';setIdleConn(fbReady&&!!FBCONN);}LIVEPREV=null;return;}
     host.classList.add('hidden');host.innerHTML='';tvKey=null;LIVEPREV=null;return;}
   host.classList.remove('hidden');
+  if(d.kind==='training'){renderTvTraining(host,d);return;}
   const key=(d.names||[]).join('|')+'|'+d.start+'|'+d.legsTarget;
   if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;}
   [0,1].forEach(i=>{
@@ -889,6 +956,163 @@ function tvWinner(nm){const fx=document.getElementById('tvFx');if(!fx)return;
   fx.innerHTML='<div class="winner"><div class="wt">Winnaar</div><div class="wn">'+esc(nm)+'</div><div class="wsub">Partij gewonnen</div></div>';
   const w=fx.querySelector('.winner');void w.offsetWidth;w.classList.add('go');confetti(240);setTimeout(()=>confetti(160),450);}
 
+/* ============ TRAINING ============ */
+const TRKEY='dartTrainingV1';
+let TR=loadTR();
+function loadTR(){try{const r=localStorage.getItem(TRKEY);if(r)return JSON.parse(r);}catch(e){}return null;}
+function freshTR(){return{players:[],view:'menu',len:'normaal',game:null};}
+if(!TR)TR=freshTR();
+function saveTR(){try{localStorage.setItem(TRKEY,JSON.stringify(TR));}catch(e){}}
+function trName(id){const p=TR.players.find(x=>x.id===id);return p?p.name:'?';}
+
+const TR_GAMES={
+  checkout:{name:'Uitgooi-training',desc:'Gooi een willekeurige finish uit. Houdt je slagingspercentage en beste finish bij.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>'},
+  clock:{name:'Around the Clock',desc:'Raak 1 t/m 20 en de bull in volgorde. Wie het snelst rond is.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'},
+  countup:{name:'Count-Up',desc:'Scoor zoveel mogelijk in een vast aantal beurten. Hoogste totaal wint.',icon:'<svg viewBox="0 0 24 24"><path d="M5 21V10M12 21V4M19 21v-7"/><path d="M3 21h18"/></svg>'},
+  bob27:{name:"Bob's 27",desc:'Dubbel-training: start op 27 punten, gooi elke dubbel D1 t/m D25.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>'}
+};
+function lenVal(type){const L=TR.len||'normaal';
+  if(type==='checkout')return L==='kort'?5:L==='lang'?20:10;
+  if(type==='countup')return L==='kort'?5:L==='lang'?12:8;
+  return 0;}
+function randFinish(){const bogey={169:1,168:1,166:1,165:1,163:1,162:1,159:1};let n;do{n=2+Math.floor(Math.random()*169);}while(bogey[n]);return n;}
+function bobVal(pos){return pos>=20?50:2*(pos+1);}
+function bobTarget(pos){return pos>=20?'Bull (D25)':('Dubbel '+(pos+1));}
+function trClockName(pos){return pos>=20?'BULL':String(pos+1);}
+
+/* --- roster + opties --- */
+function trAddPlayer(){const inp=document.getElementById('trNew');if(!inp)return;const nm=inp.value.trim();if(!nm)return;
+  TR.players.push({id:uid(),name:nm});inp.value='';saveTR();renderTraining();const e=document.getElementById('trNew');if(e)e.focus();}
+function trRemovePlayer(id){TR.players=TR.players.filter(p=>p.id!==id);saveTR();renderTraining();}
+function trSetLen(l){TR.len=l;saveTR();renderTraining();}
+
+/* --- spel starten --- */
+function trInit(type){
+  if(type==='checkout')return{attempts:0,success:0,dartsSum:0,best:0,target:0,done:false};
+  if(type==='clock')return{pos:0,darts:0,done:false};
+  if(type==='countup')return{scores:[],total:0,done:false};
+  if(type==='bob27')return{pos:0,score:27,out:false,done:false};
+  return{};}
+function trStart(type){
+  if(!TR.players.length){toast('Voeg eerst minstens 1 speler toe');return;}
+  const ids=TR.players.map(p=>p.id);
+  const g={type,players:ids,idx:0,over:false,input:'',hist:[],st:{}};
+  ids.forEach(id=>{g.st[id]=trInit(type);});
+  if(type==='checkout'){g.attempts=lenVal('checkout');ids.forEach(id=>{g.st[id].target=randFinish();});}
+  if(type==='countup'){g.rounds=lenVal('countup');}
+  TR.game=g;TR.view='play';IAMCTRL=true;saveTR();renderTraining();trPushLive();}
+
+/* --- beurt-helpers --- */
+function trCur(){const g=TR.game;return g.players[g.idx];}
+function trAllDone(){return TR.game.players.every(id=>TR.game.st[id].done);}
+function trNext(){const g=TR.game,n=g.players.length;for(let k=1;k<=n;k++){const j=(g.idx+k)%n;if(!g.st[g.players[j]].done){g.idx=j;return;}}}
+function trSnap(){const g=TR.game;g.hist=g.hist||[];g.hist.push(JSON.stringify({st:g.st,idx:g.idx,over:g.over}));if(g.hist.length>80)g.hist.shift();}
+function trUndo(){const g=TR.game;if(!g||!g.hist||!g.hist.length)return;const p=JSON.parse(g.hist.pop());g.st=p.st;g.idx=p.idx;g.over=p.over;TR.view=g.over?'result':'play';IAMCTRL=!g.over;saveTR();renderTraining();trPushLive();}
+function finishTurn(){const g=TR.game;
+  if(trAllDone()){g.over=true;TR.view='result';saveTR();renderTraining();trPushLive();setTimeout(()=>{if(TR.game&&TR.game.over)fbClearLive();},9000);return;}
+  trNext();saveTR();renderTraining();trPushLive();}
+
+/* --- per spel: invoer --- */
+function trCheckout(d){const g=TR.game;if(!g||g.type!=='checkout'||g.over)return;trSnap();const s=g.st[trCur()];
+  s.attempts++;if(d>0){s.success++;s.dartsSum+=d;if(s.target>s.best)s.best=s.target;}
+  if(s.attempts>=g.attempts)s.done=true;else s.target=randFinish();finishTurn();}
+function trClock(h){const g=TR.game;if(!g||g.type!=='clock'||g.over)return;trSnap();const s=g.st[trCur()];
+  s.pos=Math.min(21,s.pos+h);s.darts+=3;if(s.pos>=21)s.done=true;finishTurn();}
+function trBob(h){const g=TR.game;if(!g||g.type!=='bob27'||g.over)return;trSnap();const s=g.st[trCur()];
+  const v=bobVal(s.pos);s.score+=h>0?h*v:-v;s.pos++;
+  if(s.score<=0){s.score=0;s.out=true;s.done=true;}else if(s.pos>=21)s.done=true;finishTurn();}
+function trCountKey(t,v){const g=TR.game;if(!g||g.type!=='countup')return;
+  if(t==='back')g.input=g.input.slice(0,-1);
+  else if(t==='d'){if(g.input.length>=3)return;g.input=(g.input+v).replace(/^0+(?=\d)/,'');}
+  else if(t==='q'){g.input=String(v);trCountSubmit();return;}
+  const d=document.getElementById('trDisp');if(d){d.textContent=g.input===''?'0':g.input;d.classList.toggle('empty-in',g.input==='');}}
+function trCountSubmit(){const g=TR.game;if(!g||g.type!=='countup')return;let val=parseInt(g.input||'0',10);if(isNaN(val))val=0;if(val>180){toast('Max 180 per beurt');return;}
+  trSnap();const s=g.st[trCur()];s.scores.push(val);s.total+=val;g.input='';if(s.scores.length>=g.rounds)s.done=true;finishTurn();}
+
+/* --- navigatie binnen training --- */
+function trBackToMenu(){TR.game=null;TR.view='menu';IAMCTRL=false;fbClearLive();saveTR();renderTraining();}
+function trReplay(){const t=TR.game?TR.game.type:'checkout';trStart(t);}
+function trAbort(){if(!confirm('Training stoppen? De voortgang gaat verloren.'))return;trBackToMenu();}
+
+/* --- standen + waarden --- */
+function trVal(id){const g=TR.game,s=g.st[id];
+  if(g.type==='checkout'){const pct=s.attempts?Math.round(100*s.success/s.attempts):0;return{v:pct+'%',sub:s.success+'/'+s.attempts+(s.success?(' · '+(s.dartsSum/s.success).toFixed(1)+' pijl'):'')};}
+  if(g.type==='clock')return{v:s.done?'Klaar':trClockName(Math.min(s.pos,20)),sub:s.done?(s.darts+' pijlen'):('doel '+Math.min(s.pos+1,21)+'/21')};
+  if(g.type==='countup')return{v:String(s.total),sub:s.scores.length?('gem '+(s.total/s.scores.length).toFixed(1)+'/beurt'):'—'};
+  return{v:s.out?'Uit':String(s.score),sub:'doel '+Math.min(s.pos+1,21)+'/21'};}
+function trRank(){const g=TR.game,arr=g.players.map(id=>({id,s:g.st[id]}));
+  if(g.type==='checkout')arr.sort((a,b)=>b.s.success-a.s.success||(a.s.dartsSum/(a.s.success||1))-(b.s.dartsSum/(b.s.success||1)));
+  else if(g.type==='clock')arr.sort((a,b)=>(b.s.done-a.s.done)||(a.s.done?a.s.darts-b.s.darts:b.s.pos-a.s.pos));
+  else if(g.type==='countup')arr.sort((a,b)=>b.s.total-a.s.total);
+  else arr.sort((a,b)=>(a.s.out-b.s.out)||b.s.score-a.s.score||b.s.pos-a.s.pos);
+  return arr;}
+function trStandHtml(isResult){const arr=trRank();const cur=TR.game.over?null:trCur();
+  return `<div class="tr-stand">`+arr.map((r,i)=>{const val=trVal(r.id),lead=isResult&&i===0,active=!isResult&&r.id===cur;
+    return `<div class="ts-row ${lead?'lead':''} ${active?'active':''}"><div class="ts-rank">${i+1}</div><div class="ts-nm">${esc(trName(r.id))}</div><div class="ts-val">${val.v}</div><div class="ts-sub">${val.sub}</div></div>`;}).join('')+`</div>`;}
+
+/* --- schermen --- */
+function trProgressLabel(){const g=TR.game;
+  if(g.type==='checkout')return 'Best of '+g.attempts+' pogingen';
+  if(g.type==='clock')return '1 t/m 20 + bull, in volgorde';
+  if(g.type==='countup')return g.rounds+' beurten · hoogste totaal wint';
+  return 'Start 27 · elke dubbel D1–D25';}
+function trActiveHtml(){const g=TR.game,id=trCur(),s=g.st[id];let lbl,big,sub;
+  if(g.type==='checkout'){lbl='Uitgooien';big=s.target;sub='Poging '+(s.attempts+1)+' / '+g.attempts;}
+  else if(g.type==='clock'){lbl='Mik op';big=trClockName(s.pos);sub='Doel '+Math.min(s.pos+1,21)+' / 21';}
+  else if(g.type==='countup'){lbl='Totaal';big=s.total;sub='Beurt '+(s.scores.length+1)+' / '+g.rounds;}
+  else{lbl=bobTarget(s.pos);big=s.score;sub='Doel '+(s.pos+1)+' / 21 · punten';}
+  return `<div class="tr-active"><div class="ta-who">Aan de beurt</div><div class="ta-name">${esc(trName(id))}</div>
+    <div class="ta-lbl">${lbl}</div><div class="ta-big tnum">${big}</div><div class="ta-sub">${sub}</div></div>`;}
+function trInputHtml(){const g=TR.game;
+  if(g.type==='checkout')return `<div class="tr-hits five"><button class="miss" onclick="trCheckout(0)">Mis</button><button onclick="trCheckout(1)">1</button><button onclick="trCheckout(2)">2</button><button onclick="trCheckout(3)">3</button><button onclick="trUndo()" title="Ongedaan maken">↶</button></div><div class="th-s" style="text-align:center;margin-bottom:4px">In hoeveel pijlen uitgegooid? · Mis = niet gehaald</div>`;
+  if(g.type==='clock'||g.type==='bob27'){const fn=g.type==='clock'?'trClock':'trBob';
+    return `<div class="tr-hits five"><button class="miss" onclick="${fn}(0)">0</button><button onclick="${fn}(1)">1</button><button onclick="${fn}(2)">2</button><button onclick="${fn}(3)">3</button><button onclick="trUndo()" title="Ongedaan maken">↶</button></div><div class="th-s" style="text-align:center;margin-bottom:4px">Hoeveel rake worpen deze beurt? (van 3)</div>`;}
+  return `<div class="disp tnum ${g.input===''?'empty-in':''}" id="trDisp">${g.input===''?'0':g.input}</div>
+    <div class="quick">${[26,41,45,60,81,85,100,140].map(q=>`<button class="tnum" onclick="trCountKey('q',${q})">${q}</button>`).join('')}</div>
+    <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="trCountKey('d','${n}')">${n}</button>`).join('')}
+      <button class="back" onclick="trCountKey('back')">⌫</button><button onclick="trCountKey('d','0')">0</button>
+      <button class="enter" onclick="trCountSubmit()">OK</button>
+      <button class="undo" onclick="trUndo()">Laatste beurt ongedaan maken</button></div>`;}
+function trPlayHtml(){const g=TR.game,meta=TR_GAMES[g.type];
+  return `<div class="tr-play"><div class="tr-head"><div><div class="th-t">${meta.name}</div><div class="th-s">${trProgressLabel()}</div></div><button class="oc" onclick="trAbort()">✕</button></div>
+    ${trActiveHtml()}${trInputHtml()}${trStandHtml(false)}</div>`;}
+function trResultHtml(){const g=TR.game,meta=TR_GAMES[g.type],win=trRank()[0],solo=g.players.length===1;
+  const head=solo?`<div class="ta-who">Klaar</div><div class="ta-name">${esc(trName(win.id))}</div>`
+    :`<div class="trophy">${trophy()}</div><div class="ta-lbl" style="margin-top:6px">Winnaar</div><div class="ta-name">${esc(trName(win.id))}</div>`;
+  return `<div class="tr-play tr-result"><div class="tr-head"><div class="th-t">${meta.name}</div><button class="oc" onclick="trBackToMenu()">✕</button></div>
+    <div class="tr-active">${head}<div class="ta-sub">${solo?'Mooie sessie — resultaat: '+esc(trVal(win.id).v):'met '+esc(trVal(win.id).v)}</div></div>
+    ${trStandHtml(true)}
+    <button class="btn green" style="margin-top:14px" onclick="trReplay()">Nog een keer</button>
+    <button class="btn ghost" onclick="trBackToMenu()">Andere training</button></div>`;}
+function trMenuHtml(){
+  const chips=TR.players.length?TR.players.map(p=>`<span class="tr-chip">${esc(p.name)}<button onclick="trRemovePlayer('${p.id}')">✕</button></span>`).join(''):'<span class="th-s">Nog geen spelers — voeg er minstens 1 toe (solo kan ook).</span>';
+  const len=TR.len||'normaal';
+  const cards=Object.keys(TR_GAMES).map(k=>{const g=TR_GAMES[k];return `<button class="tr-game" onclick="trStart('${k}')"><div class="tg-ic">${g.icon}</div><div class="tg-t">${g.name}</div><div class="tg-d">${g.desc}</div></button>`;}).join('');
+  return `<h2 class="page-h">Training</h2><div class="page-sub">Oefen je darts — solo of met meerdere. De voortgang verschijnt ook live op de TV.</div>
+    <div class="card"><div class="card-h">Wie traint er?</div><div class="saber"></div>
+      <div class="tr-roster">${chips}</div>
+      <div class="tr-addrow"><input id="trNew" placeholder="Naam toevoegen" onkeydown="if(event.key==='Enter')trAddPlayer()"><button class="btn small green" onclick="trAddPlayer()">Toevoegen</button></div>
+      <div style="margin-top:15px"><label>Lengte</label><div class="tr-opt">${['kort','normaal','lang'].map(l=>`<button class="${len===l?'on':''}" onclick="trSetLen('${l}')">${l.charAt(0).toUpperCase()+l.slice(1)}</button>`).join('')}</div>
+        <div class="th-s">Aantal pogingen/beurten bij Uitgooi-training en Count-Up.</div></div></div>
+    <div class="tr-menu">${cards}</div>`;}
+function renderTraining(){const root=document.getElementById('trRoot');if(!root)return;
+  if(TR.game&&TR.game.over)root.innerHTML=trResultHtml();
+  else if(TR.game)root.innerHTML=trPlayHtml();
+  else root.innerHTML=trMenuHtml();
+  if(typeof renderHero==='function')renderHero();}
+
+/* --- live naar TV --- */
+function trPushLive(){if(!fbReady||!IAMCTRL||!TR.game)return;const g=TR.game;
+  try{DB.ref('live').set({active:true,kind:'training',ts:Date.now(),game:TR_GAMES[g.type].name,over:!!g.over,
+    players:g.players.map((id,i)=>{const val=trVal(id);return{name:trName(id),big:String(val.v),sub:val.sub,active:!g.over&&i===g.idx};}),
+    winner:g.over?trName(trRank()[0].id):null});}catch(e){}}
+function renderTvTraining(host,d){const wins=d.over&&d.winner;
+  host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>
+    <div class="tv-top"><div class="tv-game">Training <span>· ${esc(d.game||'')}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
+    <div class="tv-board"><div class="tvt-players">${(d.players||[]).map(p=>`<div class="tvt-p ${p.active?'active':''}"><div class="tvt-nm">${esc(p.name)}</div><div class="tvt-big tnum">${esc(p.big)}</div><div class="tvt-sub">${esc(p.sub||'')}</div></div>`).join('')}</div></div>
+    ${wins?`<div class="tv-fx"><div class="winner go"><div class="wt">Winnaar</div><div class="wn">${esc(d.winner)}</div><div class="wsub">${esc(d.game||'')}</div></div></div>`:'<div class="tv-checkout">&nbsp;</div>'}</div>`;
+  tvKey='__training__';}
+
 /* ============ BOOT ============ */
 if(TV){
   document.body.classList.add('tvmode');
@@ -896,7 +1120,9 @@ if(TV){
   /* scherm wakker houden (best-effort; de TV-app forceert dit ook native) */
   (function keepAwake(){try{if('wakeLock'in navigator){let wl=null;const req=()=>navigator.wakeLock.request('screen').then(l=>{wl=l;}).catch(()=>{});req();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')req();});}}catch(e){}})();
 }else{
-  if(MODE==='competition'){syncModeUI();goc(C.activeView||'overview');}else{syncModeUI();go(S.activeView||'setup');}
+  if(MODE==='training'){gotr(TR.view||'menu');}
+  else if(MODE==='competition'){syncModeUI();goc(C.activeView||'overview');}
+  else{syncModeUI();go(S.activeView||'setup');}
 }
 fbInit();
 </script>
