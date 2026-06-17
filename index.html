@@ -300,6 +300,51 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .toast.gold .d{background:var(--gold)}
 .livebadge{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--red-bright);background:rgba(226,59,70,.12);border:1px solid rgba(226,59,70,.4);padding:6px 11px;border-radius:8px;animation:livep 1.6s ease-in-out infinite}
 @keyframes livep{0%,100%{opacity:1}50%{opacity:.45}}
+/* ===== TV BROADCAST SCOREBOARD ===== */
+.tv{position:relative;width:100%;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.tv::before{content:"";position:absolute;inset:-25%;z-index:0;pointer-events:none;
+  background:radial-gradient(38% 48% at 26% 42%, rgba(226,59,70,.16), transparent 62%),radial-gradient(38% 48% at 74% 58%, rgba(31,174,95,.16), transparent 62%);
+  animation:tvdrift 16s ease-in-out infinite alternate}
+@keyframes tvdrift{from{transform:translate(-3%,-2%) scale(1)}to{transform:translate(3%,2%) scale(1.08)}}
+.tv-close{position:absolute;top:6px;right:4px;z-index:6;width:34px;height:34px;border:1px solid var(--line-2);background:rgba(0,0,0,.3);color:var(--ink-2);border-radius:9px;font-size:15px}
+.tv-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:4px 2px 16px}
+.tv-game{font-family:var(--disp);font-size:clamp(15px,2vw,24px);font-weight:800;letter-spacing:.3px}
+.tv-game span{color:var(--muted);font-weight:600}
+.tv-board{position:relative;z-index:2;display:flex;align-items:stretch;gap:clamp(10px,2.5vw,30px);flex:1;min-height:0}
+.tv-side{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  border:1px solid var(--line);border-radius:26px;padding:clamp(12px,3vh,40px) 14px;background:var(--surface);position:relative;overflow:hidden;transition:.4s;opacity:.6}
+.tv-side.active{opacity:1;border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 30px 80px -34px rgba(226,59,70,.7)}
+.tv-side.active::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 28%, rgba(226,59,70,.16), transparent 70%);animation:tvpulse 2.4s ease-in-out infinite}
+@keyframes tvpulse{0%,100%{opacity:.65}50%{opacity:1}}
+.tv-tag{font-size:clamp(10px,1.3vw,13px);font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red-bright);height:18px;visibility:hidden;position:relative;z-index:2}
+.tv-side.active .tv-tag{visibility:visible}
+.tv-name{font-family:var(--disp);font-size:clamp(20px,3.4vw,42px);font-weight:800;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;position:relative;z-index:2}
+.tv-rem{font-family:var(--disp);font-size:clamp(82px,17vw,230px);font-weight:800;line-height:.86;letter-spacing:-5px;font-variant-numeric:tabular-nums;position:relative;z-index:2}
+.tv-side.active .tv-rem{color:#fff}
+.tv-rem.flash{animation:tvflash .5s ease}
+@keyframes tvflash{0%{transform:scale(1.06);color:var(--green-bright)}100%{transform:none}}
+.tv-legs{display:flex;gap:9px;justify-content:center;margin-top:clamp(8px,1.6vh,18px);position:relative;z-index:2}
+.tv-legs i{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.12);transition:.3s}
+.tv-legs i.on{background:var(--gold);box-shadow:0 0 14px var(--gold)}
+.tv-legs i.justwon{animation:legpop .6s cubic-bezier(.2,1.5,.4,1)}
+@keyframes legpop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.tv-avg{font-size:clamp(11px,1.3vw,15px);color:var(--muted);margin-top:9px;position:relative;z-index:2}
+.tv-throw{position:absolute;top:16%;left:50%;transform:translateX(-50%);font-family:var(--disp);font-size:clamp(30px,5vw,68px);font-weight:800;color:var(--green-bright);opacity:0;z-index:4;pointer-events:none;text-shadow:0 4px 20px rgba(0,0,0,.4)}
+.tv-throw.show{animation:tvthrow 1.3s cubic-bezier(.2,.8,.3,1)}
+@keyframes tvthrow{0%{opacity:0;transform:translate(-50%,22px) scale(.6)}18%{opacity:1;transform:translate(-50%,0) scale(1)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-34px) scale(1)}}
+.tv-vs{align-self:center;font-family:var(--disp);font-size:clamp(15px,2vw,28px);color:var(--muted);font-weight:800}
+.tv-checkout{position:relative;z-index:2;text-align:center;min-height:30px;margin-top:14px;font-size:clamp(13px,1.6vw,19px);color:var(--muted)}
+.tv-checkout b{color:var(--green-bright);font-family:var(--disp);font-weight:800}
+.tv-fx{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.tv-fx .big180{font-family:var(--disp);font-size:clamp(70px,17vw,230px);font-weight:800;letter-spacing:-6px;color:var(--gold);text-shadow:0 0 60px rgba(240,180,41,.5);opacity:0}
+.tv-fx .big180.go{animation:big180 1.85s cubic-bezier(.2,.8,.3,1)}
+@keyframes big180{0%{opacity:0;transform:scale(.4) rotate(-7deg)}18%{opacity:1;transform:scale(1.06) rotate(0)}68%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}
+.tv-fx .winner{text-align:center;opacity:0;background:radial-gradient(60% 60% at 50% 50%, rgba(8,10,13,.85), rgba(8,10,13,.45));padding:clamp(30px,8vh,90px) clamp(30px,12vw,140px);border-radius:30px}
+.tv-fx .winner.go{animation:tvwin .9s cubic-bezier(.2,.9,.3,1) forwards}
+@keyframes tvwin{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.tv-fx .winner .wt{font-size:clamp(12px,1.6vw,16px);letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:800}
+.tv-fx .winner .wn{font-family:var(--disp);font-size:clamp(44px,9vw,130px);font-weight:800;color:#fff;text-shadow:0 0 60px rgba(240,180,41,.4);line-height:1.02;margin:4px 0}
+.tv-fx .winner .wsub{color:var(--ink-2);margin-top:8px;font-size:clamp(12px,1.5vw,16px)}
 
 @media(max-width:920px){
   .app{grid-template-columns:1fr}
@@ -729,17 +774,20 @@ function submitScore(){if(!CO)return;const val=parseInt(CO.input||'0',10);if(isN
 function bust(){doBust(parseInt(CO.input||'0',10)||0);}
 function doBust(val){const cur=CO.cur;CO.history.push({player:cur,score:0,remBefore:CO.rem[cur],bust:true});CO.darts[cur]+=3;CO.last[cur]=0;CO.input='';flashBust('BUST');CO.cur=1-cur;setTimeout(()=>renderCounter(false),520);}
 function flashBust(t){const d=document.getElementById('disp');if(d){d.textContent=t;d.classList.add('bust');d.classList.remove('empty-in');}}
-function legWon(winner){CO.legsWon[winner]++;toast(cname(CO.p[winner])+' wint de leg');
+function legWon(winner){CO.legsWon[winner]++;fbPushLive();toast(cname(CO.p[winner])+' wint de leg');
   if(CO.legsWon[winner]>=CO.legsTarget){finishCounter(winner);return;}
   CO.starter=1-CO.starter;CO.cur=CO.starter;CO.rem=[CO.start,CO.start];CO.shown=[CO.start,CO.start];CO.last=[null,null];CO.history=[];CO.input='';setTimeout(()=>renderCounter(true),750);}
 function undoThrow(){if(!CO||!CO.history.length)return;const last=CO.history.pop();const p=last.player;CO.rem[p]=last.remBefore;CO.shown[p]=last.remBefore;CO.darts[p]=Math.max(0,CO.darts[p]-3);
   if(!last.bust){CO.scored[p]-=last.score;if(last.score===180)CO.t180[p]=Math.max(0,CO.t180[p]-1);}CO.last[p]=null;CO.cur=p;CO.input='';renderCounter(true);}
 function abortCounter(){if(!confirm('Partij afbreken? De stand wordt niet bewaard.'))return;closeCounter();}
 function finishCounter(winnerIdx){const now=new Date();const month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:winnerIdx,names:[cname(CO.p[0]),cname(CO.p[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts});}catch(e){}}
   const rec={id:uid(),ts:Date.now(),month,p1:CO.p[0],p2:CO.p[1],startScore:CO.start,legsTarget:CO.legsTarget,legs1:CO.legsWon[0],legs2:CO.legsWon[1],winner:CO.p[winnerIdx],
     stats:{[CO.p[0]]:{darts:CO.darts[0],scored:CO.scored[0],t180:CO.t180[0],hi:CO.hi[0]},[CO.p[1]]:{darts:CO.darts[1],scored:CO.scored[1],t180:CO.t180[1],hi:CO.hi[1]}}};
-  C.matches.unshift(rec);const newly=evalAchievements();saveC();const wn=cname(CO.p[winnerIdx]);closeCounter();confetti(180);toast(wn+' wint de partij!',true);
-  newly.slice(0,3).forEach((n,i)=>setTimeout(()=>toast('Badge ontgrendeld · '+n.name+': '+n.t,true),900+i*1300));}
+  C.matches.unshift(rec);const newly=evalAchievements();saveC();const wn=cname(CO.p[winnerIdx]);
+  IAMCTRL=false;CO=null;document.getElementById('overlay').classList.add('hidden');render();confetti(180);toast(wn+' wint de partij!',true);
+  newly.slice(0,3).forEach((n,i)=>setTimeout(()=>toast('Badge ontgrendeld · '+n.name+': '+n.t,true),900+i*1300));
+  if(fbReady)setTimeout(()=>{try{DB.ref('live').set({active:false,ts:Date.now()});}catch(e){}},8000);}
 const FIN={170:'T20 T20 Bull',167:'T20 T19 Bull',164:'T20 T18 Bull',161:'T20 T17 Bull',160:'T20 T20 D20',158:'T20 T20 D19',157:'T20 T19 D20',156:'T20 T20 D18',155:'T20 T19 D19',154:'T20 T18 D20',153:'T20 T19 D18',152:'T20 T20 D16',151:'T20 T17 D20',150:'T20 T18 D18',149:'T20 T19 D16',148:'T20 T16 D20',147:'T20 T17 D18',146:'T20 T18 D16',145:'T20 T15 D20',144:'T20 T20 D12',143:'T20 T17 D16',142:'T20 T14 D20',141:'T20 T19 D12',140:'T20 T16 D16',139:'T19 T14 D20',138:'T20 T18 D12',137:'T19 T16 D16',136:'T20 T20 D8',135:'T20 T17 D12',134:'T20 T14 D16',133:'T20 T19 D8',132:'T20 T16 D12',131:'T20 T13 D16',130:'T20 T18 D8',129:'T19 T16 D12',128:'T18 T14 D16',127:'T20 T17 D8',126:'T19 T19 D6',125:'25 T20 D20',124:'T20 T16 D8',123:'T19 T16 D9',122:'T18 T20 D4',121:'T20 T11 D14',120:'T20 20 D20',119:'T19 T12 D13',118:'T20 18 D20',117:'T20 17 D20',116:'T20 16 D20',115:'T20 15 D20',114:'T20 14 D20',113:'T20 13 D20',112:'T20 12 D20',111:'T20 19 D16',110:'T20 Bull',109:'T20 9 D20',108:'T20 16 D16',107:'T19 Bull',106:'T20 14 D16',105:'T20 13 D16',104:'T18 Bull',103:'T19 6 D20',102:'T20 10 D16',101:'T17 Bull',100:'T20 D20',99:'T19 10 D16',98:'T20 D19',97:'T19 D20',96:'T20 D18',95:'T19 D19',94:'T18 D20',93:'T19 D18',92:'T20 D16',91:'T17 D20',90:'T18 D18',89:'T19 D16',88:'T16 D20',87:'T17 D18',86:'T18 D16',85:'T15 D20',84:'T20 D12',83:'T17 D16',82:'Bull D16',81:'T19 D12',80:'T20 D10',79:'T19 D11',78:'T18 D12',77:'T19 D10',76:'T20 D8',75:'T17 D12',74:'T14 D16',73:'T19 D8',72:'T16 D12',71:'T13 D16',70:'T18 D8',69:'T19 D6',68:'T20 D4',67:'T17 D8',66:'T10 D18',65:'T19 D4',64:'T16 D8',63:'T13 D12',62:'T10 D16',61:'T15 D8',60:'20 D20',58:'18 D20',56:'16 D20',54:'14 D20',52:'12 D20',50:'Bull',40:'D20',36:'D18',32:'D16',24:'D12',20:'D10',16:'D8',8:'D4',4:'D2',2:'D1'};
 function checkoutHint(rem){if(rem>170||rem<2)return '';if(FIN[rem])return FIN[rem];if(rem<=40&&rem%2===0)return 'D'+(rem/2);if(rem<=98)return 'finish mogelijk';return '';}
 
@@ -761,7 +809,7 @@ addEventListener('resize',()=>{const c=document.getElementById('cfC');if(c){c.wi
 
 /* ============ FIREBASE LIVE SYNC ============ */
 const firebaseConfig={apiKey:"AIzaSyA2ROasz31AAPBBeTWvgCy2nMfprxWaAuk",authDomain:"dart-app-5a19c.firebaseapp.com",databaseURL:"https://dart-app-5a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"dart-app-5a19c",storageBucket:"dart-app-5a19c.firebasestorage.app",messagingSenderId:"38748326773",appId:"1:38748326773:web:294b6a41b5986ee3d3613c"};
-let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0;
+let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null;
 function setSyncDot(on){const el=document.getElementById('syncDot');if(el){el.style.background=on?'var(--green)':'var(--muted)';el.title=on?'Live verbonden':'Offline (lokaal)';}}
 function fbInit(){try{
   if(!window.firebase||!firebase.initializeApp){setSyncDot(false);return;}
@@ -776,14 +824,38 @@ function fbPushComp(){if(!fbReady)return;clearTimeout(compPushTimer);compPushTim
 function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:CO.cur,names:[cname(CO.p[0]),cname(CO.p[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts});}catch(e){}}
 function fbClearLive(){if(!fbReady)return;try{DB.ref('live').set({active:false,ts:Date.now()});}catch(e){}}
 function dismissMirror(){mirrorDismissTs=LIVEDATA?LIVEDATA.ts:0;renderLiveMirror();}
-function renderLiveMirror(){const el=document.getElementById('liveMirror');const d=LIVEDATA;
-  if(!d||!d.active||IAMCTRL||(d.ts&&d.ts===mirrorDismissTs)){el.classList.add('hidden');el.innerHTML='';return;}
-  el.classList.remove('hidden');const co=checkoutHint(d.rem[d.cur]);
-  el.innerHTML=`<div class="overlay-wrap"><div class="ovh"><div><div class="ot tnum">${d.start}</div><div class="ol">first to ${d.legsTarget}</div></div>
-    <div style="display:flex;align-items:center;gap:10px"><span class="livebadge">● LIVE</span><button class="oc" onclick="dismissMirror()">✕</button></div></div>
-    <div class="players2">${[0,1].map(i=>{const active=d.cur===i;let legs='';for(let k=0;k<d.legsTarget;k++)legs+=`<i class="${k<d.legsWon[i]?'on':''}"></i>`;
-      return `<div class="pl ${active?'active':''}"><div class="turn">Aan zet</div><div class="pn">${esc(d.names[i])}</div><div class="legs">${legs}</div><div class="big tnum">${d.rem[i]}</div><div class="avg">gem/beurt ${avg3(d.scored[i],d.darts[i])}</div></div>`;}).join('')}</div>
-    <div class="cohint">${co?('Uitgooien: <b>'+co+'</b>'):'&nbsp;'}</div></div>`;}
+function tvSideHtml(i,d){return `<div class="tv-side" id="tvSide${i}"><div class="tv-tag">Aan zet</div>
+  <div class="tv-name">${esc(d.names[i])}</div><div class="tv-rem tnum" id="tvRem${i}">${d.rem[i]}</div>
+  <div class="tv-legs" id="tvLegs${i}"></div><div class="tv-avg" id="tvAvg${i}"></div><div class="tv-throw" id="tvThrow${i}"></div></div>`;}
+function tvLegsHtml(i,d,justWon){let s='';for(let k=0;k<d.legsTarget;k++)s+=`<i class="${k<d.legsWon[i]?'on':''} ${justWon&&k===d.legsWon[i]-1?'justwon':''}"></i>`;return s;}
+function buildTv(host,d){host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>
+  <div class="tv-top"><div class="tv-game">${d.start} <span>· first to ${d.legsTarget}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
+  <div class="tv-board">${tvSideHtml(0,d)}<div class="tv-vs">VS</div>${tvSideHtml(1,d)}</div>
+  <div class="tv-checkout" id="tvCo"></div><div class="tv-fx" id="tvFx"></div></div>`;}
+function renderLiveMirror(){const host=document.getElementById('liveMirror');const d=LIVEDATA;
+  if(!d||!d.active||IAMCTRL||(d.ts&&d.ts===mirrorDismissTs)){host.classList.add('hidden');host.innerHTML='';tvKey=null;LIVEPREV=null;return;}
+  host.classList.remove('hidden');
+  const key=(d.names||[]).join('|')+'|'+d.start+'|'+d.legsTarget;
+  if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;}
+  [0,1].forEach(i=>{
+    const side=document.getElementById('tvSide'+i);if(side)side.classList.toggle('active',d.cur===i&&!d.over);
+    const remEl=document.getElementById('tvRem'+i);const prevRem=LIVEPREV?LIVEPREV.rem[i]:d.rem[i];
+    if(remEl){if(prevRem!==d.rem[i])tweenNum(remEl,prevRem,d.rem[i]);else remEl.textContent=d.rem[i];}
+    if(LIVEPREV&&d.rem[i]<LIVEPREV.rem[i]){const delta=LIVEPREV.rem[i]-d.rem[i];tvThrow(i,delta);if(delta===180)tv180();}
+    const justWon=!!(LIVEPREV&&d.legsWon[i]>LIVEPREV.legsWon[i]);
+    const legsEl=document.getElementById('tvLegs'+i);if(legsEl)legsEl.innerHTML=tvLegsHtml(i,d,justWon);
+    const avgEl=document.getElementById('tvAvg'+i);if(avgEl)avgEl.textContent='gem/beurt '+avg3(d.scored[i],d.darts[i]);});
+  const coEl=document.getElementById('tvCo');
+  if(coEl){if(d.over)coEl.innerHTML='';else{const co=checkoutHint(d.rem[d.cur]);coEl.innerHTML=co?('Uitgooien: <b>'+co+'</b>'):'';}}
+  if(d.over&&(!LIVEPREV||!LIVEPREV.over))tvWinner(d.names[d.winner]);
+  LIVEPREV=JSON.parse(JSON.stringify(d));}
+function tvThrow(i,delta){const e=document.getElementById('tvThrow'+i);if(e){e.textContent='+'+delta;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
+  const r=document.getElementById('tvRem'+i);if(r){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');}}
+function tv180(){const fx=document.getElementById('tvFx');if(!fx)return;fx.innerHTML='<div class="big180">180</div>';const e=fx.firstChild;void e.offsetWidth;e.classList.add('go');confetti(170);
+  setTimeout(()=>{if(fx&&fx.firstChild&&fx.firstChild.classList&&fx.firstChild.classList.contains('big180'))fx.innerHTML='';},1900);}
+function tvWinner(nm){const fx=document.getElementById('tvFx');if(!fx)return;
+  fx.innerHTML='<div class="winner"><div class="wt">Winnaar</div><div class="wn">'+esc(nm)+'</div><div class="wsub">Partij gewonnen</div></div>';
+  const w=fx.querySelector('.winner');void w.offsetWidth;w.classList.add('go');confetti(240);setTimeout(()=>confetti(160),450);}
 
 /* ============ BOOT ============ */
 if(MODE==='competition'){syncModeUI();goc(C.activeView||'overview');}else{syncModeUI();go(S.activeView||'setup');}
