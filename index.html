@@ -419,6 +419,24 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 .tr-hits button:active{transform:scale(.96)}
 .tr-hits button.miss{color:var(--red-bright);border-color:rgba(226,59,70,.4)}
 .tr-hits button.miss:hover{background:var(--red-soft)}
+.dartpad{display:flex;flex-direction:column;gap:9px}
+.dp-visit{display:flex;gap:8px;justify-content:center;margin-bottom:2px}
+.dp-dart{flex:1;max-width:96px;text-align:center;padding:9px 4px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg-2);font-family:var(--disp);font-weight:800;font-size:18px;color:var(--muted)}
+.dp-dart.filled{color:var(--green-bright);border-color:var(--green);background:var(--green-soft)}
+.dp-dart.filled.miss{color:var(--red-bright);border-color:rgba(226,59,70,.4);background:var(--red-soft)}
+.dp-mult{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dp-mult button{background:var(--surface);border:1px solid var(--line-2);color:var(--ink-2);border-radius:10px;padding:12px;font-family:var(--disp);font-weight:700;font-size:15px;cursor:pointer;transition:.12s}
+.dp-mult button.on{background:var(--green-soft);border-color:var(--green);color:var(--green-bright)}
+.dp-nums{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.dp-nums button{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:14px 2px;font-family:var(--disp);font-weight:800;font-size:18px;cursor:pointer;transition:.1s}
+.dp-nums button:hover{border-color:var(--green);background:var(--surface-2)}
+.dp-nums button:active{transform:scale(.95)}
+.dp-bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.dp-bottom button{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:14px 2px;font-family:var(--disp);font-weight:700;font-size:16px;cursor:pointer;transition:.1s}
+.dp-bottom button:active{transform:scale(.95)}
+.dp-bottom .miss{color:var(--red-bright);border-color:rgba(226,59,70,.4)}
+.dp-bottom .ok{background:var(--green);color:#fff;border-color:var(--green)}
+.dp-bottom .ok:hover{background:var(--green-bright)}
 .tr-stand{margin-top:4px}
 .tr-stand .ts-row{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;background:var(--surface)}
 .tr-stand .ts-row.lead{border-color:var(--gold);background:var(--gold-soft)}
@@ -1183,7 +1201,7 @@ function trInit(type){
 function trStart(type){
   if(!TR.players.length){toast('Voeg eerst minstens 1 speler toe');return;}
   const ids=TR.players.map(p=>p.id);
-  const g={type,players:ids,idx:0,over:false,input:'',hist:[],st:{},evSeq:0,ev:null};
+  const g={type,players:ids,idx:0,over:false,input:'',hist:[],st:{},evSeq:0,ev:null,mult:1,curDarts:[]};
   ids.forEach(id=>{g.st[id]=trInit(type);});
   if(type==='checkout'){g.attempts=lenVal('checkout');ids.forEach(id=>{g.st[id].target=randFinish();});}
   if(type==='countup'){g.rounds=lenVal('countup');}
@@ -1195,23 +1213,53 @@ function trAllDone(){return TR.game.players.every(id=>TR.game.st[id].done);}
 function trNext(){const g=TR.game,n=g.players.length;for(let k=1;k<=n;k++){const j=(g.idx+k)%n;if(!g.st[g.players[j]].done){g.idx=j;return;}}}
 function trEv(o){const g=TR.game;if(!g)return;g.evSeq=(g.evSeq||0)+1;g.ev=Object.assign({seq:g.evSeq},o);if(localCaller&&!TV)trCallTraining(g.ev);}
 function trSnap(){const g=TR.game;g.hist=g.hist||[];g.hist.push(JSON.stringify({st:g.st,idx:g.idx,over:g.over}));if(g.hist.length>80)g.hist.shift();}
-function trUndo(){const g=TR.game;if(!g||!g.hist||!g.hist.length)return;const p=JSON.parse(g.hist.pop());g.st=p.st;g.idx=p.idx;g.over=p.over;TR.view=g.over?'result':'play';IAMCTRL=!g.over;saveTR();renderTraining();trPushLive();}
+function trUndo(){const g=TR.game;if(!g||!g.hist||!g.hist.length)return;const p=JSON.parse(g.hist.pop());g.st=p.st;g.idx=p.idx;g.over=p.over;g.curDarts=[];g.mult=1;TR.view=g.over?'result':'play';IAMCTRL=!g.over;saveTR();renderTraining();trPushLive();}
 function finishTurn(){const g=TR.game;
   if(trAllDone()){g.over=true;TR.view='result';if(localCaller&&!TV)trCallTrainingOver({solo:g.players.length<=1,winner:trName(trRank()[0].id),game:TR_GAMES[g.type].name});saveTR();renderTraining();trPushLive();setTimeout(()=>{if(TR.game&&TR.game.over)fbClearLive();},9000);return;}
   trNext();saveTR();renderTraining();trPushLive();}
 
 /* --- per spel: invoer --- */
-function trCheckout(d){const g=TR.game;if(!g||g.type!=='checkout'||g.over)return;trSnap();const id=trCur(),s=g.st[id],nm=trName(id),tg=s.target;
-  s.attempts++;if(d>0){s.success++;s.dartsSum+=d;if(s.target>s.best)s.best=s.target;}
-  if(s.attempts>=g.attempts)s.done=true;else s.target=randFinish();
-  trEv({kind:'checkout',hit:d>0,darts:d,target:tg,name:nm});finishTurn();}
-function trClock(h){const g=TR.game;if(!g||(g.type!=='clock'&&g.type!=='doubles')||g.over)return;trSnap();const id=trCur(),s=g.st[id],nm=trName(id);
-  s.pos=Math.min(21,s.pos+h);s.darts+=3;if(s.pos>=21)s.done=true;
-  trEv({kind:'clock',done:s.done,name:nm});finishTurn();}
-function trBob(h){const g=TR.game;if(!g||g.type!=='bob27'||g.over)return;trSnap();const id=trCur(),s=g.st[id],nm=trName(id);
-  const v=bobVal(s.pos);s.score+=h>0?h*v:-v;s.pos++;
-  if(s.score<=0){s.score=0;s.out=true;s.done=true;}else if(s.pos>=21)s.done=true;
-  trEv({kind:'bob',done:s.done,name:nm});finishTurn();}
+/* DartCounter-stijl: per pijl ingeven (Enkel/Dubbel/Triple + getal, Bull, Mis) */
+function trDartLabel(d){if(!d||d.n===0)return 'Mis';if(d.n===25)return d.m===2?'Bull':'25';return (d.m===2?'D':d.m===3?'T':'')+d.n;}
+function trDartVal(d){if(!d||d.n===0)return 0;if(d.n===25)return d.m===2?50:25;return d.n*d.m;}
+function trEvalVisit(type,s0,darts,commit){const c=JSON.parse(JSON.stringify(s0));let status='miss',dartsUsed=0,rem=null,ev=null;
+  if(type==='checkout'){rem=c.target;
+    for(const d of darts){dartsUsed++;const v=trDartVal(d);const nr=rem-v;
+      if(nr===0&&d.m===2){status='success';rem=0;break;}
+      if(nr<0||nr===1||(nr===0&&d.m!==2)){status='bust';break;}
+      rem=nr;}
+    if(status==='miss'&&darts.length<3)status='continue';
+    if(commit){c.attempts++;if(status==='success'){c.success++;c.dartsSum+=dartsUsed;if(c.target>c.best)c.best=c.target;}
+      if(c.attempts>=TR.game.attempts)c.done=true;else c.target=randFinish();}
+    ev={kind:'checkout',hit:status==='success',darts:dartsUsed};}
+  else if(type==='clock'||type==='doubles'){
+    for(const d of darts){dartsUsed++;c.darts++;const target=c.pos>=20?25:(c.pos+1);
+      const hit=type==='doubles'?(d.m===2&&d.n===target):(d.n!==0&&d.n===target);
+      if(hit){c.pos++;if(c.pos>=21){c.done=true;break;}}}
+    status=c.done?'done':'continue';ev={kind:'clock',done:c.done};}
+  else if(type==='bob27'){const target=c.pos>=20?25:(c.pos+1),val=bobVal(c.pos);let hits=0;
+    darts.forEach(d=>{if(d.m===2&&d.n===target)hits++;});dartsUsed=darts.length;
+    if(commit){c.score+=hits>0?hits*val:-val;if(c.score<=0){c.score=0;c.out=true;c.done=true;}c.pos++;if(c.pos>=21)c.done=true;}
+    status='continue';ev={kind:'bob',done:c.done};}
+  return {c,status,dartsUsed,rem,ev};}
+function trMult(m){const g=TR.game;if(!g||g.over)return;g.mult=g.mult===m?1:m;saveTR();renderTraining();}
+function trDart(n){const g=TR.game;if(!g||g.over||g.type==='countup')return;
+  if(!g.curDarts)g.curDarts=[];if(g.curDarts.length>=3)return;
+  let m=g.mult||1;if(n===25&&m===3)m=1;
+  if(g.curDarts.length===0)trSnap();
+  g.curDarts.push({n,m});
+  const id=trCur(),s=g.st[id],r=trEvalVisit(g.type,s,g.curDarts,false);
+  const auto=g.curDarts.length>=3||(g.type==='checkout'&&(r.status==='success'||r.status==='bust'))||((g.type==='clock'||g.type==='doubles')&&r.c.done);
+  if(auto)trCommitVisit();else{saveTR();renderTraining();}}
+function trCommitVisit(){const g=TR.game;if(!g)return;const id=trCur(),s=g.st[id],darts=g.curDarts||[];
+  if(darts.length===0)trSnap();
+  const r=trEvalVisit(g.type,s,darts,true);r.ev.name=trName(id);
+  g.st[id]=r.c;g.curDarts=[];g.mult=1;
+  trEv(r.ev);finishTurn();}
+function trDartBack(){const g=TR.game;if(!g)return;
+  if(g.curDarts&&g.curDarts.length){g.curDarts.pop();if(!g.curDarts.length&&g.hist&&g.hist.length)g.hist.pop();saveTR();renderTraining();}
+  else trUndo();}
+function trVisitEnd(){const g=TR.game;if(!g||g.over)return;trCommitVisit();}
 function trCountKey(t,v){const g=TR.game;if(!g||g.type!=='countup')return;
   if(t==='back')g.input=g.input.slice(0,-1);
   else if(t==='d'){if(g.input.length>=3)return;g.input=(g.input+v).replace(/^0+(?=\d)/,'');}
@@ -1250,18 +1298,25 @@ function trProgressLabel(){const g=TR.game;
   if(g.type==='doubles')return 'D1 t/m D20 + bull, in volgorde';
   if(g.type==='countup')return g.rounds+' beurten · hoogste totaal wint';
   return 'Start 27 · elke dubbel D1–D25';}
-function trActiveHtml(){const g=TR.game,id=trCur(),s=g.st[id];let lbl,big,sub;
-  if(g.type==='checkout'){lbl='Uitgooien';big=s.target;sub='Poging '+(s.attempts+1)+' / '+g.attempts;}
-  else if(g.type==='clock'){lbl='Mik op';big=trClockName(s.pos);sub='Doel '+Math.min(s.pos+1,21)+' / 21';}
-  else if(g.type==='doubles'){lbl='Mik op';big=trDblName(s.pos);sub='Doel '+Math.min(s.pos+1,21)+' / 21';}
+function trActiveHtml(){const g=TR.game,id=trCur(),s=g.st[id],dr=g.curDarts||[];let lbl,big,sub;
+  if(g.type==='checkout'){const pv=trEvalVisit('checkout',s,dr,false);lbl='Uitgooien';big=(pv.rem!=null?pv.rem:s.target);sub='Finish '+s.target+' · poging '+(s.attempts+1)+' / '+g.attempts;}
+  else if(g.type==='clock'){const pv=trEvalVisit('clock',s,dr,false);lbl='Mik op';big=trClockName(Math.min(pv.c.pos,20));sub='Doel '+Math.min(pv.c.pos+1,21)+' / 21';}
+  else if(g.type==='doubles'){const pv=trEvalVisit('doubles',s,dr,false);lbl='Mik op';big=trDblName(Math.min(pv.c.pos,20));sub='Doel '+Math.min(pv.c.pos+1,21)+' / 21';}
   else if(g.type==='countup'){lbl='Totaal';big=s.total;sub='Beurt '+(s.scores.length+1)+' / '+g.rounds;}
-  else{lbl=bobTarget(s.pos);big=s.score;sub='Doel '+(s.pos+1)+' / 21 · punten';}
+  else{lbl=bobTarget(s.pos);big=s.score;sub='Mik 3× op '+bobTarget(s.pos)+' · '+(s.pos+1)+' / 21';}
   return `<div class="tr-active"><div class="ta-who">Aan de beurt</div><div class="ta-name">${esc(trName(id))}</div>
     <div class="ta-lbl">${lbl}</div><div class="ta-big tnum">${big}</div><div class="ta-sub">${sub}</div></div>`;}
+function trDartpadHtml(){const g=TR.game,dr=g.curDarts||[];
+  const slots=[0,1,2].map(i=>`<div class="dp-dart ${dr[i]?'filled':''} ${dr[i]&&dr[i].n===0?'miss':''}">${dr[i]?trDartLabel(dr[i]):'·'}</div>`).join('');
+  let nums='';for(let k=1;k<=20;k++)nums+=`<button onclick="trDart(${k})">${k}</button>`;
+  const hint=g.type==='checkout'?'Gooi de finish uit op een dubbel':g.type==='bob27'?'Mik 3 pijlen op de dubbel':g.type==='doubles'?'Raak de dubbel':'Raak het doelwit';
+  return `<div class="dartpad"><div class="dp-visit">${slots}</div>
+    <div class="dp-mult"><button class="${g.mult===1?'on':''}" onclick="trMult(1)">Enkel</button><button class="${g.mult===2?'on':''}" onclick="trMult(2)">Dubbel</button><button class="${g.mult===3?'on':''}" onclick="trMult(3)">Triple</button></div>
+    <div class="dp-nums">${nums}</div>
+    <div class="dp-bottom"><button onclick="trDart(25)">Bull</button><button class="miss" onclick="trDart(0)">Mis</button><button onclick="trDartBack()">⌫</button><button class="ok" onclick="trVisitEnd()">Klaar</button></div>
+    <div class="th-s" style="text-align:center;margin-top:8px">Tik per pijl wat je raakte · ${hint}</div></div>`;}
 function trInputHtml(){const g=TR.game;
-  if(g.type==='checkout')return `<div class="tr-hits five"><button class="miss" onclick="trCheckout(0)">Mis</button><button onclick="trCheckout(1)">1</button><button onclick="trCheckout(2)">2</button><button onclick="trCheckout(3)">3</button><button onclick="trUndo()" title="Ongedaan maken">↶</button></div><div class="th-s" style="text-align:center;margin-bottom:4px">In hoeveel pijlen uitgegooid? · Mis = niet gehaald</div>`;
-  if(g.type==='clock'||g.type==='bob27'||g.type==='doubles'){const fn=g.type==='bob27'?'trBob':'trClock';
-    return `<div class="tr-hits five"><button class="miss" onclick="${fn}(0)">0</button><button onclick="${fn}(1)">1</button><button onclick="${fn}(2)">2</button><button onclick="${fn}(3)">3</button><button onclick="trUndo()" title="Ongedaan maken">↶</button></div><div class="th-s" style="text-align:center;margin-bottom:4px">Hoeveel rake worpen deze beurt? (van 3)</div>`;}
+  if(g.type!=='countup')return trDartpadHtml();
   return `<div class="disp tnum ${g.input===''?'empty-in':''}" id="trDisp">${g.input===''?'0':g.input}</div>
     <div class="quick">${[26,41,45,60,81,85,100,140].map(q=>`<button class="tnum" onclick="trCountKey('q',${q})">${q}</button>`).join('')}</div>
     <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="trCountKey('d','${n}')">${n}</button>`).join('')}
