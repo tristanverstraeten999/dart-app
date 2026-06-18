@@ -572,9 +572,13 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
         <div>
           <div class="card"><div class="card-h">Opzet</div><div class="saber"></div>
             <div class="row">
-              <div><label>Poule · legs</label><select id="pouleLegs"><option value="1">1 leg</option><option value="2">Best of 3</option><option value="3">Best of 5</option></select></div>
-              <div><label>Finale · legs</label><select id="finaleLegs"><option value="1">1 leg</option><option value="2" selected>Best of 3</option><option value="3">Best of 5</option></select></div></div>
-            <div style="margin-top:14px"><label>Finalisten</label><select id="finalists"><option value="2">Top 2 → finale</option><option value="4" selected>Top 4 → ½ finales</option></select></div></div>
+              <div><label>Poule · sets</label><select id="pouleSets"><option value="1" selected>First to 1</option><option value="2">First to 2</option><option value="3">First to 3</option></select></div>
+              <div><label>Poule · legs/set</label><select id="pouleLegs"><option value="1">First to 1</option><option value="2">First to 2</option><option value="3" selected>First to 3</option><option value="4">First to 4</option><option value="5">First to 5</option></select></div></div>
+            <div class="row" style="margin-top:14px">
+              <div><label>Finale · sets</label><select id="finaleSets"><option value="1">First to 1</option><option value="2">First to 2</option><option value="3" selected>First to 3</option></select></div>
+              <div><label>Finale · legs/set</label><select id="finaleLegs"><option value="1">First to 1</option><option value="2">First to 2</option><option value="3" selected>First to 3</option><option value="4">First to 4</option><option value="5">First to 5</option></select></div></div>
+            <div style="margin-top:14px"><label>Finalisten</label><select id="finalists"><option value="2">Top 2 → finale</option><option value="4" selected>Top 4 → ½ finales</option></select></div>
+            <p class="muted" style="margin-top:10px">Een set = first to X legs. Bv. poule first to 1 set, finale first to 3 sets.</p></div>
           <button class="btn" onclick="startTournament()">Start tornooi</button>
           <p class="muted center" style="margin-top:11px">Minstens 3 spelers · tellen via DartCounter, hier enkel de uitslag</p>
         </div>
@@ -695,7 +699,7 @@ function render(){
   ['poule','stand'].forEach(t=>{const b=document.querySelector(`#nav-tournament .tab[data-tab="${t}"]`);if(b)b.disabled=!started;});
   const fb=document.querySelector('#nav-tournament .tab[data-tab="finale"]');if(fb)fb.disabled=!(S.finaleMatches.length>0||pouleComplete());
   renderHero();renderPlayers();renderPoule();renderStand();renderFinale();
-  if(S.config.pouleLegs){setVal('pouleLegs',S.config.pouleLegs);setVal('finalists',S.config.finalists);setVal('finaleLegs',S.config.finaleLegs);}
+  if(S.config.pouleLegs){setVal('pouleSets',S.config.pouleSets||1);setVal('pouleLegs',S.config.pouleLegs);setVal('finaleSets',S.config.finaleSets||1);setVal('finalists',S.config.finalists);setVal('finaleLegs',S.config.finaleLegs);}
   setVal('teamName',S.team||'');renderComp();}
 function setVal(id,val){const el=document.getElementById(id);if(el)el.value=val;}
 function renderHero(){document.getElementById('heroTitle').textContent=(S.team&&S.team.trim())?S.team:'De Pijlen';let st;
@@ -716,9 +720,9 @@ function renamePlayer(id,v){const p=S.players.find(x=>x.id===id);if(p){p.name=v.
 function renderPlayers(){const list=document.getElementById('playerList');
   list.innerHTML=S.players.map((p,i)=>`<div class="prow"><div class="seed">${i+1}</div><input value="${esc(p.name)}" onchange="renamePlayer('${p.id}',this.value)"><button class="del" onclick="removePlayer('${p.id}')">×</button></div>`).join('');
   document.getElementById('playerCount').textContent=S.players.length?S.players.length+(S.players.length===1?' speler':' spelers'):'';}
-function startTournament(){S.config={pouleLegs:+gv('pouleLegs'),finalists:+gv('finalists'),finaleLegs:+gv('finaleLegs')};
+function startTournament(){S.config={pouleSets:+gv('pouleSets'),pouleLegs:+gv('pouleLegs'),finaleSets:+gv('finaleSets'),finaleLegs:+gv('finaleLegs'),finalists:+gv('finalists')};
   if(S.players.length<3){toast('Voeg minstens 3 spelers toe');return;}if(S.config.finalists>S.players.length)S.config.finalists=2;
-  S.pouleMatches=roundRobin(S.players).map(([a,b])=>({id:uid(),p1:a,p2:b,legsTarget:S.config.pouleLegs,legs1:0,legs2:0,winner:null}));
+  S.pouleMatches=roundRobin(S.players).map(([a,b])=>({id:uid(),p1:a,p2:b,st:S.config.pouleSets,lg:S.config.pouleLegs,sets1:0,sets2:0,legs1:0,legs2:0,winner:null}));
   S.finaleMatches=[];S.tieChoice=[];S.phase='poule';save();go('poule');toast('Tornooi gestart');}
 function gv(id){return document.getElementById(id).value;}
 function roundRobin(players){let ids=players.map(p=>p.id);if(ids.length%2)ids.push(null);const n=ids.length,rounds=n-1,half=n/2;let arr=ids.slice(),out=[];
@@ -730,29 +734,37 @@ function renderPoule(){const c=document.getElementById('pouleMatches');
   document.getElementById('pouleProgress').textContent=done+'/'+tot;document.getElementById('poulePbar').style.width=''+(tot?Math.round(done/tot*100):0)+'%';
   document.getElementById('toFinaleBtn').classList.toggle('hidden',!pouleComplete()||S.finaleMatches.length>0);
   const d=standData();document.getElementById('pouleStand').innerHTML=standTable(d);document.getElementById('pouleStandLegend').innerHTML=legendHTML(d);}
+function mSt(m){return m.st||1;}
+function mLg(m){return m.lg||m.legsTarget||1;}
+function mSetScore(m){const s1=m.sets1!=null?m.sets1:(m.winner?(m.winner===m.p1?1:0):0),s2=m.sets2!=null?m.sets2:(m.winner?(m.winner===m.p2?1:0):0);return [s1,s2];}
+function mScore(m){if(mSt(m)>1){const s=mSetScore(m);return s[0]+'–'+s[1];}return (m.legs1||0)+'–'+(m.legs2||0);}
+function mFmt(m){const st=mSt(m),lg=mLg(m);return st>1?('first to '+st+' sets · '+lg+' leg'+(lg>1?'s':'')+'/set'):('first to '+lg+' leg'+(lg>1?'s':''));}
 function matchRow(m,kind,i){const played=!!m.winner,w1=m.winner===m.p1,w2=m.winner===m.p2;
   return `<div class="match ${played?'played':''}" style="animation-delay:${(i||0)*.04}s" onclick="openResult('${kind}','${m.id}')"><div class="no">${i!=null?i+1:''}</div>
     <div class="who"><div class="nm ${w1?'win':''}"><span class="mk"></span>${esc(nameT(m.p1))}</div><div class="nm ${w2?'win':''}"><span class="mk"></span>${esc(nameT(m.p2))}</div></div>
-    <div class="meta">${played?`<div class="score tnum">${m.legs1}–${m.legs2}</div><div class="done">${check()} Gespeeld</div>`:`<div class="play">Invullen</div>`}</div></div>`;}
+    <div class="meta">${played?`<div class="score tnum">${mScore(m)}</div><div class="done">${check()} ${mSt(m)>1?'sets':'gespeeld'}</div>`:`<div class="play">Invullen</div>`}</div></div>`;}
 function check(){return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;}
 function emptyBox(t){return `<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg><div>${t}</div></div>`;}
-function computeStand(matches){const t={};S.players.forEach(p=>t[p.id]={id:p.id,played:0,won:0,lost:0,legF:0,legA:0});
-  matches.forEach(m=>{if(!m.winner||!t[m.p1]||!t[m.p2])return;t[m.p1].played++;t[m.p2].played++;t[m.p1].legF+=m.legs1;t[m.p1].legA+=m.legs2;t[m.p2].legF+=m.legs2;t[m.p2].legA+=m.legs1;
+function computeStand(matches){const t={};S.players.forEach(p=>t[p.id]={id:p.id,played:0,won:0,lost:0,legF:0,legA:0,setF:0,setA:0});
+  matches.forEach(m=>{if(!m.winner||!t[m.p1]||!t[m.p2])return;const ss=mSetScore(m);
+    t[m.p1].played++;t[m.p2].played++;
+    t[m.p1].legF+=(m.legs1||0);t[m.p1].legA+=(m.legs2||0);t[m.p2].legF+=(m.legs2||0);t[m.p2].legA+=(m.legs1||0);
+    t[m.p1].setF+=ss[0];t[m.p1].setA+=ss[1];t[m.p2].setF+=ss[1];t[m.p2].setA+=ss[0];
     if(m.winner===m.p1){t[m.p1].won++;t[m.p2].lost++;}else{t[m.p2].won++;t[m.p1].lost++;}});
-  return Object.values(t).sort((a,b)=>b.won-a.won||(b.legF-b.legA)-(a.legF-a.legA)||b.legF-a.legF||nameT(a.id).localeCompare(nameT(b.id)));}
+  return Object.values(t).sort((a,b)=>b.won-a.won||((b.setF-b.setA)-(a.setF-a.setA))||((b.legF-b.legA)-(a.legF-a.legA))||b.legF-a.legF||nameT(a.id).localeCompare(nameT(b.id)));}
 function standData(){const rows=computeStand(S.pouleMatches),q=S.config.finalists||0,info=resolveSeeds(rows,q);
   let qualified,ambig=false;if(S.finaleMatches.length)qualified=finalistsSet();else{const sf=finalSeeds();qualified=new Set(sf||info.seeds);ambig=info.ambiguous&&!sf;}
   const contested=ambig?new Set(info.contested):new Set();let rk=0,prevKey=null;const rankMap={};
   rows.forEach((r,idx)=>{const k=skey(r);if(k!==prevKey){rk=idx+1;prevKey=k;}rankMap[r.id]=rk;});return {rows,q,info,qualified,contested,ambig,rankMap};}
 function standTable(d){return `<thead><tr><th></th><th style="text-align:left">Speler</th><th>G</th><th>W</th><th>V</th><th>±</th></tr></thead><tbody>`+
-  d.rows.map((r,i)=>{const dd=r.legF-r.legA;return `<tr class="${d.qualified.has(r.id)?'q':''} ${d.contested.has(r.id)?'tiec':''}" style="animation-delay:${i*.04}s">
+  d.rows.map((r,i)=>{const dd=(S.config&&S.config.pouleSets>1)?(r.setF-r.setA):(r.legF-r.legA);return `<tr class="${d.qualified.has(r.id)?'q':''} ${d.contested.has(r.id)?'tiec':''}" style="animation-delay:${i*.04}s">
     <td><span class="pos">${d.rankMap[r.id]}</span></td><td class="nm">${esc(nameT(r.id))}</td>
     <td class="tnum">${r.played}</td><td class="tnum">${r.won}</td><td class="tnum">${r.lost}</td>
     <td class="tnum" style="color:${dd>0?'var(--green-bright)':dd<0?'var(--red-bright)':'var(--ink)'}">${dd>0?'+':''}${dd}</td></tr>`;}).join('')+`</tbody>`;}
 function legendHTML(d){if(d.ambig)return `<span style="color:var(--red-bright);font-weight:700">⚠ Gelijkstand om de laatste ${d.info.slots===1?'plek':'plekken'}.</span> ${d.info.contested.length} spelers staan exact gelijk — beslis zelf wie doorgaat.<br><button class="btn small" style="margin-top:11px;width:auto" onclick="openTiebreak()">Beslis wie doorgaat</button>`;
   return `G gespeeld · W gewonnen · V verloren · ± legsaldo<br><b>De top ${d.q} plaatst zich voor de finale.</b>`;}
 function renderStand(){const d=standData();document.getElementById('standTable').innerHTML=standTable(d);document.getElementById('standLegend').innerHTML=legendHTML(d);}
-function skey(r){return r.won+'_'+(r.legF-r.legA)+'_'+r.legF;}
+function skey(r){return r.won+'_'+((r.setF||0)-(r.setA||0))+'_'+(r.legF-r.legA)+'_'+r.legF;}
 function h2hT(a,b){const m=S.pouleMatches.find(x=>(x.p1===a&&x.p2===b)||(x.p1===b&&x.p2===a));return m&&m.winner?m.winner:null;}
 function resolveSeeds(rows,q){const result=[];let i=0;
   while(result.length<q&&i<rows.length){let j=i;const k=skey(rows[i]);while(j<rows.length&&skey(rows[j])===k)j++;const group=rows.slice(i,j).map(r=>r.id);
@@ -765,15 +777,16 @@ function finalistsSet(){const s=new Set();const sfs=S.finaleMatches.filter(m=>m.
   if(sfs.length)sfs.forEach(m=>{s.add(m.p1);s.add(m.p2);});else{const f=S.finaleMatches.find(m=>m.round==='final');if(f){if(f.p1)s.add(f.p1);if(f.p2)s.add(f.p2);}}return s;}
 function proceedToFinale(){if(!pouleComplete()){toast('Speel eerst alle poulewedstrijden');return;}if(!finalSeeds()){openTiebreak();return;}if(buildFinale())go('finale');}
 function buildFinale(){if(S.finaleMatches.length)return true;if(!pouleComplete()){toast('Speel eerst alle poulewedstrijden');return false;}
-  const seeds=finalSeeds();if(!seeds){openTiebreak();return false;}const q=S.config.finalists,L=S.config.finaleLegs;
-  if(q===4)S.finaleMatches=[{id:uid(),round:'sf',label:'Halve finale 1',seedTxt:'#1 vs #4',p1:seeds[0],p2:seeds[3],legsTarget:L,legs1:0,legs2:0,winner:null},
-    {id:uid(),round:'sf',label:'Halve finale 2',seedTxt:'#2 vs #3',p1:seeds[1],p2:seeds[2],legsTarget:L,legs1:0,legs2:0,winner:null},
-    {id:uid(),round:'final',label:'Finale',p1:null,p2:null,legsTarget:L,legs1:0,legs2:0,winner:null}];
-  else S.finaleMatches=[{id:uid(),round:'final',label:'Finale',seedTxt:'#1 vs #2',p1:seeds[0],p2:seeds[1],legsTarget:L,legs1:0,legs2:0,winner:null}];
+  const seeds=finalSeeds();if(!seeds){openTiebreak();return false;}const q=S.config.finalists,L=S.config.finaleLegs,ST=S.config.finaleSets||1;
+  const mk=(o)=>Object.assign({id:uid(),st:ST,lg:L,sets1:0,sets2:0,legs1:0,legs2:0,winner:null},o);
+  if(q===4)S.finaleMatches=[mk({round:'sf',label:'Halve finale 1',seedTxt:'#1 vs #4',p1:seeds[0],p2:seeds[3]}),
+    mk({round:'sf',label:'Halve finale 2',seedTxt:'#2 vs #3',p1:seeds[1],p2:seeds[2]}),
+    mk({round:'final',label:'Finale',p1:null,p2:null})];
+  else S.finaleMatches=[mk({round:'final',label:'Finale',seedTxt:'#1 vs #2',p1:seeds[0],p2:seeds[1]})];
   S.phase='finale';save();toast('Finale samengesteld');return true;}
 function rebuildFinale(){if(!confirm('Finale opnieuw samenstellen? Ingevulde finale-uitslagen gaan verloren (de poule blijft).'))return;S.finaleMatches=[];S.tieChoice=[];S.phase='poule';save();proceedToFinale();}
 function advanceFinale(){const sfs=S.finaleMatches.filter(m=>m.round==='sf'),fin=S.finaleMatches.find(m=>m.round==='final');
-  if(sfs.length===2&&fin){fin.p1=sfs[0].winner||null;fin.p2=sfs[1].winner||null;if(fin.winner&&fin.winner!==fin.p1&&fin.winner!==fin.p2){fin.winner=null;fin.legs1=0;fin.legs2=0;}}}
+  if(sfs.length===2&&fin){fin.p1=sfs[0].winner||null;fin.p2=sfs[1].winner||null;if(fin.winner&&fin.winner!==fin.p1&&fin.winner!==fin.p2){fin.winner=null;fin.legs1=0;fin.legs2=0;fin.sets1=0;fin.sets2=0;}}}
 function trophy(){return `<svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0Z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3M10 14h4v2h-4zM8 20h8"/></svg>`;}
 function renderFinale(){const area=document.getElementById('finaleArea');
   if(!S.finaleMatches.length){area.innerHTML=`<div class="card"><div class="card-h">Finale</div><div class="saber"></div><div class="empty">${trophy()}<div>De finale start zodra de poule volledig gespeeld is.`+
@@ -786,34 +799,36 @@ function renderFinale(){const area=document.getElementById('finaleArea');
 function bcard(m){if(!m||!m.p1||!m.p2)return `<div class="bmatch ph"><div class="b-lbl">${m?m.label:''}</div><div class="b-wait">Wacht op spelers…</div></div>`;
   const played=!!m.winner,w1=m.winner===m.p1,w2=m.winner===m.p2;
   return `<div class="bmatch ${played?'played':''}" onclick="openResult('finale','${m.id}')"><div class="b-lbl">${m.label}${m.seedTxt?' · '+m.seedTxt:''}</div>
-    <div class="b-pl ${w1?'win':''}"><span class="mk"></span><span class="bn">${esc(nameT(m.p1))}</span><span class="bl tnum">${played?m.legs1:''}</span></div>
-    <div class="b-pl ${w2?'win':''}"><span class="mk"></span><span class="bn">${esc(nameT(m.p2))}</span><span class="bl tnum">${played?m.legs2:''}</span></div>
+    <div class="b-pl ${w1?'win':''}"><span class="mk"></span><span class="bn">${esc(nameT(m.p1))}</span><span class="bl tnum">${played?mScore(m).split('–')[0]:''}</span></div>
+    <div class="b-pl ${w2?'win':''}"><span class="mk"></span><span class="bn">${esc(nameT(m.p2))}</span><span class="bl tnum">${played?mScore(m).split('–')[1]:''}</span></div>
     ${played?'':'<div class="b-go">Invullen</div>'}</div>`;}
-function champCard(fin){if(fin&&fin.winner)return `<div class="champ-card"><div class="medal">${trophy()}</div><div class="ct">Kampioen</div><div class="cn">${esc(nameT(fin.winner))}</div><div class="cs tnum">Wint met ${fin.legs1}–${fin.legs2}</div></div>`;
+function champCard(fin){if(fin&&fin.winner)return `<div class="champ-card"><div class="medal">${trophy()}</div><div class="ct">Kampioen</div><div class="cn">${esc(nameT(fin.winner))}</div><div class="cs tnum">Wint met ${mScore(fin)}${mSt(fin)>1?' in sets':''}</div></div>`;
   return `<div class="champ-ph">Nog te bepalen</div>`;}
 
 let RES=null;
 function findMatch(kind,id){return(kind==='poule'?S.pouleMatches:S.finaleMatches).find(m=>m.id===id);}
-function openResult(kind,id){const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;RES={kind,id,legs:[m.legs1||0,m.legs2||0],played:!!m.winner};renderResult();document.getElementById('modalBack').classList.remove('hidden');}
+function openResult(kind,id){const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;const st=mSt(m);RES={kind,id,legs:st>1?[m.sets1||0,m.sets2||0]:[m.legs1||0,m.legs2||0],played:!!m.winner};renderResult();document.getElementById('modalBack').classList.remove('hidden');}
 function closeResult(){RES=null;document.getElementById('modalBack').classList.add('hidden');}
-function stepLeg(i,d){if(!RES)return;const m=findMatch(RES.kind,RES.id);const max=m.legsTarget||7;RES.legs[i]=Math.max(0,Math.min(max,RES.legs[i]+d));renderResult();}
-function renderResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);const a=RES.legs[0],b=RES.legs[1];const w=a===b?-1:(a>b?0:1);
-  let line=a+b===0?'Vul de stand in':(w<0?'Gelijk kan niet — kies een winnaar':'Winnaar: <b>'+esc(nameT(w===0?m.p1:m.p2))+'</b>');
+function stepLeg(i,d){if(!RES)return;const m=findMatch(RES.kind,RES.id);const st=mSt(m);const max=st>1?st:mLg(m);RES.legs[i]=Math.max(0,Math.min(max,RES.legs[i]+d));renderResult();}
+function renderResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);const st=mSt(m),unit=st>1?'sets':'legs';const a=RES.legs[0],b=RES.legs[1];const w=a===b?-1:(a>b?0:1);
+  let line=a+b===0?('Vul de eindstand in ('+unit+')'):(w<0?'Gelijk kan niet — kies een winnaar':'Winnaar: <b>'+esc(nameT(w===0?m.p1:m.p2))+'</b>');
   document.getElementById('modalBack').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeResult()"><div class="modal">
-    <div class="m-h">${m.label?m.label:'Wedstrijd'}</div><div class="m-sub">first to ${m.legsTarget} leg${m.legsTarget>1?'s':''} · vul de eindstand in</div>
+    <div class="m-h">${m.label?m.label:'Wedstrijd'}</div><div class="m-sub">${mFmt(m)} · vul de eindstand in (${unit})</div>
     <div class="m-players">${plCard(0,m.p1,a,w===0)}<div class="m-vs">–</div>${plCard(1,m.p2,b,w===1)}</div>
     <div class="m-win-line">${line}</div>
     <button class="btn gold" onclick="startTourMatch('${RES.kind}','${RES.id}')">Live tellen op TV ▸</button>
     <div class="m-sub" style="text-align:center;margin:2px 0 10px">…of vul de eindstand hierboven met de hand in</div>
     <button class="btn green" onclick="saveResult()">Opslaan</button>
     ${RES.played?'<button class="btn danger" onclick="clearResult()">Uitslag wissen</button>':''}<button class="btn ghost" onclick="closeResult()">Annuleren</button></div></div>`;}
-function startTourMatch(kind,id){const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;closeResult();startCounter(m.p1,m.p2,501,m.legsTarget,{kind,id});}
+function startTourMatch(kind,id){const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;closeResult();startCounter(m.p1,m.p2,501,mLg(m),{kind,id},mSt(m));}
 function plCard(i,pid,val,win){return `<div class="m-pl ${win?'win':''}"><div class="m-name">${esc(nameT(pid))}</div><div class="legbig tnum">${val}</div>
   <div class="steps"><button onclick="stepLeg(${i},-1)">−</button><button onclick="stepLeg(${i},1)">+</button></div></div>`;}
 function saveResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);const a=RES.legs[0],b=RES.legs[1];if(a===b){toast('Gelijkspel kan niet — kies een winnaar');return;}
-  m.legs1=a;m.legs2=b;m.winner=a>b?m.p1:m.p2;const champ=RES.kind==='finale'&&m.round==='final';save();advanceFinale();save();closeResult();render();
+  m.winner=a>b?m.p1:m.p2;const st=mSt(m);
+  if(st>1){m.sets1=a;m.sets2=b;m.legs1=a;m.legs2=b;}else{m.legs1=a;m.legs2=b;m.sets1=a>b?1:0;m.sets2=a>b?0:1;}
+  const champ=RES.kind==='finale'&&m.round==='final';save();advanceFinale();save();closeResult();render();
   if(champ){confetti(200);toast(nameT(m.winner)+' is kampioen',true);}else toast(nameT(m.winner)+' wint');}
-function clearResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);m.legs1=0;m.legs2=0;m.winner=null;save();advanceFinale();save();closeResult();render();toast('Uitslag gewist');}
+function clearResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);m.legs1=0;m.legs2=0;m.sets1=0;m.sets2=0;m.winner=null;save();advanceFinale();save();closeResult();render();toast('Uitslag gewist');}
 
 let TIE=null;
 function openTiebreak(){const rows=computeStand(S.pouleMatches),q=S.config.finalists,info=resolveSeeds(rows,q);if(!info.ambiguous)return;
@@ -965,8 +980,8 @@ function startNM(){if(NM.p1===NM.p2){toast('Kies twee verschillende spelers');re
 /* ============ 501 COUNTER ============ */
 let CO=null;
 function anyName(id){let p=C.players.find(x=>x.id===id);if(p)return p.name;p=(S&&S.players)?S.players.find(x=>x.id===id):null;return p?p.name:'?';}
-function startCounter(p1,p2,start,legsTarget,ctx){CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,legsTarget,starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
-  CO.ev={seq:1,kind:'walkon',names:CO.names,start,legsTarget};
+function startCounter(p1,p2,start,lg,ctx,st){st=st||1;CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,lg,st,legsTarget:lg,setsWon:[0,0],legsTotal:[0,0],starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
+  CO.ev={seq:1,kind:'walkon',names:CO.names,start,legsTarget:lg};
   IAMCTRL=true;document.getElementById('overlay').classList.remove('hidden');renderCounter(true);}
 function coEvent(kind,player,score,bust){if(!CO)return;CO.evSeq=(CO.evSeq||0)+1;CO.ev={seq:CO.evSeq,kind,player,score:score||0,bust:!!bust,name:CO.names[player],opp:CO.names[1-player]};
   if(localCaller&&!TV)tvHandleEvent(CO.ev,{names:CO.names});}
@@ -974,7 +989,9 @@ function closeCounter(){CO=null;IAMCTRL=false;fbClearLive();document.getElementB
 function renderCounter(full){if(!CO)return;const ov=document.getElementById('overlay');
   const co0=checkoutHint(CO.rem[0]),co1=checkoutHint(CO.rem[1]);const curCo=CO.cur===0?co0:co1;
   const empty=CO.input==='',disp=empty?'0':CO.input,legNum=CO.legsWon[0]+CO.legsWon[1]+1;
-  ov.innerHTML=`<div class="overlay-wrap"><div class="ovh"><div><div class="ot tnum">${CO.start}</div><div class="ol">Leg ${legNum} · first to ${CO.legsTarget}</div></div>
+  const setNum=(CO.setsWon?CO.setsWon[0]+CO.setsWon[1]:0)+1;
+  const olTxt=(CO.st>1)?('Set '+setNum+' · Leg '+legNum+' · first to '+CO.st+' sets'):('Leg '+legNum+' · first to '+CO.lg);
+  ov.innerHTML=`<div class="overlay-wrap"><div class="ovh"><div><div class="ot tnum">${CO.start}</div><div class="ol">${olTxt}</div></div>
       <div style="display:flex;gap:8px">${localCallerBtnHtml()}<button class="oc" onclick="abortCounter()">✕</button></div></div>
     <div class="players2">${plc(0)}${plc(1)}</div>
     <div class="cohint">${curCo?('Uitgooien: <b>'+curCo+'</b>'):'&nbsp;'}</div>
@@ -987,9 +1004,10 @@ function renderCounter(full){if(!CO)return;const ov=document.getElementById('ove
   [0,1].forEach(i=>{const el=document.getElementById('big'+i);if(!el)return;const from=CO.shown[i],to=CO.rem[i];
     if(full){el.textContent=to;}else{tweenNum(el,from,to);if(from!==to){el.classList.add('flash');setTimeout(()=>el&&el.classList.remove('flash'),460);}}CO.shown[i]=to;});fbPushLive();}
 function plc(i){const active=CO.cur===i;const last=CO.last[i];const lt=last===0?'BUST':last!=null?('+'+last):'';
-  let legs='';for(let k=0;k<CO.legsTarget;k++)legs+=`<i class="${k<CO.legsWon[i]?'on':''}"></i>`;
+  let legs='';for(let k=0;k<CO.lg;k++)legs+=`<i class="${k<CO.legsWon[i]?'on':''}"></i>`;
+  const setsLine=CO.st>1?`<div style="font-size:12px;font-weight:800;color:var(--gold);margin-top:2px">Sets ${CO.setsWon[i]} / ${CO.st}</div>`:'';
   return `<div class="pl ${active?'active':''}"><div class="turn">Aan zet</div><div class="last ${last!=null?'show':''} ${last===0?'bust':''}">${lt}</div>
-    <div class="pn">${esc(CO.names[i])}</div><div class="legs">${legs}</div><div class="big tnum" id="big${i}">${CO.shown[i]}</div>
+    <div class="pn">${esc(CO.names[i])}</div>${setsLine}<div class="legs">${legs}</div><div class="big tnum" id="big${i}">${CO.shown[i]}</div>
     <div class="avg">gem/beurt ${avg3(CO.scored[i],CO.darts[i])}</div></div>`;}
 function tweenNum(el,from,to){if(from===to){el.textContent=to;return;}const t0=performance.now(),dur=420;
   function step(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=Math.round(from+(to-from)*e);if(k<1)requestAnimationFrame(step);else el.textContent=to;}requestAnimationFrame(step);}
@@ -1006,24 +1024,29 @@ function submitScore(){if(!CO)return;const val=parseInt(CO.input||'0',10);if(isN
 function bust(){doBust(parseInt(CO.input||'0',10)||0);}
 function doBust(val){const cur=CO.cur;CO.history.push({player:cur,score:0,remBefore:CO.rem[cur],bust:true});CO.darts[cur]+=3;CO.last[cur]=0;CO.input='';flashBust('BUST');coEvent('throw',cur,0,true);CO.cur=1-cur;setTimeout(()=>renderCounter(false),520);}
 function flashBust(t){const d=document.getElementById('disp');if(d){d.textContent=t;d.classList.add('bust');d.classList.remove('empty-in');}}
-function legWon(winner){CO.legsWon[winner]++;const matchOver=CO.legsWon[winner]>=CO.legsTarget;
-  coEvent(matchOver?'match':'leg',winner);fbPushLive();toast(CO.names[winner]+' wint de leg');
+function legWon(winner){CO.legsWon[winner]++;CO.legsTotal[winner]++;
+  const setOver=CO.legsWon[winner]>=CO.lg;
+  if(!setOver){coEvent('leg',winner);fbPushLive();toast(CO.names[winner]+' wint de leg');
+    CO.starter=1-CO.starter;CO.cur=CO.starter;CO.rem=[CO.start,CO.start];CO.shown=[CO.start,CO.start];CO.last=[null,null];CO.history=[];CO.input='';setTimeout(()=>renderCounter(true),750);return;}
+  CO.setsWon[winner]++;const matchOver=CO.setsWon[winner]>=CO.st;
+  coEvent(matchOver?'match':'set',winner);fbPushLive();
+  toast(CO.names[winner]+(CO.st>1?(matchOver?' wint de partij!':' pakt de set!'):' wint de leg'));
   if(matchOver){finishCounter(winner);return;}
-  CO.starter=1-CO.starter;CO.cur=CO.starter;CO.rem=[CO.start,CO.start];CO.shown=[CO.start,CO.start];CO.last=[null,null];CO.history=[];CO.input='';setTimeout(()=>renderCounter(true),750);}
+  CO.starter=1-CO.starter;CO.cur=CO.starter;CO.legsWon=[0,0];CO.rem=[CO.start,CO.start];CO.shown=[CO.start,CO.start];CO.last=[null,null];CO.history=[];CO.input='';setTimeout(()=>renderCounter(true),900);}
 function undoThrow(){if(!CO||!CO.history.length)return;const last=CO.history.pop();const p=last.player;CO.rem[p]=last.remBefore;CO.shown[p]=last.remBefore;CO.darts[p]=Math.max(0,CO.darts[p]-3);
   if(!last.bust){CO.scored[p]-=last.score;if(last.score===180)CO.t180[p]=Math.max(0,CO.t180[p]-1);}CO.last[p]=null;CO.cur=p;CO.input='';renderCounter(true);}
 function abortCounter(){if(!confirm('Partij afbreken? De stand wordt niet bewaard.'))return;closeCounter();}
 function finishCounter(winnerIdx){
-  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:winnerIdx,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
-  const wn=CO.names[winnerIdx],tour=CO.tour,legsW=CO.legsWon.slice(),ids=CO.p.slice();
+  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:winnerIdx,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
+  const wn=CO.names[winnerIdx],tour=CO.tour,legsW=CO.legsTotal.slice(),setsW=CO.setsWon.slice(),ids=CO.p.slice();
   if(tour){ // tornooi-wedstrijd: schrijf de uitslag terug in het tornooi
-    const m=findMatch(tour.kind,tour.id);if(m){m.legs1=legsW[0];m.legs2=legsW[1];m.winner=ids[winnerIdx];}
+    const m=findMatch(tour.kind,tour.id);if(m){m.legs1=legsW[0];m.legs2=legsW[1];m.sets1=setsW[0];m.sets2=setsW[1];m.winner=ids[winnerIdx];}
     const champ=tour.kind==='finale'&&m&&m.round==='final';
     IAMCTRL=false;CO=null;document.getElementById('overlay').classList.add('hidden');
     save();advanceFinale();save();render();confetti(200);toast(wn+(champ?' is kampioen!':' wint de wedstrijd!'),true);
   }else{ // competitie-partij
     const now=new Date(),month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    const rec={id:uid(),ts:Date.now(),month,p1:CO.p[0],p2:CO.p[1],startScore:CO.start,legsTarget:CO.legsTarget,legs1:CO.legsWon[0],legs2:CO.legsWon[1],winner:CO.p[winnerIdx],
+    const rec={id:uid(),ts:Date.now(),month,p1:CO.p[0],p2:CO.p[1],startScore:CO.start,legsTarget:CO.lg,legs1:CO.legsTotal[0],legs2:CO.legsTotal[1],winner:CO.p[winnerIdx],
       stats:{[CO.p[0]]:{darts:CO.darts[0],scored:CO.scored[0],t180:CO.t180[0],hi:CO.hi[0]},[CO.p[1]]:{darts:CO.darts[1],scored:CO.scored[1],t180:CO.t180[1],hi:CO.hi[1]}}};
     C.matches.unshift(rec);const newly=evalAchievements();saveC();
     IAMCTRL=false;CO=null;document.getElementById('overlay').classList.add('hidden');render();confetti(180);toast(wn+' wint de partij!',true);
@@ -1080,15 +1103,16 @@ function fbPushTour(){if(!fbReady||TV)return;clearTimeout(tourPushTimer);tourPus
     poule:S.pouleMatches.map(m=>({p1:nameT(m.p1),p2:nameT(m.p2),done:!!m.winner,legs1:m.legs1,legs2:m.legs2,w1:m.winner===m.p1,w2:m.winner===m.p2})),
     finale:buildFinaleSnapshot(),champion:fin&&fin.winner?nameT(fin.winner):null,next:nextM});
 }catch(e){}},250);}
-function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.legsTarget,cur:CO.cur,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
+function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:CO.cur,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
 function fbClearLive(){if(!fbReady)return;try{DB.ref('live').set({active:false,ts:Date.now()});}catch(e){}}
 function dismissMirror(){mirrorDismissTs=LIVEDATA?LIVEDATA.ts:0;renderLiveMirror();}
-function tvSideHtml(i,d){return `<div class="tv-side" id="tvSide${i}"><div class="tv-tag">Aan zet</div>
-  <div class="tv-name">${esc(d.names[i])}</div><div class="tv-rem tnum" id="tvRem${i}">${d.rem[i]}</div>
+function tvSideHtml(i,d){const setsLine=d.st>1?`<div style="color:var(--gold);font-weight:800;font-size:clamp(14px,1.7vw,22px);margin-top:2px">Sets ${(d.setsWon?d.setsWon[i]:0)} / ${d.st}</div>`:'';
+  return `<div class="tv-side" id="tvSide${i}"><div class="tv-tag">Aan zet</div>
+  <div class="tv-name">${esc(d.names[i])}</div>${setsLine}<div class="tv-rem tnum" id="tvRem${i}">${d.rem[i]}</div>
   <div class="tv-legs" id="tvLegs${i}"></div><div class="tv-avg" id="tvAvg${i}"></div><div class="tv-throw" id="tvThrow${i}"></div></div>`;}
 function tvLegsHtml(i,d,justWon){let s='';for(let k=0;k<d.legsTarget;k++)s+=`<i class="${k<d.legsWon[i]?'on':''} ${justWon&&k===d.legsWon[i]-1?'justwon':''}"></i>`;return s;}
 function buildTv(host,d){host.innerHTML=`<div class="tv"><button class="tv-close" onclick="dismissMirror()">✕</button>${muteBtnHtml()}
-  <div class="tv-top"><div class="tv-game">${d.start} <span>· first to ${d.legsTarget}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
+  <div class="tv-top"><div class="tv-game">${d.start} <span>· ${d.st>1?('Set '+((d.setsWon?d.setsWon[0]+d.setsWon[1]:0)+1)+' · first to '+d.st+' sets'):('first to '+d.legsTarget)}</span></div><div class="tv-live"><span class="livebadge">● LIVE</span></div></div>
   <div class="tv-board">${tvSideHtml(0,d)}<div class="tv-vs">VS</div>${tvSideHtml(1,d)}</div>
   <div class="tv-checkout" id="tvCo"></div><div class="tv-fx" id="tvFx"></div></div>`;}
 function tvIdleHtml(){return `<div class="tv"><div class="tv-idle" id="tvIdle">
@@ -1136,7 +1160,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
     host.classList.add('hidden');host.innerHTML='';tvKey=null;LIVEPREV=null;return;}
   host.classList.remove('hidden');
   if(d.kind==='training'){renderTvTraining(host,d);return;}
-  const key=(d.names||[]).join('|')+'|'+d.start+'|'+d.legsTarget;
+  const key=(d.names||[]).join('|')+'|'+d.start+'|'+d.legsTarget+'|'+(d.setsWon?d.setsWon.join('-'):'');
   if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;callerSeq=null;}
   [0,1].forEach(i=>{
     const side=document.getElementById('tvSide'+i);if(side)side.classList.toggle('active',d.cur===i&&!d.over);
@@ -1426,6 +1450,7 @@ function tvHandleEvent(ev,d){
   if(ev.kind==='walkon'){tvWalkon(ev.names||[]);callerWalkon(ev.names||[]);}
   else if(ev.kind==='throw'){callerThrow(ev);}
   else if(ev.kind==='leg'){speak(pick(['Game shot! '+ev.name+'.','And '+ev.name+' takes the leg.',ev.name+', that’s the leg.']),{pitch:1.08});}
+  else if(ev.kind==='set'){fanfare();speak(pick(['Game shot! '+ev.name+' takes the set!','And that is the set for '+ev.name+'!']),{pitch:1.1});}
   else if(ev.kind==='match'){fanfare();speak(pick(['Game, shot, and the match! '+ev.name+'!','Game shot and the match! Well done '+ev.name+'!','And it’s all over — '+ev.name+' wins it!']),{pitch:1.12,rate:.97});}}
 function callerThrow(ev){
   if(ev.bust){speak(pick(['Bust.','No score, bust.','Oh, and that’s a bust.']));return;}
