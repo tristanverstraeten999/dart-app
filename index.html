@@ -1037,7 +1037,7 @@ function undoThrow(){if(!CO||!CO.history.length)return;const last=CO.history.pop
   if(!last.bust){CO.scored[p]-=last.score;if(last.score===180)CO.t180[p]=Math.max(0,CO.t180[p]-1);}CO.last[p]=null;CO.cur=p;CO.input='';renderCounter(true);}
 function abortCounter(){if(!confirm('Partij afbreken? De stand wordt niet bewaard.'))return;closeCounter();}
 function finishCounter(winnerIdx){
-  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:winnerIdx,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
+  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:winnerIdx,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,t180:CO.t180,ev:CO.ev||null});}catch(e){}}
   const wn=CO.names[winnerIdx],tour=CO.tour,legsW=CO.legsTotal.slice(),setsW=CO.setsWon.slice(),ids=CO.p.slice();
   if(tour){ // tornooi-wedstrijd: schrijf de uitslag terug in het tornooi
     const m=findMatch(tour.kind,tour.id);if(m){m.legs1=legsW[0];m.legs2=legsW[1];m.sets1=setsW[0];m.sets2=setsW[1];m.winner=ids[winnerIdx];}
@@ -1103,7 +1103,7 @@ function fbPushTour(){if(!fbReady||TV)return;clearTimeout(tourPushTimer);tourPus
     poule:S.pouleMatches.map(m=>({p1:nameT(m.p1),p2:nameT(m.p2),done:!!m.winner,legs1:m.legs1,legs2:m.legs2,w1:m.winner===m.p1,w2:m.winner===m.p2})),
     finale:buildFinaleSnapshot(),champion:fin&&fin.winner?nameT(fin.winner):null,next:nextM});
 }catch(e){}},250);}
-function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:CO.cur,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,ev:CO.ev||null});}catch(e){}}
+function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:CO.cur,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,t180:CO.t180,ev:CO.ev||null});}catch(e){}}
 function fbClearLive(){if(!fbReady)return;try{DB.ref('live').set({active:false,ts:Date.now()});}catch(e){}}
 function dismissMirror(){mirrorDismissTs=LIVEDATA?LIVEDATA.ts:0;renderLiveMirror();}
 function tvSideHtml(i,d){const setsLine=d.st>1?`<div style="color:var(--gold);font-weight:800;font-size:clamp(14px,1.7vw,22px);margin-top:2px">Sets ${(d.setsWon?d.setsWon[i]:0)} / ${d.st}</div>`:'';
@@ -1169,7 +1169,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
     if(LIVEPREV&&d.rem[i]<LIVEPREV.rem[i]){const delta=LIVEPREV.rem[i]-d.rem[i];tvThrow(i,delta);if(delta===180)tv180();}
     const justWon=!!(LIVEPREV&&d.legsWon[i]>LIVEPREV.legsWon[i]);
     const legsEl=document.getElementById('tvLegs'+i);if(legsEl)legsEl.innerHTML=tvLegsHtml(i,d,justWon);
-    const avgEl=document.getElementById('tvAvg'+i);if(avgEl)avgEl.textContent='gem/beurt '+avg3(d.scored[i],d.darts[i]);});
+    const avgEl=document.getElementById('tvAvg'+i);if(avgEl)avgEl.textContent='gem '+avg3(d.scored[i],d.darts[i])+((d.t180&&d.t180[i])?(' · 180s: '+d.t180[i]):'');});
   const coEl=document.getElementById('tvCo');
   if(coEl){if(d.over)coEl.innerHTML='';else{const co=checkoutHint(d.rem[d.cur]);coEl.innerHTML=co?('Uitgooien: <b>'+co+'</b>'):'';}}
   if(d.over&&(!LIVEPREV||!LIVEPREV.over))tvWinner(d.names[d.winner]);
@@ -1197,7 +1197,9 @@ const TR_GAMES={
   clock:{name:'Around the Clock',desc:'Raak 1 t/m 20 en de bull in volgorde. Wie het snelst rond is.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'},
   countup:{name:'Count-Up',desc:'Scoor zoveel mogelijk in een vast aantal beurten. Hoogste totaal wint.',icon:'<svg viewBox="0 0 24 24"><path d="M5 21V10M12 21V4M19 21v-7"/><path d="M3 21h18"/></svg>'},
   bob27:{name:"Bob's 27",desc:'Dubbel-training: start op 27 punten, gooi elke dubbel D1 t/m D25.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>'},
-  doubles:{name:'Dubbels',desc:'Raak D1 t/m D20 en de bull, in volgorde. Pure dubbel-training tegen de klok.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>'}
+  doubles:{name:'Dubbels',desc:'Raak D1 t/m D20 en de bull, in volgorde. Pure dubbel-training tegen de klok.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>'},
+  shanghai:{name:'Shanghai',desc:'Rondes 1 t/m 7: scoor op het rondenummer. Single + dubbel + triple in één beurt = directe winst!',icon:'<svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.3L20 9l-4 3.8 1 6-5-3-5 3 1-6L4 9l5.6-.7z"/></svg>'},
+  killer:{name:'Killer',desc:'Word killer op je eigen dubbel en schiet de levens van de rest af. Laatste over wint. (2+ spelers)',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>'}
 };
 function trDblName(pos){return pos>=20?'BULL':'D'+(pos+1);}
 function lenVal(type){const L=TR.len||'normaal';
@@ -1221,6 +1223,8 @@ function trInit(type){
   if(type==='clock'||type==='doubles')return{pos:0,darts:0,done:false};
   if(type==='countup')return{scores:[],total:0,done:false};
   if(type==='bob27')return{pos:0,score:27,out:false,done:false};
+  if(type==='shanghai')return{pos:0,score:0,shanghai:false,done:false};
+  if(type==='killer')return{number:0,lives:3,killer:false,done:false};
   return{};}
 function trStart(type){
   if(!TR.players.length){toast('Voeg eerst minstens 1 speler toe');return;}
@@ -1229,6 +1233,9 @@ function trStart(type){
   ids.forEach(id=>{g.st[id]=trInit(type);});
   if(type==='checkout'){g.attempts=lenVal('checkout');ids.forEach(id=>{g.st[id].target=randFinish();});}
   if(type==='countup'){g.rounds=lenVal('countup');}
+  if(type==='killer'){if(ids.length<2){toast('Killer: minstens 2 spelers nodig');return;}
+    const pool=[];for(let n=1;n<=20;n++)pool.push(n);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
+    ids.forEach((id,i)=>{g.st[id].number=pool[i];g.st[id].lives=3;g.st[id].killer=false;});}
   TR.game=g;TR.view='play';IAMCTRL=true;saveTR();renderTraining();trPushLive();}
 
 /* --- beurt-helpers --- */
@@ -1265,6 +1272,10 @@ function trEvalVisit(type,s0,darts,commit){const c=JSON.parse(JSON.stringify(s0)
     darts.forEach(d=>{if(d.m===2&&d.n===target)hits++;});dartsUsed=darts.length;
     if(commit){c.score+=hits>0?hits*val:-val;if(c.score<=0){c.score=0;c.out=true;c.done=true;}c.pos++;if(c.pos>=21)c.done=true;}
     status='continue';ev={kind:'bob',done:c.done};}
+  else if(type==='shanghai'){const target=c.pos+1;let vs=0;const ms={};
+    darts.forEach(d=>{if(d.n===target&&d.n<=20){vs+=d.n*d.m;ms[d.m]=true;}});dartsUsed=darts.length;
+    if(commit){c.score+=vs;if(ms[1]&&ms[2]&&ms[3]){c.shanghai=true;c.done=true;}else{c.pos++;if(c.pos>=7)c.done=true;}}
+    status='continue';ev={kind:'shanghai',score:vs,done:c.done,shanghai:!!c.shanghai};}
   return {c,status,dartsUsed,rem,ev};}
 function trMult(m){const g=TR.game;if(!g||g.over)return;g.mult=g.mult===m?1:m;saveTR();renderTraining();}
 function trDart(n){const g=TR.game;if(!g||g.over||g.type==='countup')return;
@@ -1272,11 +1283,19 @@ function trDart(n){const g=TR.game;if(!g||g.over||g.type==='countup')return;
   let m=g.mult||1;if(n===25&&m===3)m=1;
   if(g.curDarts.length===0)trSnap();
   g.curDarts.push({n,m});
-  const id=trCur(),s=g.st[id],r=trEvalVisit(g.type,s,g.curDarts,false);
-  const auto=g.curDarts.length>=3||(g.type==='checkout'&&(r.status==='success'||r.status==='bust'))||((g.type==='clock'||g.type==='doubles')&&r.c.done);
+  let auto=g.curDarts.length>=3;
+  if(!auto&&(g.type==='checkout'||g.type==='clock'||g.type==='doubles')){const r=trEvalVisit(g.type,g.st[trCur()],g.curDarts,false);
+    auto=(g.type==='checkout'&&(r.status==='success'||r.status==='bust'))||((g.type==='clock'||g.type==='doubles')&&r.c.done);}
   if(auto)trCommitVisit();else{saveTR();renderTraining();}}
+function trKillerCommit(id,darts){const g=TR.game,me=g.st[id];let became=false,hits=0;
+  darts.forEach(d=>{if(d.n===0)return;
+    if(!me.killer){if(d.n===me.number&&d.m===2)me.killer=true,became=true;}
+    else{g.players.forEach(pid=>{if(pid===id)return;const o=g.st[pid];if(o.lives>0&&o.number===d.n){o.lives=Math.max(0,o.lives-d.m);hits++;if(o.lives<=0)o.done=true;}});}});
+  const alive=g.players.filter(pid=>g.st[pid].lives>0);if(alive.length<=1)g.players.forEach(pid=>{g.st[pid].done=true;});
+  trEv({kind:'killer',name:trName(id),became,hits});finishTurn();}
 function trCommitVisit(){const g=TR.game;if(!g)return;const id=trCur(),s=g.st[id],darts=g.curDarts||[];
   if(darts.length===0)trSnap();
+  if(g.type==='killer'){trKillerCommit(id,darts);g.curDarts=[];g.mult=1;return;}
   const r=trEvalVisit(g.type,s,darts,true);r.ev.name=trName(id);
   g.st[id]=r.c;g.curDarts=[];g.mult=1;
   trEv(r.ev);finishTurn();}
@@ -1304,11 +1323,15 @@ function trVal(id){const g=TR.game,s=g.st[id];
   if(g.type==='clock')return{v:s.done?'Klaar':trClockName(Math.min(s.pos,20)),sub:s.done?(s.darts+' pijlen'):('doel '+Math.min(s.pos+1,21)+'/21')};
   if(g.type==='doubles')return{v:s.done?'Klaar':trDblName(Math.min(s.pos,20)),sub:s.done?(s.darts+' pijlen'):('doel '+Math.min(s.pos+1,21)+'/21')};
   if(g.type==='countup')return{v:String(s.total),sub:s.scores.length?('gem '+(s.total/s.scores.length).toFixed(1)+'/beurt'):'—'};
+  if(g.type==='shanghai')return{v:String(s.score),sub:s.shanghai?'SHANGHAI!':('ronde '+Math.min(s.pos+1,7)+'/7')};
+  if(g.type==='killer')return{v:s.lives>0?(s.lives+' lvn'):'uit',sub:s.killer?('killer · nr '+s.number):('word killer: D'+s.number)};
   return{v:s.out?'Uit':String(s.score),sub:'doel '+Math.min(s.pos+1,21)+'/21'};}
 function trRank(){const g=TR.game,arr=g.players.map(id=>({id,s:g.st[id]}));
   if(g.type==='checkout')arr.sort((a,b)=>b.s.success-a.s.success||(a.s.dartsSum/(a.s.success||1))-(b.s.dartsSum/(b.s.success||1)));
   else if(g.type==='clock'||g.type==='doubles')arr.sort((a,b)=>(b.s.done-a.s.done)||(a.s.done?a.s.darts-b.s.darts:b.s.pos-a.s.pos));
   else if(g.type==='countup')arr.sort((a,b)=>b.s.total-a.s.total);
+  else if(g.type==='shanghai')arr.sort((a,b)=>(b.s.shanghai-a.s.shanghai)||b.s.score-a.s.score);
+  else if(g.type==='killer')arr.sort((a,b)=>b.s.lives-a.s.lives||(b.s.killer-a.s.killer));
   else arr.sort((a,b)=>(a.s.out-b.s.out)||b.s.score-a.s.score||b.s.pos-a.s.pos);
   return arr;}
 function trStandHtml(isResult){const arr=trRank();const cur=TR.game.over?null:trCur();
@@ -1321,19 +1344,23 @@ function trProgressLabel(){const g=TR.game;
   if(g.type==='clock')return '1 t/m 20 + bull, in volgorde';
   if(g.type==='doubles')return 'D1 t/m D20 + bull, in volgorde';
   if(g.type==='countup')return g.rounds+' beurten · hoogste totaal wint';
+  if(g.type==='shanghai')return 'Rondes 1 t/m 7 · hoogste score wint · S+D+T = win';
+  if(g.type==='killer')return 'Word killer op je dubbel, schiet de rest af';
   return 'Start 27 · elke dubbel D1–D25';}
 function trActiveHtml(){const g=TR.game,id=trCur(),s=g.st[id],dr=g.curDarts||[];let lbl,big,sub;
   if(g.type==='checkout'){const pv=trEvalVisit('checkout',s,dr,false);lbl='Uitgooien';big=(pv.rem!=null?pv.rem:s.target);sub='Finish '+s.target+' · poging '+(s.attempts+1)+' / '+g.attempts;}
   else if(g.type==='clock'){const pv=trEvalVisit('clock',s,dr,false);lbl='Mik op';big=trClockName(Math.min(pv.c.pos,20));sub='Doel '+Math.min(pv.c.pos+1,21)+' / 21';}
   else if(g.type==='doubles'){const pv=trEvalVisit('doubles',s,dr,false);lbl='Mik op';big=trDblName(Math.min(pv.c.pos,20));sub='Doel '+Math.min(pv.c.pos+1,21)+' / 21';}
   else if(g.type==='countup'){lbl='Totaal';big=s.total;sub='Beurt '+(s.scores.length+1)+' / '+g.rounds;}
+  else if(g.type==='shanghai'){lbl='Mik op';big=(s.pos+1);sub='Ronde '+(s.pos+1)+' / 7 · score '+s.score;}
+  else if(g.type==='killer'){lbl=s.killer?'KILLER — schiet af':'Word killer';big=s.killer?s.lives:('D'+s.number);sub=s.killer?('jouw nr '+s.number+' · '+s.lives+' levens'):('raak D'+s.number+' · '+s.lives+' levens');}
   else{lbl=bobTarget(s.pos);big=s.score;sub='Mik 3× op '+bobTarget(s.pos)+' · '+(s.pos+1)+' / 21';}
   return `<div class="tr-active"><div class="ta-who">Aan de beurt</div><div class="ta-name">${esc(trName(id))}</div>
     <div class="ta-lbl">${lbl}</div><div class="ta-big tnum">${big}</div><div class="ta-sub">${sub}</div></div>`;}
 function trDartpadHtml(){const g=TR.game,dr=g.curDarts||[];
   const slots=[0,1,2].map(i=>`<div class="dp-dart ${dr[i]?'filled':''} ${dr[i]&&dr[i].n===0?'miss':''}">${dr[i]?trDartLabel(dr[i]):'·'}</div>`).join('');
   let nums='';for(let k=1;k<=20;k++)nums+=`<button onclick="trDart(${k})">${k}</button>`;
-  const hint=g.type==='checkout'?'Gooi de finish uit op een dubbel':g.type==='bob27'?'Mik 3 pijlen op de dubbel':g.type==='doubles'?'Raak de dubbel':'Raak het doelwit';
+  const hint=g.type==='checkout'?'Gooi de finish uit op een dubbel':g.type==='bob27'?'Mik 3 pijlen op de dubbel':g.type==='doubles'?'Raak de dubbel':g.type==='shanghai'?'Scoor op het rondenummer (S+D+T = shanghai!)':g.type==='killer'?(g.st[trCur()]&&g.st[trCur()].killer?'Schiet de nummers van de tegenstanders af':'Raak de DUBBEL van jouw nummer om killer te worden'):'Raak het doelwit';
   return `<div class="dartpad"><div class="dp-visit">${slots}</div>
     <div class="dp-mult"><button class="${g.mult===1?'on':''}" onclick="trMult(1)">Enkel</button><button class="${g.mult===2?'on':''}" onclick="trMult(2)">Dubbel</button><button class="${g.mult===3?'on':''}" onclick="trMult(3)">Triple</button></div>
     <div class="dp-nums">${nums}</div>
@@ -1392,10 +1419,12 @@ function renderTvTraining(host,d){const wins=d.over&&d.winner;
   if(d.ev&&d.ev.seq>trCallerSeq){trCallerSeq=d.ev.seq;trCallTraining(d.ev);}
   if(d.over){if(!trOverSaid){trOverSaid=true;trCallTrainingOver(d);}}else trOverSaid=false;}
 function trCallTraining(ev){
-  if(ev.kind==='score'){if(ev.score===180){fanfare();speak('One hundred and eighty!',{pitch:1.2,rate:.95});}else if(ev.score>=100)speak(numWords(ev.score),{pitch:1.07});else if(ev.score>0)speak(numWords(ev.score),{pitch:1.02});}
-  else if(ev.kind==='checkout'){if(ev.hit)speak(pick(['Checkout!',ev.darts===1?'Bang on — one dart!':'Checkout! Lovely.','Yes! Got it.']),{pitch:1.1});}
-  else if(ev.kind==='clock'&&ev.done)speak(pick(['Game shot! '+ev.name+' is round.','And '+ev.name+' is all the way round!']),{pitch:1.08});
-  else if(ev.kind==='bob'&&ev.done)speak(pick(['Finished!','All done!']),{pitch:1.05});}
+  if(ev.kind==='score'){if(ev.score===180){fanfare();speak('One hundred and eighty!',{pitch:1.2,rate:.95});}else if(ev.score>0){sfx('hit');speak(numWords(ev.score),{pitch:ev.score>=100?1.07:1.02});}}
+  else if(ev.kind==='checkout'){if(ev.hit){sfx('checkout');speak(pick(['Checkout!',ev.darts===1?'Bang on — one dart!':'Checkout! Lovely.','Yes! Got it.']),{pitch:1.1});}}
+  else if(ev.kind==='shanghai'){if(ev.shanghai){fanfare();speak('Shanghai!',{pitch:1.2});}else if(ev.score>0)sfx('hit');}
+  else if(ev.kind==='killer'){if(ev.became){sfx('checkout');speak(pick([ev.name+' is a killer!','Killer! '+ev.name+'.']),{pitch:1.1});}else if(ev.hits>0)sfx('hit');}
+  else if(ev.kind==='clock'&&ev.done){sfx('checkout');speak(pick(['Game shot! '+ev.name+' is round.','And '+ev.name+' is all the way round!']),{pitch:1.08});}
+  else if(ev.kind==='bob'&&ev.done){sfx('checkout');speak(pick(['Finished!','All done!']),{pitch:1.05});}}
 function trCallTrainingOver(d){fanfare();speak(d.solo?pick(['Well done, '+d.winner+'!','Nice session, '+d.winner+'!']):pick(['Game shot and the match! '+d.winner+'!','And the winner is '+d.winner+'!']),{pitch:1.1});}
 
 /* ============ TV-OMROEPER + WALK-ON ============ */
@@ -1440,6 +1469,12 @@ function fanfare(){if(!callerActive()||callerMuted())return;const ctx=audioCtx()
   notes.forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;
     const s=t0+i*0.12;g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(0.22,s+0.03);g.gain.exponentialRampToValueAtTime(0.0001,s+0.3);
     o.connect(g);g.connect(ctx.destination);o.start(s);o.stop(s+0.32);});}
+function sfx(type){if(!callerActive()||callerMuted())return;const ctx=audioCtx();if(!ctx)return;const t=ctx.currentTime;
+  function tone(f,dur,wave,vol,delay){const o=ctx.createOscillator(),g=ctx.createGain();o.type=wave||'sine';o.frequency.value=f;const s=t+(delay||0);
+    g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(vol||0.18,s+0.01);g.gain.exponentialRampToValueAtTime(0.0001,s+dur);o.connect(g);g.connect(ctx.destination);o.start(s);o.stop(s+dur+0.02);}
+  if(type==='hit')tone(440,0.07,'square',0.1);
+  else if(type==='bust'){tone(170,0.2,'sawtooth',0.16);tone(120,0.24,'sawtooth',0.13,0.06);}
+  else if(type==='checkout'){tone(660,0.1,'triangle',0.18);tone(880,0.13,'triangle',0.18,0.09);tone(1175,0.18,'triangle',0.18,0.18);}}
 let _spkUnlocked=false;
 function unlockAudio(){if(_spkUnlocked)return;_spkUnlocked=true;try{audioCtx();}catch(e){}try{if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}}catch(e){}}
 document.addEventListener('click',unlockAudio,{once:true});document.addEventListener('keydown',unlockAudio,{once:true});
@@ -1449,13 +1484,14 @@ function pick(a){return a[(Math.random()*a.length)|0];}
 function tvHandleEvent(ev,d){
   if(ev.kind==='walkon'){tvWalkon(ev.names||[]);callerWalkon(ev.names||[]);}
   else if(ev.kind==='throw'){callerThrow(ev);}
-  else if(ev.kind==='leg'){speak(pick(['Game shot! '+ev.name+'.','And '+ev.name+' takes the leg.',ev.name+', that’s the leg.']),{pitch:1.08});}
+  else if(ev.kind==='leg'){sfx('checkout');speak(pick(['Game shot! '+ev.name+'.','And '+ev.name+' takes the leg.',ev.name+', that’s the leg.']),{pitch:1.08});}
   else if(ev.kind==='set'){fanfare();speak(pick(['Game shot! '+ev.name+' takes the set!','And that is the set for '+ev.name+'!']),{pitch:1.1});}
   else if(ev.kind==='match'){fanfare();speak(pick(['Game, shot, and the match! '+ev.name+'!','Game shot and the match! Well done '+ev.name+'!','And it’s all over — '+ev.name+' wins it!']),{pitch:1.12,rate:.97});}}
 function callerThrow(ev){
-  if(ev.bust){speak(pick(['Bust.','No score, bust.','Oh, and that’s a bust.']));return;}
+  if(ev.bust){sfx('bust');speak(pick(['Bust.','No score, bust.','Oh, and that’s a bust.']));return;}
   if(!ev.score){speak(pick(['No score.','Nothing there.']));return;}
   if(ev.score===180){fanfare();speak(pick(['One hundred and eighty!','One hundred and EIGHTY!','Maximum! One hundred and eighty!']),{pitch:1.2,rate:.95});return;}
+  sfx('hit');
   if(ev.score>=140){speak(numWords(ev.score),{pitch:1.12,rate:.99});return;}
   if(ev.score>=100){speak(numWords(ev.score),{pitch:1.06});return;}
   speak(numWords(ev.score),{pitch:1.02});}
