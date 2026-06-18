@@ -334,7 +334,8 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 @keyframes tvthrow{0%{opacity:0;transform:translate(-50%,22px) scale(.6)}18%{opacity:1;transform:translate(-50%,0) scale(1)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-34px) scale(1)}}
 .tv-vs{align-self:center;font-family:var(--disp);font-size:clamp(15px,2vw,28px);color:var(--muted);font-weight:800}
 .tv-checkout{position:relative;z-index:2;text-align:center;min-height:44px;margin-top:14px;font-size:clamp(14px,1.7vw,20px);color:var(--muted);display:flex;align-items:center;justify-content:center;gap:10px}
-.tv-checkout b{color:var(--green-bright);font-family:var(--disp);font-weight:800;font-size:clamp(22px,3vw,40px);letter-spacing:.5px}
+.tv-checkout b{color:var(--green-bright);font-family:var(--disp);font-weight:800;font-size:clamp(22px,3vw,40px);letter-spacing:.5px;animation:coGlow 2s ease-in-out infinite}
+@keyframes coGlow{0%,100%{text-shadow:0 0 0 rgba(40,196,110,0)}50%{text-shadow:0 0 22px rgba(40,196,110,.55)}}
 .tv-fx{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .tv-fx .big180{font-family:var(--disp);font-size:clamp(70px,17vw,230px);font-weight:800;letter-spacing:-6px;color:var(--gold);text-shadow:0 0 60px rgba(240,180,41,.5);opacity:0}
 .tv-fx .big180.go{animation:big180 1.85s cubic-bezier(.2,.8,.3,1)}
@@ -897,14 +898,26 @@ function monthWinners(){const by={};C.matches.forEach(m=>{(by[m.month]=by[m.mont
   const out=[];Object.keys(by).sort().reverse().forEach(month=>{const rows=compStand(by[month]);const top=rows.find(r=>r.played>0);if(top)out.push({month,id:top.id,pts:top.pts,completed:month!==curMonth()});});return out;}
 const ACH=[{k:'first_match',t:'Debuut',d:'Eerste partij',ic:'target'},{k:'first_win',t:'Eerste zege',d:'Win een partij',ic:'trophy'},
   {k:'first_180',t:'Maximum!',d:'Gooi een 180',ic:'bolt'},{k:'wins_10',t:'Routine',d:'10 winsten',ic:'trophy'},
-  {k:'wins_25',t:'Veteraan',d:'25 winsten',ic:'trophy'},{k:'streak_3',t:'Op dreef',d:'3 op rij',ic:'bolt'},
-  {k:'streak_5',t:'Onstopbaar',d:'5 op rij',ic:'bolt'},{k:'finish_100',t:'Ton+ finish',d:'100+ uitgooi',ic:'target'},
-  {k:'bigfish',t:'Big Fish',d:'170 finish',ic:'target'},{k:'month_champ',t:'Maandkampioen',d:'Win een maand',ic:'trophy'}];
+  {k:'wins_25',t:'Veteraan',d:'25 winsten',ic:'trophy'},{k:'wins_50',t:'Legende',d:'50 winsten',ic:'trophy'},
+  {k:'streak_3',t:'Op dreef',d:'3 op rij',ic:'bolt'},{k:'streak_5',t:'Onstopbaar',d:'5 op rij',ic:'bolt'},
+  {k:'played_50',t:'Vaste klant',d:'50 partijen',ic:'target'},
+  {k:'t180_5',t:'Scoremachine',d:'5× 180',ic:'bolt'},{k:'t180_25',t:'Maximum-master',d:'25× 180',ic:'bolt'},
+  {k:'finish_100',t:'Ton+ finish',d:'100+ uitgooi',ic:'target'},{k:'finish_120',t:'Ton-twintig',d:'120+ finish',ic:'target'},
+  {k:'bigfish',t:'Big Fish',d:'170 finish',ic:'target'},
+  {k:'avg_50',t:'Solide',d:'50+ gemiddelde',ic:'trophy'},{k:'avg_60',t:'Scherpschutter',d:'60+ gemiddelde',ic:'trophy'},
+  {k:'whitewash',t:'Whitewash',d:'Win zonder leg tegen',ic:'trophy'},
+  {k:'month_champ',t:'Maandkampioen',d:'Win een maand',ic:'trophy'},{k:'months_3',t:'Heerser',d:'Win 3 maanden',ic:'trophy'}];
 function achIcon(ic){if(ic==='trophy')return trophy();if(ic==='bolt')return `<svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`;
   return `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>`;}
-function evalAchievements(){const all=compStand(C.matches),st=compStreaks(),champs=new Set(monthWinners().filter(w=>w.completed).map(w=>w.id));const newly=[];
-  C.players.forEach(p=>{const r=all.find(x=>x.id===p.id);if(!r)return;const best=st[p.id]||0;
-    const cond={first_match:r.played>=1,first_win:r.won>=1,first_180:r.t180>=1,wins_10:r.won>=10,wins_25:r.won>=25,streak_3:best>=3,streak_5:best>=5,finish_100:r.hi>=100,bigfish:r.hi>=170,month_champ:champs.has(p.id)};
+function evalAchievements(){const all=compStand(C.matches),st=compStreaks();
+  const champCount={};monthWinners().filter(w=>w.completed).forEach(w=>{champCount[w.id]=(champCount[w.id]||0)+1;});
+  const wwSet=new Set();C.matches.forEach(m=>{if(m.winner&&m.legsTarget>=2){const loserLegs=m.winner===m.p1?m.legs2:m.legs1;if(loserLegs===0)wwSet.add(m.winner);}});
+  const newly=[];
+  C.players.forEach(p=>{const r=all.find(x=>x.id===p.id);if(!r)return;const best=st[p.id]||0;const avg=r.darts?(r.scored/r.darts*3):0;
+    const cond={first_match:r.played>=1,first_win:r.won>=1,first_180:r.t180>=1,wins_10:r.won>=10,wins_25:r.won>=25,wins_50:r.won>=50,
+      streak_3:best>=3,streak_5:best>=5,played_50:r.played>=50,t180_5:r.t180>=5,t180_25:r.t180>=25,
+      finish_100:r.hi>=100,finish_120:r.hi>=120,bigfish:r.hi>=170,avg_50:r.played>=5&&avg>=50,avg_60:r.played>=5&&avg>=60,
+      whitewash:wwSet.has(p.id),month_champ:!!champCount[p.id],months_3:(champCount[p.id]||0)>=3};
     C.achievements[p.id]=C.achievements[p.id]||{};ACH.forEach(a=>{if(cond[a.k]&&!C.achievements[p.id][a.k]){C.achievements[p.id][a.k]=Date.now();newly.push({name:p.name,t:a.t});}});});return newly;}
 function renderCompHall(){const el=document.getElementById('compHall');const winners=monthWinners();
   let html=`<div class="card"><div class="card-h">Maandkampioenen</div><div class="saber"></div>`;
@@ -1140,8 +1153,10 @@ const TR_GAMES={
   checkout:{name:'Uitgooi-training',desc:'Gooi een willekeurige finish uit. Houdt je slagingspercentage en beste finish bij.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>'},
   clock:{name:'Around the Clock',desc:'Raak 1 t/m 20 en de bull in volgorde. Wie het snelst rond is.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'},
   countup:{name:'Count-Up',desc:'Scoor zoveel mogelijk in een vast aantal beurten. Hoogste totaal wint.',icon:'<svg viewBox="0 0 24 24"><path d="M5 21V10M12 21V4M19 21v-7"/><path d="M3 21h18"/></svg>'},
-  bob27:{name:"Bob's 27",desc:'Dubbel-training: start op 27 punten, gooi elke dubbel D1 t/m D25.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>'}
+  bob27:{name:"Bob's 27",desc:'Dubbel-training: start op 27 punten, gooi elke dubbel D1 t/m D25.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>'},
+  doubles:{name:'Dubbels',desc:'Raak D1 t/m D20 en de bull, in volgorde. Pure dubbel-training tegen de klok.',icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>'}
 };
+function trDblName(pos){return pos>=20?'BULL':'D'+(pos+1);}
 function lenVal(type){const L=TR.len||'normaal';
   if(type==='checkout')return L==='kort'?5:L==='lang'?20:10;
   if(type==='countup')return L==='kort'?5:L==='lang'?12:8;
@@ -1160,7 +1175,7 @@ function trSetLen(l){TR.len=l;saveTR();renderTraining();}
 /* --- spel starten --- */
 function trInit(type){
   if(type==='checkout')return{attempts:0,success:0,dartsSum:0,best:0,target:0,done:false};
-  if(type==='clock')return{pos:0,darts:0,done:false};
+  if(type==='clock'||type==='doubles')return{pos:0,darts:0,done:false};
   if(type==='countup')return{scores:[],total:0,done:false};
   if(type==='bob27')return{pos:0,score:27,out:false,done:false};
   return{};}
@@ -1189,7 +1204,7 @@ function trCheckout(d){const g=TR.game;if(!g||g.type!=='checkout'||g.over)return
   s.attempts++;if(d>0){s.success++;s.dartsSum+=d;if(s.target>s.best)s.best=s.target;}
   if(s.attempts>=g.attempts)s.done=true;else s.target=randFinish();
   trEv({kind:'checkout',hit:d>0,darts:d,target:tg,name:nm});finishTurn();}
-function trClock(h){const g=TR.game;if(!g||g.type!=='clock'||g.over)return;trSnap();const id=trCur(),s=g.st[id],nm=trName(id);
+function trClock(h){const g=TR.game;if(!g||(g.type!=='clock'&&g.type!=='doubles')||g.over)return;trSnap();const id=trCur(),s=g.st[id],nm=trName(id);
   s.pos=Math.min(21,s.pos+h);s.darts+=3;if(s.pos>=21)s.done=true;
   trEv({kind:'clock',done:s.done,name:nm});finishTurn();}
 function trBob(h){const g=TR.game;if(!g||g.type!=='bob27'||g.over)return;trSnap();const id=trCur(),s=g.st[id],nm=trName(id);
@@ -1214,11 +1229,12 @@ function trAbort(){if(!confirm('Training stoppen? De voortgang gaat verloren.'))
 function trVal(id){const g=TR.game,s=g.st[id];
   if(g.type==='checkout'){const pct=s.attempts?Math.round(100*s.success/s.attempts):0;return{v:pct+'%',sub:s.success+'/'+s.attempts+(s.success?(' · '+(s.dartsSum/s.success).toFixed(1)+' pijl'):'')};}
   if(g.type==='clock')return{v:s.done?'Klaar':trClockName(Math.min(s.pos,20)),sub:s.done?(s.darts+' pijlen'):('doel '+Math.min(s.pos+1,21)+'/21')};
+  if(g.type==='doubles')return{v:s.done?'Klaar':trDblName(Math.min(s.pos,20)),sub:s.done?(s.darts+' pijlen'):('doel '+Math.min(s.pos+1,21)+'/21')};
   if(g.type==='countup')return{v:String(s.total),sub:s.scores.length?('gem '+(s.total/s.scores.length).toFixed(1)+'/beurt'):'—'};
   return{v:s.out?'Uit':String(s.score),sub:'doel '+Math.min(s.pos+1,21)+'/21'};}
 function trRank(){const g=TR.game,arr=g.players.map(id=>({id,s:g.st[id]}));
   if(g.type==='checkout')arr.sort((a,b)=>b.s.success-a.s.success||(a.s.dartsSum/(a.s.success||1))-(b.s.dartsSum/(b.s.success||1)));
-  else if(g.type==='clock')arr.sort((a,b)=>(b.s.done-a.s.done)||(a.s.done?a.s.darts-b.s.darts:b.s.pos-a.s.pos));
+  else if(g.type==='clock'||g.type==='doubles')arr.sort((a,b)=>(b.s.done-a.s.done)||(a.s.done?a.s.darts-b.s.darts:b.s.pos-a.s.pos));
   else if(g.type==='countup')arr.sort((a,b)=>b.s.total-a.s.total);
   else arr.sort((a,b)=>(a.s.out-b.s.out)||b.s.score-a.s.score||b.s.pos-a.s.pos);
   return arr;}
@@ -1230,18 +1246,20 @@ function trStandHtml(isResult){const arr=trRank();const cur=TR.game.over?null:tr
 function trProgressLabel(){const g=TR.game;
   if(g.type==='checkout')return 'Best of '+g.attempts+' pogingen';
   if(g.type==='clock')return '1 t/m 20 + bull, in volgorde';
+  if(g.type==='doubles')return 'D1 t/m D20 + bull, in volgorde';
   if(g.type==='countup')return g.rounds+' beurten · hoogste totaal wint';
   return 'Start 27 · elke dubbel D1–D25';}
 function trActiveHtml(){const g=TR.game,id=trCur(),s=g.st[id];let lbl,big,sub;
   if(g.type==='checkout'){lbl='Uitgooien';big=s.target;sub='Poging '+(s.attempts+1)+' / '+g.attempts;}
   else if(g.type==='clock'){lbl='Mik op';big=trClockName(s.pos);sub='Doel '+Math.min(s.pos+1,21)+' / 21';}
+  else if(g.type==='doubles'){lbl='Mik op';big=trDblName(s.pos);sub='Doel '+Math.min(s.pos+1,21)+' / 21';}
   else if(g.type==='countup'){lbl='Totaal';big=s.total;sub='Beurt '+(s.scores.length+1)+' / '+g.rounds;}
   else{lbl=bobTarget(s.pos);big=s.score;sub='Doel '+(s.pos+1)+' / 21 · punten';}
   return `<div class="tr-active"><div class="ta-who">Aan de beurt</div><div class="ta-name">${esc(trName(id))}</div>
     <div class="ta-lbl">${lbl}</div><div class="ta-big tnum">${big}</div><div class="ta-sub">${sub}</div></div>`;}
 function trInputHtml(){const g=TR.game;
   if(g.type==='checkout')return `<div class="tr-hits five"><button class="miss" onclick="trCheckout(0)">Mis</button><button onclick="trCheckout(1)">1</button><button onclick="trCheckout(2)">2</button><button onclick="trCheckout(3)">3</button><button onclick="trUndo()" title="Ongedaan maken">↶</button></div><div class="th-s" style="text-align:center;margin-bottom:4px">In hoeveel pijlen uitgegooid? · Mis = niet gehaald</div>`;
-  if(g.type==='clock'||g.type==='bob27'){const fn=g.type==='clock'?'trClock':'trBob';
+  if(g.type==='clock'||g.type==='bob27'||g.type==='doubles'){const fn=g.type==='bob27'?'trBob':'trClock';
     return `<div class="tr-hits five"><button class="miss" onclick="${fn}(0)">0</button><button onclick="${fn}(1)">1</button><button onclick="${fn}(2)">2</button><button onclick="${fn}(3)">3</button><button onclick="trUndo()" title="Ongedaan maken">↶</button></div><div class="th-s" style="text-align:center;margin-bottom:4px">Hoeveel rake worpen deze beurt? (van 3)</div>`;}
   return `<div class="disp tnum ${g.input===''?'empty-in':''}" id="trDisp">${g.input===''?'0':g.input}</div>
     <div class="quick">${[26,41,45,60,81,85,100,140].map(q=>`<button class="tnum" onclick="trCountKey('q',${q})">${q}</button>`).join('')}</div>
@@ -1294,11 +1312,11 @@ function renderTvTraining(host,d){const wins=d.over&&d.winner;
   if(d.ev&&d.ev.seq>trCallerSeq){trCallerSeq=d.ev.seq;trCallTraining(d.ev);}
   if(d.over){if(!trOverSaid){trOverSaid=true;trCallTrainingOver(d);}}else trOverSaid=false;}
 function trCallTraining(ev){
-  if(ev.kind==='score'){if(ev.score===180)speak('one hundred and eighty!',{pitch:1.18,rate:.97});else if(ev.score>0)speak(numWords(ev.score),{pitch:ev.score>=100?1.08:1.02});}
-  else if(ev.kind==='checkout'){if(ev.hit)speak(ev.darts===1?'Checkout! Bang on.':'Checkout!',{pitch:1.1});}
-  else if(ev.kind==='clock'&&ev.done)speak('Game shot! '+ev.name+' is round.',{pitch:1.08});
-  else if(ev.kind==='bob'&&ev.done)speak('Finished!',{pitch:1.05});}
-function trCallTrainingOver(d){speak(d.solo?('Well done, '+d.winner+'!'):('Game shot and the match! '+d.winner+'!'),{pitch:1.1});}
+  if(ev.kind==='score'){if(ev.score===180){fanfare();speak('One hundred and eighty!',{pitch:1.2,rate:.95});}else if(ev.score>=100)speak(numWords(ev.score),{pitch:1.07});else if(ev.score>0)speak(numWords(ev.score),{pitch:1.02});}
+  else if(ev.kind==='checkout'){if(ev.hit)speak(pick(['Checkout!',ev.darts===1?'Bang on — one dart!':'Checkout! Lovely.','Yes! Got it.']),{pitch:1.1});}
+  else if(ev.kind==='clock'&&ev.done)speak(pick(['Game shot! '+ev.name+' is round.','And '+ev.name+' is all the way round!']),{pitch:1.08});
+  else if(ev.kind==='bob'&&ev.done)speak(pick(['Finished!','All done!']),{pitch:1.05});}
+function trCallTrainingOver(d){fanfare();speak(d.solo?pick(['Well done, '+d.winner+'!','Nice session, '+d.winner+'!']):pick(['Game shot and the match! '+d.winner+'!','And the winner is '+d.winner+'!']),{pitch:1.1});}
 
 /* ============ TV-OMROEPER + WALK-ON ============ */
 function callerMuted(){try{return localStorage.getItem('dartCallerMute')==='1';}catch(e){return false;}}
@@ -1335,15 +1353,21 @@ function unlockAudio(){if(_spkUnlocked)return;_spkUnlocked=true;try{audioCtx();}
 document.addEventListener('click',unlockAudio,{once:true});document.addEventListener('keydown',unlockAudio,{once:true});
 
 /* events -> beeld + stem */
+function pick(a){return a[(Math.random()*a.length)|0];}
 function tvHandleEvent(ev,d){
   if(ev.kind==='walkon'){tvWalkon(ev.names||[]);callerWalkon(ev.names||[]);}
   else if(ev.kind==='throw'){callerThrow(ev);}
-  else if(ev.kind==='leg'){speak('Game shot! '+ev.name+'.',{pitch:1.08});}
-  else if(ev.kind==='match'){speak('Game, shot, and the match! '+ev.name+'!',{pitch:1.12,rate:.98});}}
-function callerThrow(ev){if(ev.bust){speak('Bust!');return;}if(!ev.score){speak('No score.');return;}
-  if(ev.score===180){speak('One hundred and eighty!',{pitch:1.18,rate:.97});return;}
-  speak(numWords(ev.score),{pitch:1.03});}
-function callerWalkon(names){const a=names[0]||'',b=names[1]||'';speak('Welcome to the oche. '+a+'. versus. '+b+'. Game on!',{pitch:1.05});}
+  else if(ev.kind==='leg'){speak(pick(['Game shot! '+ev.name+'.','And '+ev.name+' takes the leg.',ev.name+', that’s the leg.']),{pitch:1.08});}
+  else if(ev.kind==='match'){fanfare();speak(pick(['Game, shot, and the match! '+ev.name+'!','Game shot and the match! Well done '+ev.name+'!','And it’s all over — '+ev.name+' wins it!']),{pitch:1.12,rate:.97});}}
+function callerThrow(ev){
+  if(ev.bust){speak(pick(['Bust.','No score, bust.','Oh, and that’s a bust.']));return;}
+  if(!ev.score){speak(pick(['No score.','Nothing there.']));return;}
+  if(ev.score===180){fanfare();speak(pick(['One hundred and eighty!','One hundred and EIGHTY!','Maximum! One hundred and eighty!']),{pitch:1.2,rate:.95});return;}
+  if(ev.score>=140){speak(numWords(ev.score),{pitch:1.12,rate:.99});return;}
+  if(ev.score>=100){speak(numWords(ev.score),{pitch:1.06});return;}
+  speak(numWords(ev.score),{pitch:1.02});}
+function callerWalkon(names){const a=names[0]||'',b=names[1]||'';
+  speak(pick(["Welcome. to the oche!","Ladies and gentlemen — let’s. play. darts!","It’s time. for. darts!"])+' '+a+'. versus. '+b+'. Game on!',{pitch:1.05,rate:.98});}
 function tvWalkon(names){const fx=document.getElementById('tvFx');if(!fx)return;
   fx.innerHTML=`<div class="walkon"><div class="wo-top">Walk-on</div><div class="wo-vs"><span>${esc(names[0]||'')}</span><b>VS</b><span>${esc(names[1]||'')}</span></div><div class="wo-go">Game on</div></div>`;
   const e=fx.querySelector('.walkon');if(e){void e.offsetWidth;e.classList.add('go');}fanfare();
