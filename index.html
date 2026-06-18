@@ -950,13 +950,14 @@ function anyName(id){let p=C.players.find(x=>x.id===id);if(p)return p.name;p=(S&
 function startCounter(p1,p2,start,legsTarget,ctx){CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,legsTarget,starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
   CO.ev={seq:1,kind:'walkon',names:CO.names,start,legsTarget};
   IAMCTRL=true;document.getElementById('overlay').classList.remove('hidden');renderCounter(true);}
-function coEvent(kind,player,score,bust){if(!CO)return;CO.evSeq=(CO.evSeq||0)+1;CO.ev={seq:CO.evSeq,kind,player,score:score||0,bust:!!bust,name:CO.names[player],opp:CO.names[1-player]};}
+function coEvent(kind,player,score,bust){if(!CO)return;CO.evSeq=(CO.evSeq||0)+1;CO.ev={seq:CO.evSeq,kind,player,score:score||0,bust:!!bust,name:CO.names[player],opp:CO.names[1-player]};
+  if(localCaller&&!TV)tvHandleEvent(CO.ev,{names:CO.names});}
 function closeCounter(){CO=null;IAMCTRL=false;fbClearLive();document.getElementById('overlay').classList.add('hidden');render();}
 function renderCounter(full){if(!CO)return;const ov=document.getElementById('overlay');
   const co0=checkoutHint(CO.rem[0]),co1=checkoutHint(CO.rem[1]);const curCo=CO.cur===0?co0:co1;
   const empty=CO.input==='',disp=empty?'0':CO.input,legNum=CO.legsWon[0]+CO.legsWon[1]+1;
   ov.innerHTML=`<div class="overlay-wrap"><div class="ovh"><div><div class="ot tnum">${CO.start}</div><div class="ol">Leg ${legNum} · first to ${CO.legsTarget}</div></div>
-      <button class="oc" onclick="abortCounter()">✕</button></div>
+      <div style="display:flex;gap:8px">${localCallerBtnHtml()}<button class="oc" onclick="abortCounter()">✕</button></div></div>
     <div class="players2">${plc(0)}${plc(1)}</div>
     <div class="cohint">${curCo?('Uitgooien: <b>'+curCo+'</b>'):'&nbsp;'}</div>
     <div class="disp tnum ${empty?'empty-in':''}" id="disp">${disp}</div>
@@ -1192,11 +1193,11 @@ function trStart(type){
 function trCur(){const g=TR.game;return g.players[g.idx];}
 function trAllDone(){return TR.game.players.every(id=>TR.game.st[id].done);}
 function trNext(){const g=TR.game,n=g.players.length;for(let k=1;k<=n;k++){const j=(g.idx+k)%n;if(!g.st[g.players[j]].done){g.idx=j;return;}}}
-function trEv(o){const g=TR.game;if(!g)return;g.evSeq=(g.evSeq||0)+1;g.ev=Object.assign({seq:g.evSeq},o);}
+function trEv(o){const g=TR.game;if(!g)return;g.evSeq=(g.evSeq||0)+1;g.ev=Object.assign({seq:g.evSeq},o);if(localCaller&&!TV)trCallTraining(g.ev);}
 function trSnap(){const g=TR.game;g.hist=g.hist||[];g.hist.push(JSON.stringify({st:g.st,idx:g.idx,over:g.over}));if(g.hist.length>80)g.hist.shift();}
 function trUndo(){const g=TR.game;if(!g||!g.hist||!g.hist.length)return;const p=JSON.parse(g.hist.pop());g.st=p.st;g.idx=p.idx;g.over=p.over;TR.view=g.over?'result':'play';IAMCTRL=!g.over;saveTR();renderTraining();trPushLive();}
 function finishTurn(){const g=TR.game;
-  if(trAllDone()){g.over=true;TR.view='result';saveTR();renderTraining();trPushLive();setTimeout(()=>{if(TR.game&&TR.game.over)fbClearLive();},9000);return;}
+  if(trAllDone()){g.over=true;TR.view='result';if(localCaller&&!TV)trCallTrainingOver({solo:g.players.length<=1,winner:trName(trRank()[0].id),game:TR_GAMES[g.type].name});saveTR();renderTraining();trPushLive();setTimeout(()=>{if(TR.game&&TR.game.over)fbClearLive();},9000);return;}
   trNext();saveTR();renderTraining();trPushLive();}
 
 /* --- per spel: invoer --- */
@@ -1268,7 +1269,7 @@ function trInputHtml(){const g=TR.game;
       <button class="enter" onclick="trCountSubmit()">OK</button>
       <button class="undo" onclick="trUndo()">Laatste beurt ongedaan maken</button></div>`;}
 function trPlayHtml(){const g=TR.game,meta=TR_GAMES[g.type];
-  return `<div class="tr-play"><div class="tr-head"><div><div class="th-t">${meta.name}</div><div class="th-s">${trProgressLabel()}</div></div><button class="oc" onclick="trAbort()">✕</button></div>
+  return `<div class="tr-play"><div class="tr-head"><div><div class="th-t">${meta.name}</div><div class="th-s">${trProgressLabel()}</div></div><div style="display:flex;gap:8px">${localCallerBtnHtml()}<button class="oc" onclick="trAbort()">✕</button></div></div>
     ${trActiveHtml()}${trInputHtml()}${trStandHtml(false)}</div>`;}
 function trResultHtml(){const g=TR.game,meta=TR_GAMES[g.type],win=trRank()[0],solo=g.players.length===1;
   const head=solo?`<div class="ta-who">Klaar</div><div class="ta-name">${esc(trName(win.id))}</div>`
@@ -1326,6 +1327,18 @@ function muteBtnHtml(){return `<button class="tv-mute ${callerMuted()?'muted':''
   <svg class="on" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>
   <svg class="off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6M21 9l-4 6"/></svg></button>`;}
 
+/* omroeper ook op het scoor-toestel (niet enkel TV) */
+let localCaller=(function(){try{return localStorage.getItem('dartCallerLocal')==='1';}catch(e){return false;}})();
+function callerActive(){return TV||localCaller;}
+function localCallerBtnHtml(){const on=localCaller&&!callerMuted();
+  return `<button class="oc" onclick="toggleLocalCaller(event)" title="Omroeper aan/uit" style="${on?'color:var(--green-bright);border-color:var(--green)':''}">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/>${on?'<path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>':'<path d="m17 10 4 4M21 10l-4 4"/>'}</svg></button>`;}
+function toggleLocalCaller(e){if(e)e.stopPropagation();localCaller=!localCaller;try{localStorage.setItem('dartCallerLocal',localCaller?'1':'0');}catch(e2){}
+  if(localCaller){if(callerMuted())try{localStorage.setItem('dartCallerMute','0');}catch(e3){}unlockAudio();setTimeout(()=>speak('Caller on. Game on!',{pitch:1.06}),120);}
+  else{try{if('speechSynthesis'in window)speechSynthesis.cancel();}catch(e4){}}
+  if(CO)renderCounter(false);if(MODE==='training'&&TR&&TR.game)renderTraining();
+  toast(localCaller?'Omroeper aan op dit toestel 🔊':'Omroeper uit');}
+
 /* spraak */
 let _voices=[];
 function loadVoices(){try{_voices=(window.speechSynthesis&&speechSynthesis.getVoices())||[];}catch(e){_voices=[];}}
@@ -1334,7 +1347,7 @@ function pickVoice(){if(!_voices.length)loadVoices();
   const pref=['Google UK English Male','Daniel','Arthur (Enhanced)','Arthur','Google UK English'];
   for(const p of pref){const v=_voices.find(v=>v.name===p);if(v)return v;}
   return _voices.find(v=>v.lang&&v.lang.toLowerCase().indexOf('en-gb')===0)||_voices.find(v=>v.lang&&v.lang.toLowerCase().indexOf('en')===0)||_voices[0]||null;}
-function speak(text,opts){opts=opts||{};try{if(!TV||callerMuted()||!('speechSynthesis'in window)||!text)return;
+function speak(text,opts){opts=opts||{};try{if(!callerActive()||callerMuted()||!('speechSynthesis'in window)||!text)return;
   const u=new SpeechSynthesisUtterance(text);const v=pickVoice();if(v)u.voice=v;u.lang='en-GB';
   u.rate=opts.rate||1;u.pitch=opts.pitch||1;u.volume=1;speechSynthesis.speak(u);}catch(e){}}
 const _ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
@@ -1344,7 +1357,7 @@ function numWords(n){n=Math.round(n);if(n<0)n=0;if(n<20)return _ONES[n];if(n<100
 /* audio (fanfare + unlock) */
 let _actx=null;
 function audioCtx(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!_actx)_actx=new AC();if(_actx.state==='suspended')_actx.resume();return _actx;}catch(e){return null;}}
-function fanfare(){if(!TV||callerMuted())return;const ctx=audioCtx();if(!ctx)return;const t0=ctx.currentTime,notes=[523.25,659.25,783.99,1046.5];
+function fanfare(){if(!callerActive()||callerMuted())return;const ctx=audioCtx();if(!ctx)return;const t0=ctx.currentTime,notes=[523.25,659.25,783.99,1046.5];
   notes.forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;
     const s=t0+i*0.12;g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(0.22,s+0.03);g.gain.exponentialRampToValueAtTime(0.0001,s+0.3);
     o.connect(g);g.connect(ctx.destination);o.start(s);o.stop(s+0.32);});}
