@@ -686,37 +686,44 @@ input,select{border-radius:13px;padding:13px 14px}
 .lr-r{text-align:right;flex:0 0 auto}
 .lr-score{font-family:var(--disp);font-weight:800;font-size:18px}
 .win-pill{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.4px;color:var(--win-2);background:var(--win-soft);border:1px solid rgba(34,197,94,.3);padding:2px 7px;border-radius:6px;margin-top:3px}
-/* ===== DART-POPPETJE (avatar character) ===== */
+/* ===== DART-POPPETJE (zijaanzicht darter) ===== */
 .char{display:inline-block;position:relative;line-height:0}
 .char-svg{width:100%;height:100%;overflow:visible;display:block}
+.char.flip{transform:scaleX(-1)}
+.char .ch-shadow{fill:rgba(0,0,0,.3)}
 .char .torso{fill:var(--jersey)}
-.char .head{fill:var(--skin)}
+.char .head,.char .nose{fill:var(--skin)}
+.char .neck{stroke:var(--skin);stroke-width:6;stroke-linecap:round;fill:none}
 .char .hair{fill:var(--hair)}
-.char .leg{stroke:var(--pants);stroke-width:7;stroke-linecap:round;fill:none}
-.char .foot{stroke:#14141d;stroke-width:4.5;stroke-linecap:round}
-.char .arm-back,.char .arm-throw{stroke:var(--skin);stroke-width:6;stroke-linecap:round;fill:none}
-.char .hand{fill:var(--skin)}
+.char .leg-f{stroke:var(--pants);stroke-width:10;stroke-linecap:round;fill:none}
+.char .leg-b{stroke:var(--pants);stroke-width:9;stroke-linecap:round;fill:none;opacity:.68}
+.char .foot{stroke:#14141d;stroke-width:5.2;stroke-linecap:round}
+.char .arm-u,.char .forearm{stroke:var(--skin);stroke-width:6.6;stroke-linecap:round;fill:none}
+.char .arm-b{stroke:var(--skin);stroke-width:6.4;stroke-linecap:round;fill:none;opacity:.8}
+.char .hand,.char .hand-b{fill:var(--skin)}
+.char .hand-b{opacity:.8}
 .char .dart{stroke:#d7dbe4;stroke-width:2.6;stroke-linecap:round}
-.char .dart-tip{fill:var(--pri-2)}
-.char .ch-arm{transform-box:fill-box;transform-origin:3% 97%}
-.char .ch-arm2{transform-box:fill-box;transform-origin:92% 6%}
-.char .ch-shadow{fill:rgba(0,0,0,.28)}
-/* idle */
-.char.idle .ch-body{animation:chBob 3.2s ease-in-out infinite}
-.char.idle .ch-arm{transform:rotate(7deg)}
-@keyframes chBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-/* gooien (aan de beurt) */
-.char.throw .ch-arm{animation:chThrow 1.7s cubic-bezier(.5,0,.5,1) infinite}
-.char.throw .ch-body{animation:chLean 1.7s ease-in-out infinite}
-@keyframes chThrow{0%{transform:rotate(10deg)}32%{transform:rotate(46deg)}52%{transform:rotate(-44deg)}66%{transform:rotate(-26deg)}100%{transform:rotate(10deg)}}
-@keyframes chLean{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-1px) rotate(-2deg)}60%{transform:translateY(0) rotate(1deg)}}
-/* juichen (180 / winst) */
-.char.celebrate .ch-body{animation:chJump .56s cubic-bezier(.3,1.5,.5,1) infinite}
-.char.celebrate .ch-arm{animation:chCheerR .56s ease-in-out infinite}
-.char.celebrate .ch-arm2{animation:chCheerL .56s ease-in-out infinite}
+.char .dart-flight{stroke:var(--pri-2);stroke-width:3.4;stroke-linecap:round}
+.char .dart-nib{fill:#b9bdc8}
+.char .ch-fore{transform-box:view-box;transform-origin:80px 46px}
+.char .ch-arm2{transform-box:view-box;transform-origin:58px 55px}
+/* idle: rustig ademen + licht mikken */
+.char.idle .ch-body{animation:chBob 3.4s ease-in-out infinite}
+.char.idle .ch-fore{animation:chAim 3.4s ease-in-out infinite}
+@keyframes chBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes chAim{0%,100%{transform:rotate(0)}50%{transform:rotate(-6deg)}}
+/* gooien (aan de beurt): mik -> terug -> naar voren snappen */
+.char.throw .ch-fore{animation:chThrow 1.6s cubic-bezier(.4,0,.5,1) infinite}
+.char.throw .ch-body{animation:chLean 1.6s ease-in-out infinite}
+@keyframes chThrow{0%{transform:rotate(0)}16%{transform:rotate(-22deg)}40%{transform:rotate(82deg)}54%{transform:rotate(70deg)}66%{transform:rotate(74deg)}100%{transform:rotate(0)}}
+@keyframes chLean{0%,100%{transform:translate(0,0)}40%{transform:translate(2px,-1px)}}
+/* juichen (180 / winst): springen + armen omhoog */
+.char.celebrate .ch-body{animation:chJump .52s cubic-bezier(.3,1.5,.5,1) infinite}
+.char.celebrate .ch-fore{animation:chCheerF .52s ease-in-out infinite}
+.char.celebrate .ch-arm2{animation:chCheerB .52s ease-in-out infinite}
 @keyframes chJump{0%,100%{transform:translateY(0)}45%{transform:translateY(-12px)}}
-@keyframes chCheerR{0%,100%{transform:rotate(-118deg)}50%{transform:rotate(-150deg)}}
-@keyframes chCheerL{0%,100%{transform:rotate(118deg)}50%{transform:rotate(150deg)}}
+@keyframes chCheerF{0%,100%{transform:rotate(-30deg)}50%{transform:rotate(-46deg)}}
+@keyframes chCheerB{0%,100%{transform:rotate(-120deg)}50%{transform:rotate(-140deg)}}
 /* avatar-maker */
 .av-preview{display:flex;justify-content:center;margin:6px 0 14px}
 .av-preview .char{width:120px;height:156px}
@@ -898,15 +905,19 @@ function defaultAv(name){let h=0;const n=avKey(name);for(let i=0;i<n.length;i++)
   return {skin:SKINS[h%SKINS.length],hair:HAIRS[(h>>>3)%HAIRS.length],jersey:JERSEYS[(h>>>7)%JERSEYS.length],pants:PANTS[(h>>>11)%PANTS.length]};}
 function getAv(name){const d=defaultAv(name),c=AVATARS[avKey(name)];return c?{skin:c.skin||d.skin,hair:c.hair||d.hair,jersey:c.jersey||d.jersey,pants:c.pants||d.pants}:d;}
 function setAv(name,av){AVATARS[avKey(name)]=av;saveAvatars();}
-function charSvg(av,state,size,id){av=av||defaultAv('?');const w=size||90,h=Math.round(w*1.34);state=state||'idle';
-  return `<span class="char ${state}"${id?` id="${id}"`:''} style="--skin:${av.skin};--hair:${av.hair};--jersey:${av.jersey};--pants:${av.pants};width:${w}px;height:${h}px">`+
-    `<svg viewBox="0 0 80 116" class="char-svg"><ellipse class="ch-shadow" cx="40" cy="111" rx="19" ry="3.6"/><g class="ch-body">`+
-    `<path class="leg" d="M35 70 L31 102"/><path class="leg" d="M45 70 L49 102"/>`+
-    `<path class="foot" d="M27 102 H35"/><path class="foot" d="M45 102 H53"/>`+
-    `<g class="ch-arm2"><path class="arm-back" d="M32 46 Q26 56 25 64"/><circle class="hand" cx="25" cy="64" r="3"/></g>`+
-    `<path class="torso" d="M29 42 Q40 37 51 42 L49 70 Q40 73 31 70 Z"/>`+
-    `<circle class="head" cx="40" cy="26" r="11.5"/><path class="hair" d="M28 25 Q29 12 40 12 Q51 12 52 25 Q47 19 40 19 Q33 19 28 25 Z"/>`+
-    `<g class="ch-arm"><path class="arm-throw" d="M48 44 Q54 32 63 23"/><circle class="hand" cx="63" cy="23" r="3.2"/><path class="dart" d="M63 23 L72 16"/><circle class="dart-tip" cx="72.6" cy="15.4" r="1.9"/></g>`+
+function charSvg(av,state,size,id,flip){av=av||defaultAv('?');const w=size||90,h=Math.round(w*1.27);state=state||'idle';
+  return `<span class="char ${state}${flip?' flip':''}"${id?` id="${id}"`:''} style="--skin:${av.skin};--hair:${av.hair};--jersey:${av.jersey};--pants:${av.pants};width:${w}px;height:${h}px">`+
+    `<svg viewBox="0 0 110 140" class="char-svg"><ellipse class="ch-shadow" cx="56" cy="129" rx="29" ry="4"/><g class="ch-body">`+
+    `<path class="leg-b" d="M51 90 Q44 108 38 124"/><path class="foot" d="M33 124 H43"/>`+
+    `<g class="ch-arm2"><path class="arm-b" d="M58 55 Q53 68 50 80"/><circle class="hand-b" cx="50" cy="80" r="3"/></g>`+
+    `<path class="leg-f" d="M55 89 Q63 106 70 124"/><path class="foot" d="M64 124 H78"/>`+
+    `<path class="torso" d="M49 90 Q46 70 58 53 Q60 50 65 51 L68 55 Q71 74 61 90 Z"/>`+
+    `<path class="neck" d="M63 52 L68 46"/>`+
+    `<circle class="head" cx="71" cy="39" r="11.5"/><path class="nose" d="M82 39 q3 1 0 3"/>`+
+    `<path class="hair" d="M60 40 Q58 26 71 26 Q80 26 82 33 Q77 30 71 30 Q64 30 61 41 Z"/>`+
+    `<path class="arm-u" d="M64 53 L80 46"/>`+
+    `<g class="ch-fore"><path class="forearm" d="M80 46 L84 29"/><circle class="hand" cx="84" cy="29" r="3.4"/>`+
+    `<path class="dart" d="M84 29 L98 24"/><path class="dart-flight" d="M98 24 l4 -1.5"/><circle class="dart-nib" cx="83" cy="29.5" r="1.6"/></g>`+
     `</g></svg></span>`;}
 let AV_EDIT=null;
 function openAvatarEditor(name){if(!name)return;AV_EDIT={name,av:Object.assign({},getAv(name))};renderAvatarEditor();document.getElementById('sheetBack').classList.remove('hidden');}
@@ -1357,7 +1368,7 @@ function plc(i){const active=CO.cur===i;const last=CO.last[i];const lt=last===0?
   let legs='';for(let k=0;k<CO.lg;k++)legs+=`<i class="${k<CO.legsWon[i]?'on':''}"></i>`;
   const setsLine=CO.st>1?`<div style="font-size:12px;font-weight:800;color:var(--gold);margin-top:2px">Sets ${CO.setsWon[i]} / ${CO.st}</div>`:'';
   return `<div class="pl ${active?'active':''}"><div class="turn">Aan zet</div><div class="last ${last!=null?'show':''} ${last===0?'bust':''}">${lt}</div>
-    <div class="pl-char">${charSvg(getAv(CO.names[i]),active?'throw':'idle',54)}</div>
+    <div class="pl-char">${charSvg(getAv(CO.names[i]),active?'throw':'idle',54,null,i===1)}</div>
     <div class="pn">${esc(CO.names[i])}</div>${setsLine}<div class="legs">${legs}</div><div class="big tnum" id="big${i}">${CO.shown[i]}</div>
     <div class="avg">gem/beurt ${avg3(CO.scored[i],CO.darts[i])}</div></div>`;}
 function tweenNum(el,from,to){if(from===to){el.textContent=to;return;}const t0=performance.now(),dur=420;
@@ -1460,7 +1471,7 @@ function dismissMirror(){mirrorDismissTs=LIVEDATA?LIVEDATA.ts:0;renderLiveMirror
 function tvSideHtml(i,d){const setsLine=d.st>1?`<div class="tv-sets">Sets ${(d.setsWon?d.setsWon[i]:0)} / ${d.st}</div>`:'';
   const av=(d.avs&&d.avs[i])||getAv(d.names[i]);const sz=TV?150:94;
   return `<div class="tv-side" id="tvSide${i}"><div class="tv-aura"></div><div class="tv-tag">● Aan zet</div>
-  <div class="tv-char">${charSvg(av,'idle',sz,'tvChar'+i)}</div>
+  <div class="tv-char">${charSvg(av,'idle',sz,'tvChar'+i,i===1)}</div>
   <div class="tv-name">${esc(d.names[i])}</div>${setsLine}
   <div class="tv-rem tnum" id="tvRem${i}">${d.rem[i]}</div>
   <div class="tv-legs" id="tvLegs${i}"></div><div class="tv-avg" id="tvAvg${i}"></div><div class="tv-throw" id="tvThrow${i}"></div></div>`;}
@@ -1522,7 +1533,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
   if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;callerSeq=null;}
   [0,1].forEach(i=>{
     const side=document.getElementById('tvSide'+i);if(side)side.classList.toggle('active',d.cur===i&&!d.over);
-    const ch=document.getElementById('tvChar'+i);if(ch){let st='idle';if((d.over&&d.winner===i)||tvCele[i]>Date.now())st='celebrate';else if(d.cur===i&&!d.over)st='throw';ch.className='char '+st;}
+    const ch=document.getElementById('tvChar'+i);if(ch){let st='idle';if((d.over&&d.winner===i)||tvCele[i]>Date.now())st='celebrate';else if(d.cur===i&&!d.over)st='throw';ch.className='char '+st+(i===1?' flip':'');}
     const remEl=document.getElementById('tvRem'+i);const prevRem=LIVEPREV?LIVEPREV.rem[i]:d.rem[i];
     if(remEl){if(prevRem!==d.rem[i])tweenNum(remEl,prevRem,d.rem[i]);else remEl.textContent=d.rem[i];}
     if(LIVEPREV&&d.rem[i]<LIVEPREV.rem[i]){const delta=LIVEPREV.rem[i]-d.rem[i];tvThrow(i,delta);if(delta===180)tv180();}
