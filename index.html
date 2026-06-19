@@ -13,12 +13,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root{
-  --bg:#080d0b;--bg-2:#0e1512;--surface:#101814;--surface-2:#172620;
-  --ink:#eaf3ee;--ink-2:#9fb2a8;--muted:#697c73;
+  --bg:#0a0a12;--bg-2:#101019;--surface:#14141f;--surface-2:#1d1d2c;
+  --ink:#eef0f7;--ink-2:#a6a9bd;--muted:#71748f;
   --line:rgba(255,255,255,.06);--line-2:rgba(255,255,255,.11);
   --red:#e23b46;--red-bright:#f24b56;--red-soft:rgba(226,59,70,.12);
-  --green:#22c55e;--green-bright:#3ddc80;--green-soft:rgba(34,197,94,.12);
-  --green-line:rgba(34,197,94,.30);
+  --green:#8b5cf6;--green-bright:#a78bfa;--green-soft:rgba(139,92,246,.16);
+  --green-line:rgba(139,92,246,.40);
+  --pri:#8b5cf6;--pri-2:#a78bfa;--pri-soft:rgba(139,92,246,.16);--pri-line:rgba(139,92,246,.40);
+  --win:#22c55e;--win-2:#3ddc80;--win-soft:rgba(34,197,94,.13);
   --gold:#f0b429;--gold-soft:rgba(240,180,41,.14);
   --radius:18px;--radius-sm:12px;
   --sh-sm:0 1px 2px rgba(0,0,0,.35);
@@ -30,15 +32,22 @@
 html,body{margin:0;padding:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;
   font-feature-settings:"tnum","cv01";line-height:1.45;min-height:100vh;
-  background-image:radial-gradient(1100px 720px at 100% -12%, rgba(34,197,94,.11), transparent 56%),
-    radial-gradient(900px 650px at -8% 4%, rgba(34,197,94,.05), transparent 52%),
-    radial-gradient(700px 500px at 50% 120%, rgba(34,197,94,.04), transparent 60%);background-attachment:fixed;}
+  background-image:radial-gradient(1100px 720px at 100% -12%, rgba(139,92,246,.16), transparent 56%),
+    radial-gradient(900px 650px at -8% 4%, rgba(124,92,255,.08), transparent 52%),
+    radial-gradient(700px 500px at 50% 120%, rgba(139,92,246,.05), transparent 60%);background-attachment:fixed;}
 .tnum{font-variant-numeric:tabular-nums}
 
-.app{position:relative;z-index:2;display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}
-.sidebar{position:sticky;top:0;align-self:start;height:100vh;display:flex;flex-direction:column;
-  padding:24px 20px;border-right:1px solid var(--line);background:rgba(14,21,18,.62);backdrop-filter:blur(14px)}
-.brand{display:flex;align-items:center;gap:13px;position:relative;margin-bottom:20px}
+.app{position:relative;z-index:2;min-height:100vh;max-width:780px;margin:0 auto;padding-bottom:calc(94px + env(safe-area-inset-bottom))}
+.appbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;
+  padding:calc(13px + env(safe-area-inset-top)) clamp(16px,4vw,26px) 13px;
+  background:linear-gradient(180deg,var(--bg) 62%,rgba(10,10,18,.86));backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.appbar-right{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.iconbtn{width:38px;height:38px;border:1px solid var(--line-2);background:var(--surface);border-radius:11px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;transition:.15s}
+.iconbtn:hover{color:var(--ink)}.iconbtn:active{transform:scale(.94)}
+.iconbtn svg{width:20px;height:20px}
+.segwrap{position:relative;z-index:20;padding:12px clamp(16px,4vw,26px) 2px}
+.segwrap.hidden{display:none}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
 .board{width:46px;height:46px;flex:0 0 auto;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,.55),inset 0 0 0 2px #0b0e13;
   background:radial-gradient(circle,#e23b46 0 6%,#1fae5f 6% 12%,#11151b 12% 15%,transparent 15%),
    radial-gradient(circle,transparent 0 32%,#1fae5f 32% 38%,transparent 38%),
@@ -46,7 +55,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-
    radial-gradient(circle,transparent 0 87%,#11151b 87%),
    repeating-conic-gradient(#1b222c 0 18deg,#e9e0cb 18deg 36deg)}
 .brand .eyebrow{font-size:9.5px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--green-bright);opacity:.92}
-.brand h1{font-family:var(--disp);font-size:18px;font-weight:800;margin:3px 0 0;line-height:1.05;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.brand h1{font-family:var(--disp);font-size:18px;font-weight:800;margin:2px 0 0;line-height:1.05;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand .status{font-size:11.5px;color:var(--muted);margin-top:4px}
 .brand .status b{color:var(--ink-2);font-weight:600}
 .reset{position:absolute;top:-4px;right:-4px;background:rgba(255,255,255,.04);border:1px solid var(--line-2);color:var(--muted);
@@ -56,28 +65,58 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-
 .modesw button{flex:1;border:none;background:none;color:var(--muted);font-family:var(--font);font-size:12px;font-weight:600;
   padding:9px 4px;border-radius:8px;cursor:pointer;transition:.18s}
 .modesw button.on{background:var(--surface-2);color:var(--green-bright);box-shadow:var(--sh-sm)}
-.tabs{display:flex;flex-direction:column;gap:3px}
-.tab{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:11px 13px;border:none;background:none;cursor:pointer;
-  font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--muted);border-radius:10px;transition:.16s}
-.tab svg{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.tab:hover:not(:disabled){color:var(--ink-2);background:rgba(255,255,255,.03)}
-.tab.active{color:var(--green-bright);background:var(--green-soft)}
-.tab.active::before{content:"";position:absolute;left:0;top:18%;bottom:18%;width:3px;border-radius:0 3px 3px 0;background:var(--green)}
+.tabs{display:flex;flex-direction:row;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{position:relative;flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid var(--line);background:var(--surface);cursor:pointer;
+  font-family:var(--font);font-size:13px;font-weight:600;color:var(--ink-2);border-radius:999px;transition:.16s;white-space:nowrap}
+.tab svg{width:17px;height:17px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tab:hover:not(:disabled){color:var(--ink);border-color:var(--line-2)}
+.tab.active{color:#fff;background:var(--pri);border-color:var(--pri);box-shadow:0 6px 16px -8px rgba(139,92,246,.85)}
 .tab:disabled{opacity:.32;cursor:default}
 .side-foot{margin-top:auto;padding-top:18px;display:flex;flex-direction:column;gap:11px}
 .sync-badge{display:inline-flex;align-items:center;gap:8px;width:fit-content;font-size:10.5px;font-weight:800;letter-spacing:1.4px;
-  color:var(--ink-2);background:rgba(34,197,94,.07);border:1px solid var(--line-2);padding:7px 12px;border-radius:999px}
+  color:var(--ink-2);background:rgba(139,92,246,.09);border:1px solid var(--line-2);padding:7px 12px;border-radius:999px}
 .sync-dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:0 0 auto}
 .side-tag{font-size:10.5px;letter-spacing:.6px;color:var(--muted);opacity:.75;font-weight:600}
 .avatar{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex:0 0 auto;
   font-family:var(--disp);font-weight:800;font-size:11.5px;letter-spacing:.3px;border:1px solid var(--line-2);line-height:1}
 .nm-wrap{display:inline-flex;align-items:center;gap:9px;min-width:0}
 
-.main{min-width:0;padding:34px clamp(20px,4vw,52px) 80px}
-.page{max-width:1280px;margin:0 auto;animation:fade .34s cubic-bezier(.2,.7,.3,1)}
+.main{min-width:0;padding:14px clamp(16px,4vw,26px) 0}
+.page{max-width:none;margin:0;animation:fade .34s cubic-bezier(.2,.7,.3,1)}
 @keyframes fade{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
-.page-h{font-family:var(--disp);font-size:25px;font-weight:800;letter-spacing:-.4px;margin:0 0 4px}
-.page-sub{font-size:13.5px;color:var(--muted);margin-bottom:22px}
+.page-h{font-family:var(--disp);font-size:26px;font-weight:800;letter-spacing:-.4px;margin:0 0 4px}
+.page-sub{font-size:13.5px;color:var(--muted);margin-bottom:20px}
+/* ===== BOTTOM NAV ===== */
+.botnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:flex-end;justify-content:space-around;gap:2px;
+  padding:7px 10px calc(7px + env(safe-area-inset-bottom));max-width:780px;margin:0 auto;
+  background:rgba(16,16,25,.93);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.botnav-i{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;border:none;background:none;cursor:pointer;
+  color:var(--muted);font-family:var(--font);font-size:10px;font-weight:700;padding:6px 2px;transition:.15s}
+.botnav-i svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.botnav-i span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.botnav-i.on{color:var(--pri-2)}
+.botnav-play{flex:0 0 auto;width:58px;height:58px;margin:-20px 4px 0;border:none;border-radius:50%;cursor:pointer;
+  background:linear-gradient(160deg,var(--pri-2),var(--pri));color:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 12px 26px -10px rgba(139,92,246,.95),0 0 0 5px var(--bg);transition:.15s}
+.botnav-play:active{transform:scale(.93)}
+.botnav-play svg{width:26px;height:26px;fill:#fff;stroke:none}
+/* ===== BOTTOM SHEET ===== */
+.sheet-back{position:fixed;inset:0;z-index:100;background:rgba(6,6,12,.66);backdrop-filter:blur(5px);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s ease}
+.sheet{width:100%;max-width:780px;background:var(--surface);border:1px solid var(--line-2);border-bottom:none;border-radius:22px 22px 0 0;
+  padding:10px 18px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px -20px #000;animation:sheetUp .3s cubic-bezier(.2,.9,.3,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grip{width:40px;height:4px;border-radius:99px;background:var(--line-2);margin:6px auto 14px}
+.sheet-h{font-family:var(--disp);font-size:17px;font-weight:800;margin:0 0 4px;text-align:center}
+.sheet-sub{font-size:12.5px;color:var(--muted);margin-bottom:16px;text-align:center}
+.sheet-opt{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:1px solid var(--line);background:var(--bg-2);border-radius:14px;margin-bottom:10px;color:var(--ink);text-align:left;transition:.15s;cursor:pointer}
+.sheet-opt:hover{border-color:var(--line-2)}.sheet-opt:active{transform:scale(.99)}
+.sheet-opt .so-ic{width:42px;height:42px;flex:0 0 auto;border-radius:12px;background:var(--pri-soft);display:flex;align-items:center;justify-content:center}
+.sheet-opt.danger .so-ic{background:var(--red-soft)}
+.sheet-opt .so-ic svg{width:22px;height:22px;stroke:var(--pri-2);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.sheet-opt.danger .so-ic svg{stroke:var(--red-bright)}
+.sheet-opt .so-t{font-size:15px;font-weight:700}
+.sheet-opt .so-d{font-size:12px;color:var(--muted);margin-top:2px}
 
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:18px;box-shadow:var(--sh)}
 .card-h{font-family:var(--disp);font-size:12.5px;font-weight:700;letter-spacing:.4px;color:var(--ink);margin:0;display:flex;align-items:center;gap:8px}
@@ -97,8 +136,8 @@ select{appearance:none;cursor:pointer;padding-right:38px;
 option{background:var(--surface);color:var(--ink)}
 
 button{cursor:pointer;font-family:var(--font)}
-.btn{width:100%;border:none;background:var(--green);color:#04140c;border-radius:var(--radius-sm);padding:15px;
-  font-family:var(--font);font-size:15px;font-weight:800;letter-spacing:.2px;transition:.14s;box-shadow:0 8px 22px -12px rgba(34,197,94,.7),var(--sh-sm)}
+.btn{width:100%;border:none;background:var(--green);color:#fff;border-radius:var(--radius-sm);padding:15px;
+  font-family:var(--font);font-size:15px;font-weight:800;letter-spacing:.2px;transition:.14s;box-shadow:0 8px 22px -12px rgba(139,92,246,.7),var(--sh-sm)}
 .btn:hover{background:var(--green-bright)}
 .btn:active{transform:translateY(1px) scale(.995)}
 .btn.gold{background:var(--gold);color:#2a1d00}.btn.gold:hover{filter:brightness(1.05)}
@@ -137,14 +176,14 @@ button{cursor:pointer;font-family:var(--font)}
 .match .no{flex:0 0 24px;font-family:var(--disp);font-size:13px;font-weight:700;color:var(--muted);text-align:center}
 .match .who{flex:1;min-width:0}
 .match .nm{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;line-height:1.5}
-.match .nm.win{font-weight:700;color:var(--green-bright)}
+.match .nm.win{font-weight:700;color:var(--win-2)}
 .match .nm .mk{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--line-2)}
-.match .nm.win .mk{background:var(--green)}
+.match .nm.win .mk{background:var(--win)}
 .match .meta{flex:0 0 auto;text-align:right}
 .match .score{font-family:var(--disp);font-size:22px;font-weight:800}
-.match .play{display:inline-flex;align-items:center;gap:5px;color:#04140c;background:var(--green);font-size:12px;font-weight:800;padding:8px 14px;border-radius:9px;transition:.15s}
+.match .play{display:inline-flex;align-items:center;gap:5px;color:#fff;background:var(--green);font-size:12px;font-weight:800;padding:8px 14px;border-radius:9px;transition:.15s}
 .match:hover .play{background:var(--green-bright)}
-.match .done{font-size:11.5px;font-weight:600;color:var(--green-bright);margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.match .done{font-size:11.5px;font-weight:600;color:var(--win-2);margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:flex-end}
 .match .sub{font-size:11px;color:var(--muted);margin-top:3px}
 .match.played{background:rgba(255,255,255,.012)}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -164,8 +203,8 @@ tr.lead{background:linear-gradient(90deg,var(--green-soft),transparent 82%)}
 tr.lead td:first-child{box-shadow:inset 3px 0 0 var(--green)}
 tr.lead td.nm{color:var(--green-bright)}
 .nm-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.lead-badge{flex:0 0 auto;font-size:8.5px;font-weight:800;letter-spacing:.8px;color:#04140c;background:var(--green);padding:3px 7px;border-radius:6px}
-#compStandTable tr.lead .pos{background:var(--green);color:#04140c;border-color:var(--green)}
+.lead-badge{flex:0 0 auto;font-size:8.5px;font-weight:800;letter-spacing:.8px;color:#fff;background:var(--green);padding:3px 7px;border-radius:6px}
+#compStandTable tr.lead .pos{background:var(--green);color:#fff;border-color:var(--green)}
 .pos{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;
   background:var(--bg-2);border:1px solid var(--line);font-family:var(--disp);font-size:12px;font-weight:700;color:var(--ink-2)}
 tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var(--gold)}
@@ -175,7 +214,7 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .banner{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:var(--radius);margin-bottom:18px;
   border:1px solid var(--line);background:linear-gradient(110deg,var(--green-soft),transparent 58%),var(--surface);box-shadow:var(--sh)}
 .banner::after{content:"";position:absolute;right:-26px;bottom:-40px;width:190px;height:190px;opacity:.16;pointer-events:none;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20c0-9 7-16 16-16 0 9-7 16-16 16Z'/%3E%3Cpath d='M4 20C8 14 13 9 20 4'/%3E%3Cpath d='M9 15c1-3 3-5 6-6'/%3E%3Cpath d='M7 17c.6-2 2-3.5 4-4.5'/%3E%3C/svg%3E") no-repeat center/contain}
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20c0-9 7-16 16-16 0 9-7 16-16 16Z'/%3E%3Cpath d='M4 20C8 14 13 9 20 4'/%3E%3Cpath d='M9 15c1-3 3-5 6-6'/%3E%3Cpath d='M7 17c.6-2 2-3.5 4-4.5'/%3E%3C/svg%3E") no-repeat center/contain}
 .banner>*{position:relative;z-index:1}
 .banner .medal{width:52px;height:52px;flex:0 0 auto;border-radius:14px;background:var(--green-soft);border:1px solid var(--green-line);display:flex;align-items:center;justify-content:center}
 .banner .medal svg{width:27px;height:27px;stroke:var(--green-bright);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -196,7 +235,7 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .chart{display:flex;align-items:flex-end;gap:12px;padding:14px 4px 0}
 .chart .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
 .chart .bar .track{width:100%;max-width:48px;height:112px;display:flex;align-items:flex-end}
-.chart .bar i{width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--green-bright),var(--green));min-height:4px;box-shadow:0 0 18px -5px rgba(34,197,94,.55);transition:height .5s cubic-bezier(.3,.85,.3,1)}
+.chart .bar i{width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--pri-2),var(--pri));min-height:4px;box-shadow:0 0 18px -5px rgba(139,92,246,.6);transition:height .5s cubic-bezier(.3,.85,.3,1)}
 .chart .bar .bv{font-family:var(--disp);font-size:13px;font-weight:800;color:var(--ink)}
 .chart .bar .bl{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .chart-empty{height:120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
@@ -235,7 +274,7 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .b-pl{display:flex;align-items:center;gap:9px;padding:4px 0;font-size:15.5px;font-weight:600}
 .b-pl+.b-pl{border-top:1px solid var(--line)}
 .b-pl .mk{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--line-2)}
-.b-pl.win{color:var(--green-bright);font-weight:700}.b-pl.win .mk{background:var(--green)}
+.b-pl.win{color:var(--win-2);font-weight:700}.b-pl.win .mk{background:var(--win)}
 .b-pl .bn{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .b-pl .bl{font-family:var(--disp);font-size:18px;font-weight:800}
 .b-go{margin-top:9px;text-align:center;color:#fff;background:var(--red);font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:7px;border-radius:8px}
@@ -258,16 +297,16 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .m-sub{font-size:12px;color:var(--muted);text-align:center;margin-top:3px;margin-bottom:18px}
 .m-players{display:flex;align-items:stretch;gap:10px}
 .m-pl{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:14px 8px 12px;text-align:center;transition:.2s}
-.m-pl.win{border-color:var(--green);background:var(--green-soft)}
+.m-pl.win{border-color:var(--win);background:var(--win-soft)}
 .m-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:20px}
-.m-pl.win .m-name{color:var(--green-bright)}
+.m-pl.win .m-name{color:var(--win-2)}
 .legbig{font-family:var(--disp);font-size:46px;font-weight:800;line-height:1;margin:8px 0;letter-spacing:-1px}
 .steps{display:flex;gap:8px;justify-content:center}
 .steps button{width:42px;height:42px;border-radius:11px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:.12s}
 .steps button:hover{border-color:var(--green)}.steps button:active{background:var(--green-soft);transform:scale(.94)}
 .m-vs{align-self:center;font-family:var(--disp);font-size:14px;color:var(--muted)}
 .m-win-line{text-align:center;font-size:13px;color:var(--ink-2);margin:16px 0;min-height:18px}
-.m-win-line b{color:var(--green-bright);font-weight:700}
+.m-win-line b{color:var(--win-2);font-weight:700}
 .modal .btn{margin-top:9px}
 .tie-list{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
 .tie-opt{display:flex;align-items:center;justify-content:space-between;width:100%;padding:15px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--line-2);background:var(--bg-2);color:var(--ink);font-size:16px;font-weight:600;transition:.15s}
@@ -325,7 +364,7 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
   font-size:14.5px;font-weight:600;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);max-width:88vw;text-align:center;
   display:flex;align-items:center;gap:10px;transition:transform .35s cubic-bezier(.2,1.3,.4,1),opacity .3s}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.toast .d{width:8px;height:8px;border-radius:50%;background:var(--green);flex:0 0 auto}
+.toast .d{width:8px;height:8px;border-radius:50%;background:var(--win);flex:0 0 auto}
 .toast.gold .d{background:var(--gold)}
 .livebadge{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--red-bright);background:rgba(226,59,70,.12);border:1px solid rgba(226,59,70,.4);padding:6px 11px;border-radius:8px;animation:livep 1.6s ease-in-out infinite}
 @keyframes livep{0%,100%{opacity:1}50%{opacity:.45}}
@@ -376,14 +415,10 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .tv-fx .winner .wn{font-family:var(--disp);font-size:clamp(44px,9vw,130px);font-weight:800;color:#fff;text-shadow:0 0 60px rgba(240,180,41,.4);line-height:1.02;margin:4px 0}
 .tv-fx .winner .wsub{color:var(--ink-2);margin-top:8px;font-size:clamp(12px,1.5vw,16px)}
 
-@media(max-width:920px){
-  .app{grid-template-columns:1fr}
-  .sidebar{position:sticky;top:0;height:auto;padding:14px 16px;border-right:none;border-bottom:1px solid var(--line);z-index:30}
-  .brand{margin-bottom:12px}.modesw{margin-bottom:10px}
-  .tabs{flex-direction:row;overflow-x:auto;gap:6px;-webkit-overflow-scrolling:touch}
-  .tab{flex:0 0 auto;justify-content:center;padding:9px 14px}
-  .tab.active::before{left:18%;right:18%;top:auto;bottom:0;width:auto;height:3px;border-radius:3px 3px 0 0}
-  .side-foot{display:none}.main{padding:20px 16px 70px}
+@media(max-width:560px){
+  .page-h{font-size:23px}
+  .brand h1{font-size:16px}
+  .statgrid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:780px){
   .grid2,.dash,.dash2{grid-template-columns:1fr}
@@ -393,7 +428,7 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 
 /* ===== TV-ONLY MODE (eigen TV-app, ?tv) ===== */
 body.tvmode{overflow:hidden}
-body.tvmode .app,body.tvmode #overlay{display:none!important}
+body.tvmode .app,body.tvmode #overlay,body.tvmode .botnav,body.tvmode #sheetBack{display:none!important}
 body.tvmode #liveMirror{display:flex!important}
 body.tvmode #liveMirror.hidden{display:flex!important}
 body.tvmode .tv-close{display:none!important}
@@ -402,7 +437,7 @@ body.tvmode .tv-rem{font-size:clamp(120px,20vw,320px)}
 body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 .tv-idle{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px}
 .tv-idle .ti-board{width:clamp(120px,16vw,210px);height:clamp(120px,16vw,210px);border-radius:50%;
-  background:radial-gradient(circle at 50% 50%,#1a212c 0 38%,var(--red) 38% 41%,#1a212c 41% 60%,var(--green) 60% 63%,#1a212c 63% 100%);
+  background:radial-gradient(circle at 50% 50%,#1a212c 0 38%,var(--red) 38% 41%,#1a212c 41% 60%,var(--win) 60% 63%,#1a212c 63% 100%);
   box-shadow:0 0 0 6px #0c0f14,0 40px 90px -40px rgba(0,0,0,.9);position:relative;animation:tiSpin 30s linear infinite}
 .tv-idle .ti-board::after{content:"";position:absolute;inset:46%;border-radius:50%;background:var(--red)}
 @keyframes tiSpin{to{transform:rotate(360deg)}}
@@ -411,7 +446,7 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 .tv-idle .ti-dot{display:inline-flex;align-items:center;gap:10px;color:var(--muted);font-size:clamp(13px,1.5vw,18px);font-weight:600;
   border:1px solid var(--line-2);padding:9px 18px;border-radius:999px;margin-top:6px}
 .tv-idle .ti-dot i{width:11px;height:11px;border-radius:50%;background:var(--muted);transition:.3s}
-.tv-idle.online .ti-dot i{background:var(--green);box-shadow:0 0 12px var(--green);animation:tiPulse 2s ease-in-out infinite}
+.tv-idle.online .ti-dot i{background:var(--win);box-shadow:0 0 12px var(--win);animation:tiPulse 2s ease-in-out infinite}
 @keyframes tiPulse{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* ===== TRAINING ===== */
@@ -556,7 +591,7 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 </head>
 <body>
 <div class="app">
-  <aside class="sidebar">
+  <header class="appbar">
     <div class="brand">
       <div class="board"></div>
       <div style="min-width:0">
@@ -564,13 +599,13 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
         <h1 id="heroTitle">De Pijlen</h1>
         <div class="status" id="heroStatus">Klaar om te starten</div>
       </div>
-      <button class="reset" onclick="resetAll()">Reset</button>
     </div>
-    <div class="modesw">
-      <button id="mode-tournament" class="on" onclick="setMode('tournament')">Tornooi</button>
-      <button id="mode-competition" onclick="setMode('competition')">Competitie</button>
-      <button id="mode-training" onclick="setMode('training')">Training</button>
+    <div class="appbar-right">
+      <span id="syncDot" class="sync-dot" title="Live-sync"></span>
+      <button class="iconbtn" onclick="openMoreSheet()" aria-label="Meer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></button>
     </div>
+  </header>
+  <div class="segwrap" id="segwrap">
     <nav class="tabs" id="nav-tournament">
       <button class="tab" data-tab="setup" onclick="go('setup')"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16.5 7.5a2.8 2.8 0 0 1 0 5"/><path d="M19 20a4.7 4.7 0 0 0-2.8-4.4"/></svg><span>Spelers</span></button>
       <button class="tab" data-tab="poule" onclick="go('poule')"><svg viewBox="0 0 24 24"><path d="M14 4 20 9l-9 9-2.5.8L9 16Z"/><path d="M10 4 4 9l9 9 2.5.8L15 16"/></svg><span>Poule</span></button>
@@ -584,11 +619,7 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
       <button class="tab" data-ctab="rivalry" onclick="goc('rivalry')"><svg viewBox="0 0 24 24"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M2 20a5 5 0 0 1 10 0M12 20a5 5 0 0 1 10 0"/></svg><span>Onderling</span></button>
       <button class="tab" data-ctab="hall" onclick="goc('hall')"><svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0Z"/><path d="M7 5H4.5v1.5A3 3 0 0 0 7.5 10"/><path d="M17 5h2.5v1.5A3 3 0 0 1 16.5 10"/><path d="M10 13.5V16h4v-2.5M8.5 20h7M10 20v-1.5h4V20"/></svg><span>Erelijst</span></button>
     </nav>
-    <div class="side-foot">
-      <div class="sync-badge"><span id="syncDot" class="sync-dot"></span>LIVE SYNC</div>
-      <div class="side-tag">Focus. Precision. Victory.</div>
-    </div>
-  </aside>
+  </div>
 
   <main class="main">
     <section id="view-setup" class="view tview page">
@@ -679,7 +710,16 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
   </main>
 </div>
 
+<nav class="botnav">
+  <button class="botnav-i" id="mode-competition" onclick="setMode('competition')"><svg viewBox="0 0 24 24"><path d="M5 21v-6M12 21V9M19 21v-9"/><path d="M3 21h18"/></svg><span>Competitie</span></button>
+  <button class="botnav-i" id="mode-tournament" onclick="setMode('tournament')"><svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0Z"/><path d="M7 5H4.5v1.5A3 3 0 0 0 7.5 10"/><path d="M17 5h2.5v1.5A3 3 0 0 1 16.5 10"/><path d="M10 13.5V16h4v-2.5M8.5 20h7"/></svg><span>Tornooi</span></button>
+  <button class="botnav-play" onclick="openPlaySheet()" aria-label="Speel"><svg viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5v14l11-7z"/></svg></button>
+  <button class="botnav-i" id="mode-training" onclick="setMode('training')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg><span>Training</span></button>
+  <button class="botnav-i" onclick="openMoreSheet()"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Meer</span></button>
+</nav>
+
 <div id="modalBack" class="hidden"></div>
+<div id="sheetBack" class="hidden"></div>
 <div id="overlay" class="overlay hidden"></div>
 <div id="liveMirror" class="overlay hidden"></div>
 
@@ -687,7 +727,7 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 /* ============ SHARED ============ */
 function uid(){return Math.random().toString(36).slice(2,9);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-const AV_COLORS=[['#10402a','#48d189'],['#0e3a37','#3fd6c4'],['#163d20','#7bd86a'],['#33310f','#e8c45a'],['#102e44','#5cb8ef'],['#321433','#df84c8'],['#3a2410','#eaa45c']];
+const AV_COLORS=[['#2a2150','#b39dff'],['#241a48','#a78bfa'],['#1e2550','#8ab4ff'],['#102e44','#5cb8ef'],['#33310f','#e8c45a'],['#321433','#df84c8'],['#10402a','#48d189']];
 function initials(name){const n=(name||'?').trim();if(!n)return '?';const parts=n.split(/\s+/);return ((parts[0][0]||'')+(parts.length>1?parts[parts.length-1][0]:'')).toUpperCase();}
 function avatar(name,size){const n=(name||'?').trim();let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;const c=AV_COLORS[h%AV_COLORS.length];const s=size||30;
   return `<span class="avatar" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px;background:${c[0]};color:${c[1]}">${esc(initials(n))}</span>`;}
@@ -737,7 +777,29 @@ function syncModeUI(){document.getElementById('mode-tournament').classList.toggl
   document.getElementById('mode-competition').classList.toggle('on',MODE==='competition');
   document.getElementById('mode-training').classList.toggle('on',MODE==='training');
   document.getElementById('nav-tournament').classList.toggle('hidden',MODE!=='tournament');
-  document.getElementById('nav-comp').classList.toggle('hidden',MODE!=='competition');}
+  document.getElementById('nav-comp').classList.toggle('hidden',MODE!=='competition');
+  const sw=document.getElementById('segwrap');if(sw)sw.classList.toggle('hidden',MODE==='training');}
+/* ============ BOTTOM SHEETS (Speel / Meer) ============ */
+function closeSheet(){document.getElementById('sheetBack').classList.add('hidden');document.getElementById('sheetBack').innerHTML='';}
+function sheetOpt(ic,t,d,onclick,danger){return `<button class="sheet-opt ${danger?'danger':''}" onclick="closeSheet();${onclick}"><span class="so-ic">${ic}</span><span><span class="so-t">${t}</span><span class="so-d">${d}</span></span></button>`;}
+function openSheet(title,sub,html){const el=document.getElementById('sheetBack');el.innerHTML=`<div class="sheet-back" onclick="if(event.target===this)closeSheet()"><div class="sheet"><div class="sheet-grip"></div><div class="sheet-h">${title}</div><div class="sheet-sub">${sub}</div>${html}</div></div>`;el.classList.remove('hidden');}
+function openPlaySheet(){const ic={dart:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>',
+  edit:'<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 0 1-10 0Z"/><path d="M7 5H4.5v1.5A3 3 0 0 0 7.5 10"/><path d="M17 5h2.5v1.5A3 3 0 0 1 16.5 10"/><path d="M10 13.5V16h4v-2.5M8.5 20h7"/></svg>',
+  tv:'<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M8 3l4 3 4-3"/></svg>'};
+  openSheet('Speel','Start meteen een partij of oefening',
+    sheetOpt(ic.dart,'Nieuwe partij (live tellen)','501/301 partij, app telt mee',"setMode('competition');openNewMatch()")+
+    sheetOpt(ic.edit,'Handmatige uitslag','Op een echt bord gespeeld? Log de uitslag',"setMode('competition');openManualMatch()")+
+    sheetOpt(ic.trophy,'Training','Checkout, clock, killer en meer',"setMode('training')")+
+    sheetOpt(ic.tv,'TV-scherm openen','Live scorebord op een tweede scherm',"openTvWindow()"));}
+function openMoreSheet(){const ic={tv:'<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M8 3l4 3 4-3"/></svg>',
+  sound:'<svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/></svg>',
+  trash:'<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>'};
+  openSheet('Meer','Instellingen en extra’s',
+    sheetOpt(ic.tv,'TV-scherm openen','Live scorebord op een tweede scherm',"openTvWindow()")+
+    sheetOpt(ic.sound,(callerMuted()?'Omroeper aanzetten':'Omroeper dempen'),'Stem en geluidseffecten',"toggleCallerMute()")+
+    sheetOpt(ic.trash,'Resetten','Wis de huidige modus en begin opnieuw',"resetAll()",true));}
+function openTvWindow(){try{window.open(location.pathname+'?tv','_blank');}catch(e){toast('Open de app met ?tv op je TV-scherm');}}
 function render(){
   const started=S.phase!=='setup';
   ['poule','stand'].forEach(t=>{const b=document.querySelector(`#nav-tournament .tab[data-tab="${t}"]`);if(b)b.disabled=!started;});
@@ -804,7 +866,7 @@ function standTable(d){return `<thead><tr><th></th><th style="text-align:left">S
   d.rows.map((r,i)=>{const dd=(S.config&&S.config.pouleSets>1)?(r.setF-r.setA):(r.legF-r.legA);return `<tr class="${d.qualified.has(r.id)?'q':''} ${d.contested.has(r.id)?'tiec':''}" style="animation-delay:${i*.04}s">
     <td><span class="pos">${d.rankMap[r.id]}</span></td><td class="nm"><span class="nm-wrap">${avatar(nameT(r.id),26)}<span class="nm-txt">${esc(nameT(r.id))}</span></span></td>
     <td class="tnum">${r.played}</td><td class="tnum">${r.won}</td><td class="tnum">${r.lost}</td>
-    <td class="tnum" style="color:${dd>0?'var(--green-bright)':dd<0?'var(--red-bright)':'var(--ink)'}">${dd>0?'+':''}${dd}</td></tr>`;}).join('')+`</tbody>`;}
+    <td class="tnum" style="color:${dd>0?'var(--win-2)':dd<0?'var(--red-bright)':'var(--ink)'}">${dd>0?'+':''}${dd}</td></tr>`;}).join('')+`</tbody>`;}
 function legendHTML(d){if(d.ambig)return `<span style="color:var(--red-bright);font-weight:700">⚠ Gelijkstand om de laatste ${d.info.slots===1?'plek':'plekken'}.</span> ${d.info.contested.length} spelers staan exact gelijk — beslis zelf wie doorgaat.<br><button class="btn small" style="margin-top:11px;width:auto" onclick="openTiebreak()">Beslis wie doorgaat</button>`;
   return `G gespeeld · W gewonnen · V verloren · ± legsaldo<br><b>De top ${d.q} plaatst zich voor de finale.</b>`;}
 function renderStand(){const d=standData();document.getElementById('standTable').innerHTML=standTable(d);document.getElementById('standLegend').innerHTML=legendHTML(d);}
@@ -1171,7 +1233,7 @@ addEventListener('resize',()=>{const c=document.getElementById('cfC');if(c){c.wi
 /* ============ FIREBASE LIVE SYNC ============ */
 const firebaseConfig={apiKey:"AIzaSyA2ROasz31AAPBBeTWvgCy2nMfprxWaAuk",authDomain:"dart-app-5a19c.firebaseapp.com",databaseURL:"https://dart-app-5a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"dart-app-5a19c",storageBucket:"dart-app-5a19c.firebasestorage.app",messagingSenderId:"38748326773",appId:"1:38748326773:web:294b6a41b5986ee3d3613c"};
 let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null,FBCONN=false,callerSeq=null,TOURDATA=null,tourPushTimer=null;
-function setSyncDot(on){const el=document.getElementById('syncDot');if(el){el.style.background=on?'var(--green)':'var(--muted)';el.title=on?'Live verbonden':'Offline (lokaal)';}}
+function setSyncDot(on){const el=document.getElementById('syncDot');if(el){el.style.background=on?'var(--win)':'var(--muted)';el.title=on?'Live verbonden':'Offline (lokaal)';}}
 function fbInit(){try{
   if(!window.firebase||!firebase.initializeApp){setSyncDot(false);return;}
   firebase.initializeApp(firebaseConfig);DB=firebase.database();fbReady=true;setSyncDot(true);
