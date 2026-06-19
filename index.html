@@ -1260,7 +1260,8 @@ function renderCompHall(){const el=document.getElementById('compHall');const win
       <div class="ach-grid">`+ACH.map(a=>`<div class="ach ${got[a.k]?'on':''}"><div class="ai">${achIcon(a.ic)}</div><div class="at">${a.t}</div><div class="ad">${a.d}</div></div>`).join('')+`</div></div>`;});
   el.innerHTML=html;}
 let NM=null;
-function openNewMatch(){if(C.players.length<2){toast('Voeg eerst 2 spelers toe (rechts)');return;}NM={p1:C.players[0].id,p2:C.players[1].id,start:C.config.startScore||501,legs:C.config.legs||3,out:C.config.doubleOut===false?'straight':'double'};renderNewMatch();document.getElementById('modalBack').classList.remove('hidden');}
+function openNewMatch(){if(C.players.length<2){toast('Voeg eerst 2 spelers toe (rechts)');return;}NM={p1:C.players[0].id,p2:C.players[1].id,start:C.config.startScore||501,legs:C.config.legs||3,out:C.config.doubleOut===false?'straight':'double',first:0};renderNewMatch();document.getElementById('modalBack').classList.remove('hidden');}
+function nmBull(){if(!NM)return;NM.first=Math.random()<0.5?0:1;renderNewMatch();toast(cname(NM.first===0?NM.p1:NM.p2)+' begint · bull gewonnen',true);}
 function closeNewMatch(){NM=null;document.getElementById('modalBack').classList.add('hidden');}
 function nmSet(k,v){NM[k]=k==='start'||k==='legs'?+v:v;renderNewMatch();}
 function renderNewMatch(){const opts=sel=>C.players.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join('');
@@ -1272,8 +1273,10 @@ function renderNewMatch(){const opts=sel=>C.players.map(p=>`<option value="${p.i
       <div><label>Legs (first to)</label><select onchange="nmSet('legs',this.value)">
         <option value="1" ${NM.legs===1?'selected':''}>1</option><option value="2" ${NM.legs===2?'selected':''}>2</option><option value="3" ${NM.legs===3?'selected':''}>3</option><option value="4" ${NM.legs===4?'selected':''}>4</option><option value="5" ${NM.legs===5?'selected':''}>5</option></select></div></div>
     <div style="margin-top:14px"><label>Uitgooien</label><select onchange="nmSet('out',this.value)"><option value="double" ${NM.out!=='straight'?'selected':''}>Dubbel uit</option><option value="straight" ${NM.out==='straight'?'selected':''}>Enkel uit</option></select></div>
+    <div style="margin-top:14px"><label>Wie begint? (bull)</label>
+      <div class="tr-opt"><button class="${NM.first===0?'on':''}" onclick="nmSet('first',0)">${esc(cname(NM.p1))}</button><button class="${NM.first===1?'on':''}" onclick="nmSet('first',1)">${esc(cname(NM.p2))}</button><button onclick="nmBull()" title="Gooi om de bull" style="flex:0 0 auto;min-width:52px">🎯</button></div></div>
     <button class="btn green" style="margin-top:18px" onclick="startNM()">Start partij</button><button class="btn ghost" onclick="closeNewMatch()">Annuleren</button></div></div>`;}
-function startNM(){if(NM.p1===NM.p2){toast('Kies twee verschillende spelers');return;}const dbl=NM.out!=='straight';C.config.startScore=NM.start;C.config.legs=NM.legs;C.config.doubleOut=dbl;saveC();const p1=NM.p1,p2=NM.p2,start=NM.start,legs=NM.legs;closeNewMatch();startCounter(p1,p2,start,legs,null,1,dbl);}
+function startNM(){if(NM.p1===NM.p2){toast('Kies twee verschillende spelers');return;}const dbl=NM.out!=='straight';C.config.startScore=NM.start;C.config.legs=NM.legs;C.config.doubleOut=dbl;saveC();const p1=NM.p1,p2=NM.p2,start=NM.start,legs=NM.legs,first=NM.first?1:0;closeNewMatch();startCounter(p1,p2,start,legs,null,1,dbl,first);}
 
 /* --- handmatige uitslag (gespeeld op echt bord) --- */
 function openManualMatch(){if(C.players.length<2){toast('Voeg eerst 2 spelers toe (rechts)');return;}
@@ -1306,7 +1309,7 @@ function saveManualMatch(){const g=id=>document.getElementById(id);
 /* ============ 501 COUNTER ============ */
 let CO=null;
 function anyName(id){let p=C.players.find(x=>x.id===id);if(p)return p.name;p=(S&&S.players)?S.players.find(x=>x.id===id):null;return p?p.name:'?';}
-function startCounter(p1,p2,start,lg,ctx,st,dblOut){st=st||1;CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,lg,st,legsTarget:lg,dblOut:dblOut!==false,setsWon:[0,0],legsTotal:[0,0],starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
+function startCounter(p1,p2,start,lg,ctx,st,dblOut,starter){st=st||1;starter=starter?1:0;CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,lg,st,legsTarget:lg,dblOut:dblOut!==false,setsWon:[0,0],legsTotal:[0,0],starter:starter,cur:starter,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
   CO.ev={seq:1,kind:'walkon',names:CO.names,start,legsTarget:lg};
   IAMCTRL=true;document.getElementById('overlay').classList.remove('hidden');renderCounter(true);}
 function coEvent(kind,player,score,bust){if(!CO)return;CO.evSeq=(CO.evSeq||0)+1;CO.ev={seq:CO.evSeq,kind,player,score:score||0,bust:!!bust,name:CO.names[player],opp:CO.names[1-player]};
