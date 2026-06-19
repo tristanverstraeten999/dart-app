@@ -608,6 +608,84 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
 .tt-champ .tc-l{font-size:clamp(11px,1.2vw,15px);color:var(--gold);font-weight:800;text-transform:uppercase;letter-spacing:2px}
 .tt-champ .tc-n{font-family:var(--disp);font-size:clamp(26px,4vw,52px);font-weight:800;line-height:1}
 @media(max-width:780px){.tt-grid{grid-template-columns:1fr}}
+/* ============================================================
+   APP-FEEL POLISH (native mobiele look — geldt voor heel de app)
+   ============================================================ */
+*{-webkit-tap-highlight-color:transparent}
+/* schermtransitie bij elke navigatie */
+.view.pgin{animation:pgin .42s cubic-bezier(.2,.8,.25,1)}
+@keyframes pgin{from{opacity:0;transform:translateY(16px) scale(.992)}to{opacity:1;transform:none}}
+/* grotere, native titels + ritme */
+.main{padding:8px clamp(16px,4vw,26px) 0}
+.page-h{font-size:clamp(25px,7vw,30px);letter-spacing:-.6px;margin:6px 0 3px}
+.page-sub{font-size:14px;margin-bottom:18px;line-height:1.5}
+/* zachtere, rondere kaarten met subtiele hooglicht */
+.card{border-radius:22px;padding:18px;border:1px solid rgba(255,255,255,.065);
+  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 38%),var(--surface);
+  box-shadow:0 20px 44px -30px rgba(0,0,0,.95);margin-bottom:16px}
+.card-h{font-size:13px;font-weight:800;letter-spacing:.1px}
+.saber{height:3px;margin:11px 0 16px;opacity:.85}
+/* tactiele knoppen */
+.btn{border-radius:15px;padding:16px;font-size:15.5px}
+.btn:active{transform:scale(.97)}
+.btn.small{border-radius:11px}
+/* velden */
+input,select{border-radius:13px;padding:13px 14px}
+/* lijst-rijen (match) → native rijen */
+.match{border-radius:15px;padding:13px 14px;border:1px solid rgba(255,255,255,.06);background:var(--surface)}
+.match:active:not(.flat){transform:scale(.985)}
+.match .play{border-radius:11px;padding:9px 15px}
+/* segment-pills tactiel */
+.tab:active{transform:scale(.95)}
+/* onderbalk: actieve indicator + tap */
+.botnav-i{position:relative}
+.botnav-i::before{content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) scaleX(0);width:22px;height:3px;border-radius:0 0 4px 4px;background:var(--pri);transition:transform .25s cubic-bezier(.3,.9,.3,1)}
+.botnav-i.on::before{transform:translateX(-50%) scaleX(1)}
+.botnav-i:active{transform:scale(.92)}
+/* empty states vriendelijker */
+.empty{padding:42px 18px;font-size:14.5px}
+.empty svg{width:44px;height:44px;margin-bottom:12px}
+/* stattegels ronder */
+.stat{border-radius:15px;padding:15px 14px}
+.stat .sv{font-size:25px}
+/* ===== HOME: begroeting + hero + quick-start ===== */
+.greet{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:6px 0 16px}
+.greet-hi{font-size:13.5px;color:var(--muted);font-weight:600}
+.greet-team{font-family:var(--disp);font-size:clamp(24px,7vw,30px);font-weight:800;letter-spacing:-.6px;line-height:1.08;margin-top:2px}
+.greet-badge{flex:0 0 auto;font-size:11.5px;font-weight:800;color:var(--pri-2);background:var(--pri-soft);border:1px solid var(--pri-line);padding:8px 14px;border-radius:999px;text-transform:capitalize;white-space:nowrap}
+.hero{position:relative;overflow:hidden;border-radius:24px;padding:20px;margin-bottom:16px;border:1px solid var(--pri-line);
+  background:linear-gradient(150deg,rgba(139,92,246,.26),rgba(139,92,246,.04) 62%),var(--surface);box-shadow:0 26px 56px -32px rgba(139,92,246,.65)}
+.hero::after{content:"";position:absolute;right:-30px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.3),transparent 70%);pointer-events:none}
+.hero-l{font-size:12px;color:var(--ink-2);font-weight:700;letter-spacing:.4px;text-transform:uppercase;position:relative;z-index:1}
+.hero-main{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:6px 0 14px;position:relative;z-index:1}
+.hero-big{font-family:var(--disp);font-size:clamp(46px,13vw,58px);font-weight:800;letter-spacing:-2px;line-height:1}
+.spark{width:clamp(110px,34vw,150px);height:48px;flex:0 0 auto}
+.hero-stats{display:flex;gap:9px;position:relative;z-index:1}
+.hero-stats>div{flex:1;min-width:0;background:rgba(0,0,0,.26);border:1px solid var(--line);border-radius:14px;padding:11px 8px;text-align:center}
+.hero-stats .hv{font-family:var(--disp);font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-stats .hl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;font-weight:700}
+.qs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.qs-card{position:relative;overflow:hidden;text-align:left;border:1px solid var(--line-2);border-radius:20px;padding:16px;background:var(--surface);cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:9px;min-height:124px}
+.qs-card:active{transform:scale(.97)}
+.qs-card.primary{border-color:transparent;background:linear-gradient(155deg,var(--pri),#6a44cf);box-shadow:0 18px 38px -22px rgba(139,92,246,.85)}
+.qs-card .qs-ic{width:42px;height:42px;border-radius:13px;background:var(--pri-soft);display:flex;align-items:center;justify-content:center}
+.qs-card .qs-ic svg{width:23px;height:23px;stroke:var(--pri-2);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.qs-card.primary .qs-ic{background:rgba(255,255,255,.2)}
+.qs-card.primary .qs-ic svg{stroke:#fff}
+.qs-card .qs-t{font-family:var(--disp);font-size:17px;font-weight:800;margin-top:auto}
+.qs-card .qs-d{font-size:12px;color:var(--ink-2)}
+.qs-card.primary .qs-t,.qs-card.primary .qs-d{color:#fff}
+.qs-card.primary .qs-d{opacity:.82}
+/* lijst-rij voor recente partijen */
+.lrow{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.lrow:last-child{border-bottom:none}
+.lr-main{flex:1;min-width:0}
+.lr-t{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr-t span{color:var(--muted);font-weight:500}
+.lr-s{font-size:12px;color:var(--muted);margin-top:2px}
+.lr-r{text-align:right;flex:0 0 auto}
+.lr-score{font-family:var(--disp);font-weight:800;font-size:18px}
+.win-pill{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.4px;color:var(--win-2);background:var(--win-soft);border:1px solid rgba(34,197,94,.3);padding:2px 7px;border-radius:6px;margin-top:3px}
 </style>
 </head>
 <body>
@@ -692,13 +770,16 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
     </section>
 
     <section id="cview-overview" class="view cview page hidden">
-      <h2 class="page-h">Competitie</h2><div class="page-sub" id="compSub">Seizoen-overzicht.</div>
+      <div id="compGreeting"></div>
       <div id="compBanner"></div>
+      <div class="qs-grid">
+        <button class="qs-card primary" onclick="openNewMatch()"><div class="qs-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg></div><div class="qs-t">Nieuwe partij</div><div class="qs-d">501 · live tellen</div></button>
+        <button class="qs-card" onclick="setMode('training')"><div class="qs-ic"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/></svg></div><div class="qs-t">Training</div><div class="qs-d">Oefen je worp</div></button>
+      </div>
       <div class="dash">
         <div class="card"><div class="card-h">Stand <span class="right" id="compMonth"></span></div><div class="saber"></div>
           <table id="compStandTable"></table>
-          <button class="btn" style="margin-top:16px" onclick="openNewMatch()">+ Nieuwe partij (live tellen)</button>
-          <button class="btn ghost small" style="margin-top:8px;width:100%" onclick="openManualMatch()">Of: uitslag handmatig invoeren</button></div>
+          <button class="btn ghost small" style="margin-top:14px;width:100%" onclick="openManualMatch()">Uitslag handmatig invoeren</button></div>
         <aside class="card"><div class="card-h">Spelers <span class="right" id="compPlayerCount"></span></div><div class="saber"></div>
           <div id="compPlayerList"></div>
           <div class="addrow"><input id="compNewPlayer" placeholder="Speler toevoegen" autocomplete="off" onkeydown="if(event.key==='Enter')compAddPlayer()"><button class="add" onclick="compAddPlayer()">+</button></div></aside>
@@ -752,10 +833,18 @@ const AV_COLORS=[['#2a2150','#b39dff'],['#241a48','#a78bfa'],['#1e2550','#8ab4ff
 function initials(name){const n=(name||'?').trim();if(!n)return '?';const parts=n.split(/\s+/);return ((parts[0][0]||'')+(parts.length>1?parts[parts.length-1][0]:'')).toUpperCase();}
 function avatar(name,size){const n=(name||'?').trim();let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;const c=AV_COLORS[h%AV_COLORS.length];const s=size||30;
   return `<span class="avatar" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px;background:${c[0]};color:${c[1]}">${esc(initials(n))}</span>`;}
+let _sparkId=0;
+function sparkline(vals,w,h){if(!vals||vals.length<2)return '';w=w||130;h=h||46;const mn=Math.min(...vals),mx=Math.max(...vals),rng=(mx-mn)||1,pad=4;
+  const pts=vals.map((v,i)=>[(i/(vals.length-1))*w,pad+(h-2*pad)-((v-mn)/rng)*(h-2*pad)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const id='sp'+(++_sparkId);const last=pts[pts.length-1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--pri)" stop-opacity=".4"/><stop offset="1" stop-color="var(--pri)" stop-opacity="0"/></linearGradient></defs>`+
+    `<path d="${line} L ${w} ${h} L 0 ${h} Z" fill="url(#${id})"/><path d="${line}" fill="none" stroke="var(--pri-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`+
+    `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3" fill="#fff"/></svg>`;}
 const MONTHS=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 function curMonth(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function monthLabel(m){const [y,mo]=m.split('-');return MONTHS[(+mo)-1]+' '+y;}
-let MODE=localStorage.getItem('dartMode')||'tournament';
+let MODE=localStorage.getItem('dartMode')||'competition';
 const TV=(function(){try{return new URLSearchParams(location.search).has('tv')||location.hash.replace('#','')==='tv';}catch(e){return false;}})();
 
 /* ============ TOURNAMENT STATE ============ */
@@ -779,19 +868,20 @@ function cname(id){const p=C.players.find(x=>x.id===id);return p?p.name:'?';}
 /* ============ MODE / NAV ============ */
 function setMode(m){MODE=m;localStorage.setItem('dartMode',m);if(m==='tournament')go(S.activeView||'setup');else if(m==='training')gotr(TR.view||'menu');else goc(C.activeView||'overview');}
 function hideAllViews(){document.querySelectorAll('.tview').forEach(s=>s.classList.add('hidden'));document.querySelectorAll('.cview').forEach(s=>s.classList.add('hidden'));document.querySelectorAll('.trview').forEach(s=>s.classList.add('hidden'));}
+function animateIn(el){if(!el)return;el.classList.remove('pgin');void el.offsetWidth;el.classList.add('pgin');}
 function go(v){MODE='tournament';localStorage.setItem('dartMode','tournament');S.activeView=v;save();
   hideAllViews();
-  document.getElementById('view-'+v).classList.remove('hidden');
+  const _v=document.getElementById('view-'+v);_v.classList.remove('hidden');animateIn(_v);
   document.querySelectorAll('#nav-tournament .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===v));
   syncModeUI();render();window.scrollTo({top:0,behavior:'smooth'});}
 function goc(v){MODE='competition';localStorage.setItem('dartMode','competition');C.activeView=v;saveC();
   hideAllViews();
-  document.getElementById('cview-'+v).classList.remove('hidden');
+  const _cv=document.getElementById('cview-'+v);_cv.classList.remove('hidden');animateIn(_cv);
   document.querySelectorAll('#nav-comp .tab').forEach(b=>b.classList.toggle('active',b.dataset.ctab===v));
   syncModeUI();render();if(typeof fbReady!=='undefined'&&fbReady&&!TV)fbPushTour();window.scrollTo({top:0,behavior:'smooth'});}
 function gotr(v){MODE='training';localStorage.setItem('dartMode','training');TR.view=v;saveTR();
   hideAllViews();
-  document.getElementById('view-training').classList.remove('hidden');
+  const _tv=document.getElementById('view-training');_tv.classList.remove('hidden');animateIn(_tv);
   IAMCTRL=!!(TR.game&&!TR.game.over);
   syncModeUI();renderTraining();renderHero();if(typeof fbReady!=='undefined'&&fbReady&&!TV)fbPushTour();window.scrollTo({top:0,behavior:'smooth'});}
 function syncModeUI(){document.getElementById('mode-tournament').classList.toggle('on',MODE==='tournament');
@@ -986,17 +1076,19 @@ function renderComp(){
   pl.innerHTML=C.players.length?C.players.map((p,i)=>`<div class="prow">${avatar(p.name,32)}<input value="${esc(p.name)}" onchange="compRename('${p.id}',this.value)"><button class="del" onclick="compRemovePlayer('${p.id}')">×</button></div>`).join('')
     :'<div class="muted center" style="padding:10px 0">Voeg minstens 2 spelers toe</div>';
   document.getElementById('compPlayerCount').textContent=C.players.length?C.players.length+(C.players.length===1?' speler':' spelers'):'';
-  document.getElementById('compSub').textContent='Seizoen '+monthLabel(curMonth())+' · 3 punten per gewonnen partij.';
+  const _gt=document.getElementById('compGreeting');if(_gt)_gt.innerHTML=`<div class="greet"><div><div class="greet-hi">Welkom terug 👋</div><div class="greet-team">${esc((S&&S.team&&S.team.trim())||'De Pijlen')}</div></div><div class="greet-badge">${monthLabel(curMonth())}</div></div>`;
   document.getElementById('compMonth').textContent=monthLabel(curMonth());
   const rows=compStand(monthMatches(curMonth()));const tbl=document.getElementById('compStandTable');
   if(!C.players.length){tbl.innerHTML='';}else tbl.innerHTML=`<thead><tr><th></th><th style="text-align:left">Speler</th><th>G</th><th>W</th><th>V</th><th>Ptn</th></tr></thead><tbody>`+
     rows.map((r,i)=>{const isLead=i===0&&r.played;return `<tr class="${isLead?'lead':''}"><td><span class="pos">${i+1}</span></td><td class="nm"><span class="nm-wrap">${avatar(cname(r.id),26)}<span class="nm-txt">${esc(cname(r.id))}</span>${isLead?'<span class="lead-badge">LEADER</span>':''}</span></td>
       <td class="tnum">${r.played}</td><td class="tnum">${r.won}</td><td class="tnum">${r.lost}</td><td class="tnum" style="color:var(--green-bright);font-family:var(--disp);font-weight:800">${r.pts}</td></tr>`;}).join('')+`</tbody>`;
   const leader=rows[0];
-  document.getElementById('compBanner').innerHTML=leader&&leader.played?
-    `<div class="banner"><div class="medal">${trophy()}</div><div><div class="bt">Leider · ${monthLabel(curMonth())}</div><div class="bl">${esc(cname(leader.id))}</div>
-      <div class="bs">${leader.pts} punten · ${leader.won} ${leader.won===1?'winst':'winsten'} · gem ${avg3(leader.scored,leader.darts)}</div></div></div>`
-    :`<div class="banner"><div class="medal">${trophy()}</div><div><div class="bt">${monthLabel(curMonth())}</div><div class="bl">Nog geen partijen</div><div class="bs">Speel de eerste partij van de maand!</div></div></div>`;
+  const msH=monthMatches(curMonth());let hT=0,hD=0,hS=0;rows.forEach(r=>{hT+=r.t180;hD+=r.darts;hS+=r.scored;});
+  const sv=msH.slice().reverse().map(m=>{const a=m.stats&&m.stats[m.p1],b=m.stats&&m.stats[m.p2];const dd=(a?a.darts:0)+(b?b.darts:0),sc=(a?a.scored:0)+(b?b.scored:0);return dd>0?sc/dd*3:null;}).filter(v=>v!=null);
+  const leadName=leader&&leader.played?cname(leader.id):'—';
+  document.getElementById('compBanner').innerHTML=`<div class="hero"><div class="hero-l">Teamgemiddelde · ${monthLabel(curMonth())}</div>
+    <div class="hero-main"><div class="hero-big tnum">${avg3(hS,hD)}</div>${sparkline(sv,140,48)||'<div style="flex:1"></div>'}</div>
+    <div class="hero-stats"><div><div class="hv tnum">${msH.length}</div><div class="hl">Partijen</div></div><div><div class="hv tnum">${hT}</div><div class="hl">180's</div></div><div><div class="hv">${esc(leadName)}</div><div class="hl">Leider</div></div></div></div>`;
   renderCompDash();renderCompStats();renderCompHistory();renderCompHall();renderRivalry();}
 let compStatPeriod='month';
 function compSetPeriod(v){compStatPeriod=v;renderCompDash();}
@@ -1015,10 +1107,9 @@ function renderCompDash(){const statsEl=document.getElementById('compDashStats')
       :`<div class="chart-empty">Speel partijen om de grafiek te vullen.</div>`);
   const recent=C.matches.slice(0,5);
   recEl.innerHTML=`<div class="card-h">Recente partijen <span class="right">${C.matches.length}</span></div><div class="saber"></div>`+
-    (recent.length?recent.map(m=>{const w1=m.winner===m.p1;return `<div class="match flat played"><div class="who">
-        <div class="nm ${w1?'win':''}"><span class="mk"></span>${esc(cname(m.p1))}</div>
-        <div class="nm ${!w1?'win':''}"><span class="mk"></span>${esc(cname(m.p2))}</div></div>
-      <div class="meta"><div class="score tnum">${m.legs1}–${m.legs2}</div><div class="sub">${monthLabel(m.month)}${m.manual?' · handmatig':''}</div></div></div>`;}).join('')
+    (recent.length?recent.map(m=>{const w1=m.winner===m.p1;const wn=w1?cname(m.p1):cname(m.p2);return `<div class="lrow">${avatar(wn,38)}
+        <div class="lr-main"><div class="lr-t">${esc(cname(m.p1))} <span>vs</span> ${esc(cname(m.p2))}</div><div class="lr-s">${monthLabel(m.month)}${m.manual?' · handmatig':''}</div></div>
+        <div class="lr-r"><div class="lr-score">${m.legs1}–${m.legs2}</div><span class="win-pill">${esc(initials(wn))} wint</span></div></div>`;}).join('')
       :`<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg><div>Nog geen partijen gespeeld.</div><button class="btn green small" style="margin-top:14px;width:auto" onclick="openNewMatch()">+ Nieuwe partij</button></div>`);}
 function renderCompStats(){const el=document.getElementById('compStats');
   if(!C.matches.length){el.innerHTML=`<div class="card"><div class="empty">${statIcon()}<div>Nog geen partijen gespeeld.</div></div></div>`;return;}
