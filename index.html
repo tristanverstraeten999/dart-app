@@ -172,11 +172,14 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .legend{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.7}
 .legend b{color:var(--gold);font-weight:600}
 
-.banner{display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:var(--radius);margin-bottom:18px;
-  border:1px solid var(--line);background:linear-gradient(110deg,var(--gold-soft),transparent 60%),var(--surface);box-shadow:var(--sh)}
-.banner .medal{width:52px;height:52px;flex:0 0 auto;border-radius:14px;background:var(--gold-soft);border:1px solid rgba(240,180,41,.4);display:flex;align-items:center;justify-content:center}
-.banner .medal svg{width:27px;height:27px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.banner .bt{font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold)}
+.banner{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:var(--radius);margin-bottom:18px;
+  border:1px solid var(--line);background:linear-gradient(110deg,var(--green-soft),transparent 58%),var(--surface);box-shadow:var(--sh)}
+.banner::after{content:"";position:absolute;right:-26px;bottom:-40px;width:190px;height:190px;opacity:.16;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20c0-9 7-16 16-16 0 9-7 16-16 16Z'/%3E%3Cpath d='M4 20C8 14 13 9 20 4'/%3E%3Cpath d='M9 15c1-3 3-5 6-6'/%3E%3Cpath d='M7 17c.6-2 2-3.5 4-4.5'/%3E%3C/svg%3E") no-repeat center/contain}
+.banner>*{position:relative;z-index:1}
+.banner .medal{width:52px;height:52px;flex:0 0 auto;border-radius:14px;background:var(--green-soft);border:1px solid var(--green-line);display:flex;align-items:center;justify-content:center}
+.banner .medal svg{width:27px;height:27px;stroke:var(--green-bright);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.banner .bt{font-size:10.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--green-bright)}
 .banner .bl{font-family:var(--disp);font-size:24px;font-weight:800;margin-top:2px;line-height:1.05;letter-spacing:-.3px}
 .banner .bs{font-size:12.5px;color:var(--muted);margin-top:3px}
 
@@ -186,6 +189,17 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
 .stat .sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;font-weight:600}
 .pstat-h{font-family:var(--disp);font-size:16px;font-weight:700;margin:0;display:flex;align-items:center;gap:9px;letter-spacing:-.2px}
 .pstat-h .dotg{width:9px;height:9px;border-radius:50%;background:var(--green)}
+.dash2{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;align-items:start;margin-top:0}
+.mini-sel{appearance:none;background:var(--bg-2);border:1px solid var(--line-2);color:var(--ink-2);border-radius:9px;padding:7px 30px 7px 12px;font-size:12.5px;font-weight:600;font-family:var(--font);cursor:pointer;width:auto;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23697c73' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.chart-h{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);margin:20px 0 0}
+.chart{display:flex;align-items:flex-end;gap:12px;padding:14px 4px 0}
+.chart .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0}
+.chart .bar .track{width:100%;max-width:48px;height:112px;display:flex;align-items:flex-end}
+.chart .bar i{width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--green-bright),var(--green));min-height:4px;box-shadow:0 0 18px -5px rgba(34,197,94,.55);transition:height .5s cubic-bezier(.3,.85,.3,1)}
+.chart .bar .bv{font-family:var(--disp);font-size:13px;font-weight:800;color:var(--ink)}
+.chart .bar .bl{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.chart-empty{height:120px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
 
 .h2h{display:flex;align-items:center;justify-content:center;gap:20px;padding:14px 0 20px}
 .h2h .side{text-align:center;flex:1;min-width:0}
@@ -372,7 +386,7 @@ tbody tr:nth-child(1) .pos{background:var(--gold);color:#2a1d00;border-color:var
   .side-foot{display:none}.main{padding:20px 16px 70px}
 }
 @media(max-width:780px){
-  .grid2,.dash{grid-template-columns:1fr}
+  .grid2,.dash,.dash2{grid-template-columns:1fr}
   .bracket{flex-direction:column}.conn{display:none}.round{min-width:0;padding-top:26px}
   .h2h .side .hw{font-size:42px}
 }
@@ -637,6 +651,10 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
           <div id="compPlayerList"></div>
           <div class="addrow"><input id="compNewPlayer" placeholder="Speler toevoegen" autocomplete="off" onkeydown="if(event.key==='Enter')compAddPlayer()"><button class="add" onclick="compAddPlayer()">+</button></div></aside>
       </div>
+      <div class="dash2">
+        <div class="card" id="compDashStats"></div>
+        <aside class="card" id="compRecent"></aside>
+      </div>
     </section>
 
     <section id="cview-stats" class="view cview page hidden">
@@ -896,7 +914,29 @@ function renderComp(){
     `<div class="banner"><div class="medal">${trophy()}</div><div><div class="bt">Leider · ${monthLabel(curMonth())}</div><div class="bl">${esc(cname(leader.id))}</div>
       <div class="bs">${leader.pts} punten · ${leader.won} ${leader.won===1?'winst':'winsten'} · gem ${avg3(leader.scored,leader.darts)}</div></div></div>`
     :`<div class="banner"><div class="medal">${trophy()}</div><div><div class="bt">${monthLabel(curMonth())}</div><div class="bl">Nog geen partijen</div><div class="bs">Speel de eerste partij van de maand!</div></div></div>`;
-  renderCompStats();renderCompHistory();renderCompHall();renderRivalry();}
+  renderCompDash();renderCompStats();renderCompHistory();renderCompHall();renderRivalry();}
+let compStatPeriod='month';
+function compSetPeriod(v){compStatPeriod=v;renderCompDash();}
+function renderCompDash(){const statsEl=document.getElementById('compDashStats'),recEl=document.getElementById('compRecent');if(!statsEl||!recEl)return;
+  const period=compStatPeriod==='all'?'all':'month';
+  const ms=period==='all'?C.matches:monthMatches(curMonth());
+  const rows=compStand(ms);let t180=0,darts=0,scored=0,hi=0;rows.forEach(r=>{t180+=r.t180;darts+=r.darts;scored+=r.scored;hi=Math.max(hi,r.hi);});
+  const tiles=[["180's",t180],['Hoogste finish',hi||'—'],['Gem. 3-pijl',avg3(scored,darts)],['Partijen',ms.length]];
+  const players=rows.filter(r=>r.played>0),maxW=Math.max(1,...players.map(r=>r.won));
+  const periodLabel=period==='all'?'Heel seizoen':monthLabel(curMonth());
+  statsEl.innerHTML=`<div class="card-h">Statistieken <span class="right"><select class="mini-sel" onchange="compSetPeriod(this.value)">
+      <option value="month" ${period==='month'?'selected':''}>${esc(monthLabel(curMonth()))}</option>
+      <option value="all" ${period==='all'?'selected':''}>Heel seizoen</option></select></span></div><div class="saber"></div>
+    <div class="statgrid">`+tiles.map(t=>`<div class="stat"><div class="sv tnum">${t[1]}</div><div class="sl">${t[0]}</div></div>`).join('')+`</div>`+
+    (players.length?`<div class="chart-h">Winsten per speler · ${esc(periodLabel)}</div><div class="chart">`+players.map(r=>`<div class="bar" title="${esc(cname(r.id))}"><div class="bv tnum">${r.won}</div><div class="track"><i style="height:${Math.round(r.won/maxW*100)}%"></i></div><div class="bl">${esc(initials(cname(r.id)))}</div></div>`).join('')+`</div>`
+      :`<div class="chart-empty">Speel partijen om de grafiek te vullen.</div>`);
+  const recent=C.matches.slice(0,5);
+  recEl.innerHTML=`<div class="card-h">Recente partijen <span class="right">${C.matches.length}</span></div><div class="saber"></div>`+
+    (recent.length?recent.map(m=>{const w1=m.winner===m.p1;return `<div class="match flat played"><div class="who">
+        <div class="nm ${w1?'win':''}"><span class="mk"></span>${esc(cname(m.p1))}</div>
+        <div class="nm ${!w1?'win':''}"><span class="mk"></span>${esc(cname(m.p2))}</div></div>
+      <div class="meta"><div class="score tnum">${m.legs1}–${m.legs2}</div><div class="sub">${monthLabel(m.month)}${m.manual?' · handmatig':''}</div></div></div>`;}).join('')
+      :`<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg><div>Nog geen partijen gespeeld.</div><button class="btn green small" style="margin-top:14px;width:auto" onclick="openNewMatch()">+ Nieuwe partij</button></div>`);}
 function renderCompStats(){const el=document.getElementById('compStats');
   if(!C.matches.length){el.innerHTML=`<div class="card"><div class="empty">${statIcon()}<div>Nog geen partijen gespeeld.</div></div></div>`;return;}
   const all=compStand(C.matches);
