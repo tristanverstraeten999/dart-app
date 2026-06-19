@@ -895,8 +895,8 @@ function avKey(name){return (name||'?').trim().toLowerCase();}
 let AVATARS=(function(){try{return JSON.parse(localStorage.getItem('dartAvatars')||'{}');}catch(e){return {};}})();
 function saveAvatars(){try{localStorage.setItem('dartAvatars',JSON.stringify(AVATARS));}catch(e){}}
 function defaultAv(name){let h=0;const n=avKey(name);for(let i=0;i<n.length;i++)h=(h*33+n.charCodeAt(i))>>>0;
-  return {skin:SKINS[h%SKINS.length],hair:HAIRS[(h>>3)%HAIRS.length],jersey:JERSEYS[(h>>7)%JERSEYS.length],pants:PANTS[(h>>11)%PANTS.length]};}
-function getAv(name){return AVATARS[avKey(name)]||defaultAv(name);}
+  return {skin:SKINS[h%SKINS.length],hair:HAIRS[(h>>>3)%HAIRS.length],jersey:JERSEYS[(h>>>7)%JERSEYS.length],pants:PANTS[(h>>>11)%PANTS.length]};}
+function getAv(name){const d=defaultAv(name),c=AVATARS[avKey(name)];return c?{skin:c.skin||d.skin,hair:c.hair||d.hair,jersey:c.jersey||d.jersey,pants:c.pants||d.pants}:d;}
 function setAv(name,av){AVATARS[avKey(name)]=av;saveAvatars();}
 function charSvg(av,state,size,id){av=av||defaultAv('?');const w=size||90,h=Math.round(w*1.34);state=state||'idle';
   return `<span class="char ${state}"${id?` id="${id}"`:''} style="--skin:${av.skin};--hair:${av.hair};--jersey:${av.jersey};--pants:${av.pants};width:${w}px;height:${h}px">`+
