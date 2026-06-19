@@ -578,6 +578,9 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
               <div><label>Finale · sets</label><select id="finaleSets"><option value="1">First to 1</option><option value="2">First to 2</option><option value="3" selected>First to 3</option></select></div>
               <div><label>Finale · legs/set</label><select id="finaleLegs"><option value="1">First to 1</option><option value="2">First to 2</option><option value="3" selected>First to 3</option><option value="4">First to 4</option><option value="5">First to 5</option></select></div></div>
             <div style="margin-top:14px"><label>Finalisten</label><select id="finalists"><option value="2">Top 2 → finale</option><option value="4" selected>Top 4 → ½ finales</option></select></div>
+            <div class="row" style="margin-top:14px">
+              <div><label>Startscore</label><select id="tourStart"><option value="501" selected>501</option><option value="301">301</option><option value="701">701</option><option value="170">170</option></select></div>
+              <div><label>Uitgooien</label><select id="tourOut"><option value="double" selected>Dubbel uit</option><option value="straight">Enkel uit</option></select></div></div>
             <p class="muted" style="margin-top:10px">Een set = first to X legs. Bv. poule first to 1 set, finale first to 3 sets.</p></div>
           <button class="btn" onclick="startTournament()">Start tornooi</button>
           <p class="muted center" style="margin-top:11px">Minstens 3 spelers · tellen via DartCounter, hier enkel de uitslag</p>
@@ -610,7 +613,8 @@ body.tvmode .tv-name{font-size:clamp(30px,4.4vw,60px)}
       <div class="dash">
         <div class="card"><div class="card-h">Stand <span class="right" id="compMonth"></span></div><div class="saber"></div>
           <table id="compStandTable"></table>
-          <button class="btn" style="margin-top:16px" onclick="openNewMatch()">+ Nieuwe partij</button></div>
+          <button class="btn" style="margin-top:16px" onclick="openNewMatch()">+ Nieuwe partij (live tellen)</button>
+          <button class="btn ghost small" style="margin-top:8px;width:100%" onclick="openManualMatch()">Of: uitslag handmatig invoeren</button></div>
         <aside class="card"><div class="card-h">Spelers <span class="right" id="compPlayerCount"></span></div><div class="saber"></div>
           <div id="compPlayerList"></div>
           <div class="addrow"><input id="compNewPlayer" placeholder="Speler toevoegen" autocomplete="off" onkeydown="if(event.key==='Enter')compAddPlayer()"><button class="add" onclick="compAddPlayer()">+</button></div></aside>
@@ -699,7 +703,7 @@ function render(){
   ['poule','stand'].forEach(t=>{const b=document.querySelector(`#nav-tournament .tab[data-tab="${t}"]`);if(b)b.disabled=!started;});
   const fb=document.querySelector('#nav-tournament .tab[data-tab="finale"]');if(fb)fb.disabled=!(S.finaleMatches.length>0||pouleComplete());
   renderHero();renderPlayers();renderPoule();renderStand();renderFinale();
-  if(S.config.pouleLegs){setVal('pouleSets',S.config.pouleSets||1);setVal('pouleLegs',S.config.pouleLegs);setVal('finaleSets',S.config.finaleSets||1);setVal('finalists',S.config.finalists);setVal('finaleLegs',S.config.finaleLegs);}
+  if(S.config.pouleLegs){setVal('pouleSets',S.config.pouleSets||1);setVal('pouleLegs',S.config.pouleLegs);setVal('finaleSets',S.config.finaleSets||1);setVal('finalists',S.config.finalists);setVal('finaleLegs',S.config.finaleLegs);setVal('tourStart',S.config.startScore||501);setVal('tourOut',S.config.doubleOut===false?'straight':'double');}
   setVal('teamName',S.team||'');renderComp();}
 function setVal(id,val){const el=document.getElementById(id);if(el)el.value=val;}
 function renderHero(){document.getElementById('heroTitle').textContent=(S.team&&S.team.trim())?S.team:'De Pijlen';let st;
@@ -720,7 +724,7 @@ function renamePlayer(id,v){const p=S.players.find(x=>x.id===id);if(p){p.name=v.
 function renderPlayers(){const list=document.getElementById('playerList');
   list.innerHTML=S.players.map((p,i)=>`<div class="prow"><div class="seed">${i+1}</div><input value="${esc(p.name)}" onchange="renamePlayer('${p.id}',this.value)"><button class="del" onclick="removePlayer('${p.id}')">×</button></div>`).join('');
   document.getElementById('playerCount').textContent=S.players.length?S.players.length+(S.players.length===1?' speler':' spelers'):'';}
-function startTournament(){S.config={pouleSets:+gv('pouleSets'),pouleLegs:+gv('pouleLegs'),finaleSets:+gv('finaleSets'),finaleLegs:+gv('finaleLegs'),finalists:+gv('finalists')};
+function startTournament(){S.config={pouleSets:+gv('pouleSets'),pouleLegs:+gv('pouleLegs'),finaleSets:+gv('finaleSets'),finaleLegs:+gv('finaleLegs'),finalists:+gv('finalists'),startScore:+gv('tourStart'),doubleOut:gv('tourOut')==='double'};
   if(S.players.length<3){toast('Voeg minstens 3 spelers toe');return;}if(S.config.finalists>S.players.length)S.config.finalists=2;
   S.pouleMatches=roundRobin(S.players).map(([a,b])=>({id:uid(),p1:a,p2:b,st:S.config.pouleSets,lg:S.config.pouleLegs,sets1:0,sets2:0,legs1:0,legs2:0,winner:null}));
   S.finaleMatches=[];S.tieChoice=[];S.phase='poule';save();go('poule');toast('Tornooi gestart');}
@@ -820,7 +824,7 @@ function renderResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);const 
     <div class="m-sub" style="text-align:center;margin:2px 0 10px">…of vul de eindstand hierboven met de hand in</div>
     <button class="btn green" onclick="saveResult()">Opslaan</button>
     ${RES.played?'<button class="btn danger" onclick="clearResult()">Uitslag wissen</button>':''}<button class="btn ghost" onclick="closeResult()">Annuleren</button></div></div>`;}
-function startTourMatch(kind,id){const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;closeResult();startCounter(m.p1,m.p2,501,mLg(m),{kind,id},mSt(m));}
+function startTourMatch(kind,id){const m=findMatch(kind,id);if(!m||!m.p1||!m.p2)return;closeResult();startCounter(m.p1,m.p2,S.config.startScore||501,mLg(m),{kind,id},mSt(m),S.config.doubleOut!==false);}
 function plCard(i,pid,val,win){return `<div class="m-pl ${win?'win':''}"><div class="m-name">${esc(nameT(pid))}</div><div class="legbig tnum">${val}</div>
   <div class="steps"><button onclick="stepLeg(${i},-1)">−</button><button onclick="stepLeg(${i},1)">+</button></div></div>`;}
 function saveResult(){if(!RES)return;const m=findMatch(RES.kind,RES.id);const a=RES.legs[0],b=RES.legs[1];if(a===b){toast('Gelijkspel kan niet — kies een winnaar');return;}
@@ -897,7 +901,7 @@ function renderCompHistory(){const el=document.getElementById('compHistory');
   html+=`<div class="card"><div class="card-h">Alle partijen <span class="right">${C.matches.length}</span></div><div class="saber"></div>`+
     C.matches.map(m=>{const w1=m.winner===m.p1;return `<div class="match flat played"><div class="who"><div class="sub">${monthLabel(m.month)}</div>
       <div class="nm ${w1?'win':''}"><span class="mk"></span>${esc(cname(m.p1))}</div><div class="nm ${!w1?'win':''}"><span class="mk"></span>${esc(cname(m.p2))}</div></div>
-      <div class="meta"><div class="score tnum">${m.legs1}–${m.legs2}</div><div class="sub">${m.startScore}</div></div></div>`;}).join('')+`</div>`;
+      <div class="meta"><div class="score tnum">${m.legs1}–${m.legs2}</div><div class="sub">${m.startScore}${m.manual?' · handmatig':''}</div></div></div>`;}).join('')+`</div>`;
   el.innerHTML=html;}
 function compStreaks(){const s={};const cur={};C.matches.slice().sort((a,b)=>a.ts-b.ts).forEach(m=>{const w=m.winner,l=w===m.p1?m.p2:m.p1;cur[w]=(cur[w]||0)+1;s[w]=Math.max(s[w]||0,cur[w]);cur[l]=0;});return s;}
 function h2hPairs(){const map={};C.matches.forEach(m=>{const ids=[m.p1,m.p2].sort();const key=ids.join('|');
@@ -963,7 +967,7 @@ function renderCompHall(){const el=document.getElementById('compHall');const win
       <div class="ach-grid">`+ACH.map(a=>`<div class="ach ${got[a.k]?'on':''}"><div class="ai">${achIcon(a.ic)}</div><div class="at">${a.t}</div><div class="ad">${a.d}</div></div>`).join('')+`</div></div>`;});
   el.innerHTML=html;}
 let NM=null;
-function openNewMatch(){if(C.players.length<2){toast('Voeg eerst 2 spelers toe (rechts)');return;}NM={p1:C.players[0].id,p2:C.players[1].id,start:C.config.startScore||501,legs:C.config.legs||3};renderNewMatch();document.getElementById('modalBack').classList.remove('hidden');}
+function openNewMatch(){if(C.players.length<2){toast('Voeg eerst 2 spelers toe (rechts)');return;}NM={p1:C.players[0].id,p2:C.players[1].id,start:C.config.startScore||501,legs:C.config.legs||3,out:C.config.doubleOut===false?'straight':'double'};renderNewMatch();document.getElementById('modalBack').classList.remove('hidden');}
 function closeNewMatch(){NM=null;document.getElementById('modalBack').classList.add('hidden');}
 function nmSet(k,v){NM[k]=k==='start'||k==='legs'?+v:v;renderNewMatch();}
 function renderNewMatch(){const opts=sel=>C.players.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join('');
@@ -974,13 +978,42 @@ function renderNewMatch(){const opts=sel=>C.players.map(p=>`<option value="${p.i
         <option value="501" ${NM.start===501?'selected':''}>501</option><option value="301" ${NM.start===301?'selected':''}>301</option><option value="170" ${NM.start===170?'selected':''}>170</option></select></div>
       <div><label>Legs (first to)</label><select onchange="nmSet('legs',this.value)">
         <option value="1" ${NM.legs===1?'selected':''}>1</option><option value="2" ${NM.legs===2?'selected':''}>2</option><option value="3" ${NM.legs===3?'selected':''}>3</option><option value="4" ${NM.legs===4?'selected':''}>4</option><option value="5" ${NM.legs===5?'selected':''}>5</option></select></div></div>
+    <div style="margin-top:14px"><label>Uitgooien</label><select onchange="nmSet('out',this.value)"><option value="double" ${NM.out!=='straight'?'selected':''}>Dubbel uit</option><option value="straight" ${NM.out==='straight'?'selected':''}>Enkel uit</option></select></div>
     <button class="btn green" style="margin-top:18px" onclick="startNM()">Start partij</button><button class="btn ghost" onclick="closeNewMatch()">Annuleren</button></div></div>`;}
-function startNM(){if(NM.p1===NM.p2){toast('Kies twee verschillende spelers');return;}C.config.startScore=NM.start;C.config.legs=NM.legs;saveC();const p1=NM.p1,p2=NM.p2,start=NM.start,legs=NM.legs;closeNewMatch();startCounter(p1,p2,start,legs);}
+function startNM(){if(NM.p1===NM.p2){toast('Kies twee verschillende spelers');return;}const dbl=NM.out!=='straight';C.config.startScore=NM.start;C.config.legs=NM.legs;C.config.doubleOut=dbl;saveC();const p1=NM.p1,p2=NM.p2,start=NM.start,legs=NM.legs;closeNewMatch();startCounter(p1,p2,start,legs,null,1,dbl);}
+
+/* --- handmatige uitslag (gespeeld op echt bord) --- */
+function openManualMatch(){if(C.players.length<2){toast('Voeg eerst 2 spelers toe (rechts)');return;}
+  const start=C.config.startScore||501,legs=C.config.legs||3;
+  const opts=sel=>C.players.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join('');
+  const so=v=>[170,301,501,701].map(s=>`<option value="${s}" ${s===v?'selected':''}>${s}</option>`).join('');
+  document.getElementById('modalBack').innerHTML=`<div class="modal-back" onclick="if(event.target===this)closeManualMatch()"><div class="modal">
+    <div class="m-h">Handmatige uitslag</div><div class="m-sub">Log een partij die je op een echt bord speelde. Stats zijn optioneel.</div>
+    <div class="row"><div><label>Speler 1</label><select id="mmP1">${opts(C.players[0].id)}</select></div><div><label>Speler 2</label><select id="mmP2">${opts(C.players[1].id)}</select></div></div>
+    <div class="row" style="margin-top:12px"><div><label>Startscore</label><select id="mmStart">${so(start)}</select></div><div><label>Legs (first to)</label><select id="mmLegs">${[1,2,3,4,5,6,7].map(n=>`<option value="${n}" ${n===legs?'selected':''}>${n}</option>`).join('')}</select></div></div>
+    <div class="row" style="margin-top:12px"><div><label>Legs gewonnen · S1</label><input id="mmL1" type="number" inputmode="numeric" min="0" value="0"></div><div><label>Legs gewonnen · S2</label><input id="mmL2" type="number" inputmode="numeric" min="0" value="0"></div></div>
+    <div class="m-sub" style="text-align:left;margin:14px 0 6px">Optionele stats</div>
+    <div class="row"><div><label>180's · S1</label><input id="mmT1" type="number" inputmode="numeric" min="0" value="0"></div><div><label>180's · S2</label><input id="mmT2" type="number" inputmode="numeric" min="0" value="0"></div></div>
+    <div class="row" style="margin-top:12px"><div><label>Hoogste finish · S1</label><input id="mmH1" type="number" inputmode="numeric" min="0" max="170" value="0"></div><div><label>Hoogste finish · S2</label><input id="mmH2" type="number" inputmode="numeric" min="0" max="170" value="0"></div></div>
+    <p class="muted" style="margin-top:10px">Gemiddelde wordt niet berekend bij handmatige invoer (geen pijl-data). 180's en hoogste finish tellen wel mee.</p>
+    <button class="btn green" style="margin-top:14px" onclick="saveManualMatch()">Opslaan</button><button class="btn ghost" onclick="closeManualMatch()">Annuleren</button></div></div>`;}
+function closeManualMatch(){document.getElementById('modalBack').classList.add('hidden');}
+function saveManualMatch(){const g=id=>document.getElementById(id);
+  const p1=g('mmP1').value,p2=g('mmP2').value;if(p1===p2){toast('Kies twee verschillende spelers');return;}
+  const start=+g('mmStart').value,legsTarget=+g('mmLegs').value;
+  const num=(id,max)=>{let v=parseInt(g(id).value||'0',10);if(isNaN(v)||v<0)v=0;if(max!=null&&v>max)v=max;return v;};
+  const l1=num('mmL1'),l2=num('mmL2');if(l1===l2){toast('Vul een winnende stand in (geen gelijkspel)');return;}
+  const t1=num('mmT1'),t2=num('mmT2'),h1=num('mmH1',170),h2=num('mmH2',170);
+  const winner=l1>l2?p1:p2;const now=new Date(),month=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const rec={id:uid(),ts:Date.now(),month,p1,p2,startScore:start,legsTarget,legs1:l1,legs2:l2,winner,manual:true,
+    stats:{[p1]:{darts:0,scored:0,t180:t1,hi:h1},[p2]:{darts:0,scored:0,t180:t2,hi:h2}}};
+  C.matches.unshift(rec);const newly=evalAchievements();saveC();closeManualMatch();render();confetti(120);toast(cname(winner)+' wint de partij!',true);
+  newly.slice(0,3).forEach((n,i)=>setTimeout(()=>toast('Badge ontgrendeld · '+n.name+': '+n.t,true),700+i*1200));}
 
 /* ============ 501 COUNTER ============ */
 let CO=null;
 function anyName(id){let p=C.players.find(x=>x.id===id);if(p)return p.name;p=(S&&S.players)?S.players.find(x=>x.id===id):null;return p?p.name:'?';}
-function startCounter(p1,p2,start,lg,ctx,st){st=st||1;CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,lg,st,legsTarget:lg,setsWon:[0,0],legsTotal:[0,0],starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
+function startCounter(p1,p2,start,lg,ctx,st,dblOut){st=st||1;CO={p:[p1,p2],names:[anyName(p1),anyName(p2)],tour:ctx||null,start,lg,st,legsTarget:lg,dblOut:dblOut!==false,setsWon:[0,0],legsTotal:[0,0],starter:0,cur:0,rem:[start,start],shown:[start,start],last:[null,null],darts:[0,0],scored:[0,0],t180:[0,0],hi:[0,0],legsWon:[0,0],history:[],input:'',evSeq:1};
   CO.ev={seq:1,kind:'walkon',names:CO.names,start,legsTarget:lg};
   IAMCTRL=true;document.getElementById('overlay').classList.remove('hidden');renderCounter(true);}
 function coEvent(kind,player,score,bust){if(!CO)return;CO.evSeq=(CO.evSeq||0)+1;CO.ev={seq:CO.evSeq,kind,player,score:score||0,bust:!!bust,name:CO.names[player],opp:CO.names[1-player]};
@@ -1017,7 +1050,7 @@ function ckey(type,val){if(!CO)return;
 const IMPOSSIBLE={163:1,166:1,169:1,172:1,173:1,175:1,176:1,178:1,179:1};
 function submitScore(){if(!CO)return;const val=parseInt(CO.input||'0',10);if(isNaN(val))return;if(val>180){flashBust('MAX 180');return;}
   if(IMPOSSIBLE[val]){flashBust('KAN NIET');CO.input='';return;}
-  const cur=CO.cur,before=CO.rem[cur],after=before-val;if(after<0||after===1){doBust(val);return;}
+  const cur=CO.cur,before=CO.rem[cur],after=before-val;if(after<0||(after===1&&CO.dblOut)){doBust(val);return;}
   CO.history.push({player:cur,score:val,remBefore:before});CO.rem[cur]=after;CO.darts[cur]+=3;CO.scored[cur]+=val;if(val===180)CO.t180[cur]++;CO.last[cur]=val;CO.input='';
   if(after===0){CO.hi[cur]=Math.max(CO.hi[cur],val);legWon(cur);return;}
   coEvent('throw',cur,val,false);CO.cur=1-cur;renderCounter(false);}
