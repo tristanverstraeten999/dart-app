@@ -686,6 +686,51 @@ input,select{border-radius:13px;padding:13px 14px}
 .lr-r{text-align:right;flex:0 0 auto}
 .lr-score{font-family:var(--disp);font-weight:800;font-size:18px}
 .win-pill{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.4px;color:var(--win-2);background:var(--win-soft);border:1px solid rgba(34,197,94,.3);padding:2px 7px;border-radius:6px;margin-top:3px}
+/* ===== DART-POPPETJE (avatar character) ===== */
+.char{display:inline-block;position:relative;line-height:0}
+.char-svg{width:100%;height:100%;overflow:visible;display:block}
+.char .torso{fill:var(--jersey)}
+.char .head{fill:var(--skin)}
+.char .hair{fill:var(--hair)}
+.char .leg{stroke:var(--pants);stroke-width:7;stroke-linecap:round;fill:none}
+.char .foot{stroke:#14141d;stroke-width:4.5;stroke-linecap:round}
+.char .arm-back,.char .arm-throw{stroke:var(--skin);stroke-width:6;stroke-linecap:round;fill:none}
+.char .hand{fill:var(--skin)}
+.char .dart{stroke:#d7dbe4;stroke-width:2.6;stroke-linecap:round}
+.char .dart-tip{fill:var(--pri-2)}
+.char .ch-arm{transform-box:fill-box;transform-origin:3% 97%}
+.char .ch-arm2{transform-box:fill-box;transform-origin:92% 6%}
+.char .ch-shadow{fill:rgba(0,0,0,.28)}
+/* idle */
+.char.idle .ch-body{animation:chBob 3.2s ease-in-out infinite}
+.char.idle .ch-arm{transform:rotate(7deg)}
+@keyframes chBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* gooien (aan de beurt) */
+.char.throw .ch-arm{animation:chThrow 1.7s cubic-bezier(.5,0,.5,1) infinite}
+.char.throw .ch-body{animation:chLean 1.7s ease-in-out infinite}
+@keyframes chThrow{0%{transform:rotate(10deg)}32%{transform:rotate(46deg)}52%{transform:rotate(-44deg)}66%{transform:rotate(-26deg)}100%{transform:rotate(10deg)}}
+@keyframes chLean{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-1px) rotate(-2deg)}60%{transform:translateY(0) rotate(1deg)}}
+/* juichen (180 / winst) */
+.char.celebrate .ch-body{animation:chJump .56s cubic-bezier(.3,1.5,.5,1) infinite}
+.char.celebrate .ch-arm{animation:chCheerR .56s ease-in-out infinite}
+.char.celebrate .ch-arm2{animation:chCheerL .56s ease-in-out infinite}
+@keyframes chJump{0%,100%{transform:translateY(0)}45%{transform:translateY(-12px)}}
+@keyframes chCheerR{0%,100%{transform:rotate(-118deg)}50%{transform:rotate(-150deg)}}
+@keyframes chCheerL{0%,100%{transform:rotate(118deg)}50%{transform:rotate(150deg)}}
+/* avatar-maker */
+.av-preview{display:flex;justify-content:center;margin:6px 0 14px}
+.av-preview .char{width:120px;height:156px}
+.av-section{margin-bottom:14px}
+.av-section>label{margin-bottom:9px}
+.av-swatches{display:flex;flex-wrap:wrap;gap:9px}
+.av-sw{width:34px;height:34px;border-radius:50%;border:2px solid var(--line-2);cursor:pointer;transition:.12s;position:relative}
+.av-sw:active{transform:scale(.9)}
+.av-sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--pri)}
+.tv-char{display:flex;justify-content:center;align-items:flex-end;position:relative;z-index:2;margin-bottom:4px}
+.pl-char{display:flex;justify-content:center;margin:-2px 0 2px}
+.prow-av{border:none;background:none;padding:0;cursor:pointer;border-radius:50%;position:relative;flex:0 0 auto}
+.prow-av::after{content:"✎";position:absolute;right:-2px;bottom:-2px;width:15px;height:15px;font-size:9px;background:var(--pri);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
+.prow-av:active{transform:scale(.92)}
 </style>
 </head>
 <body>
@@ -841,6 +886,42 @@ function sparkline(vals,w,h){if(!vals||vals.length<2)return '';w=w||130;h=h||46;
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--pri)" stop-opacity=".4"/><stop offset="1" stop-color="var(--pri)" stop-opacity="0"/></linearGradient></defs>`+
     `<path d="${line} L ${w} ${h} L 0 ${h} Z" fill="url(#${id})"/><path d="${line}" fill="none" stroke="var(--pri-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`+
     `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3" fill="#fff"/></svg>`;}
+/* ===== DART-POPPETJE / AVATARS ===== */
+const SKINS=['#f1c9a5','#e8b88f','#c68642','#8d5524','#fcd9b8','#5c3a21'];
+const HAIRS=['#211f24','#6b4226','#caa84a','#cfcfcf','#d94f2a','#0d0d0d','#8b5cf6','#e3e3e3'];
+const JERSEYS=['#8b5cf6','#22c55e','#e23b46','#f0b429','#3b82f6','#ec4899','#14b8a6','#0ea5e9','#f97316','#111827'];
+const PANTS=['#1f2430','#27272a','#3a2c1a','#1e293b','#3f1d2e'];
+function avKey(name){return (name||'?').trim().toLowerCase();}
+let AVATARS=(function(){try{return JSON.parse(localStorage.getItem('dartAvatars')||'{}');}catch(e){return {};}})();
+function saveAvatars(){try{localStorage.setItem('dartAvatars',JSON.stringify(AVATARS));}catch(e){}}
+function defaultAv(name){let h=0;const n=avKey(name);for(let i=0;i<n.length;i++)h=(h*33+n.charCodeAt(i))>>>0;
+  return {skin:SKINS[h%SKINS.length],hair:HAIRS[(h>>3)%HAIRS.length],jersey:JERSEYS[(h>>7)%JERSEYS.length],pants:PANTS[(h>>11)%PANTS.length]};}
+function getAv(name){return AVATARS[avKey(name)]||defaultAv(name);}
+function setAv(name,av){AVATARS[avKey(name)]=av;saveAvatars();}
+function charSvg(av,state,size,id){av=av||defaultAv('?');const w=size||90,h=Math.round(w*1.34);state=state||'idle';
+  return `<span class="char ${state}"${id?` id="${id}"`:''} style="--skin:${av.skin};--hair:${av.hair};--jersey:${av.jersey};--pants:${av.pants};width:${w}px;height:${h}px">`+
+    `<svg viewBox="0 0 80 116" class="char-svg"><ellipse class="ch-shadow" cx="40" cy="111" rx="19" ry="3.6"/><g class="ch-body">`+
+    `<path class="leg" d="M35 70 L31 102"/><path class="leg" d="M45 70 L49 102"/>`+
+    `<path class="foot" d="M27 102 H35"/><path class="foot" d="M45 102 H53"/>`+
+    `<g class="ch-arm2"><path class="arm-back" d="M32 46 Q26 56 25 64"/><circle class="hand" cx="25" cy="64" r="3"/></g>`+
+    `<path class="torso" d="M29 42 Q40 37 51 42 L49 70 Q40 73 31 70 Z"/>`+
+    `<circle class="head" cx="40" cy="26" r="11.5"/><path class="hair" d="M28 25 Q29 12 40 12 Q51 12 52 25 Q47 19 40 19 Q33 19 28 25 Z"/>`+
+    `<g class="ch-arm"><path class="arm-throw" d="M48 44 Q54 32 63 23"/><circle class="hand" cx="63" cy="23" r="3.2"/><path class="dart" d="M63 23 L72 16"/><circle class="dart-tip" cx="72.6" cy="15.4" r="1.9"/></g>`+
+    `</g></svg></span>`;}
+let AV_EDIT=null;
+function openAvatarEditor(name){if(!name)return;AV_EDIT={name,av:Object.assign({},getAv(name))};renderAvatarEditor();document.getElementById('sheetBack').classList.remove('hidden');}
+function avPick(part,val){if(!AV_EDIT)return;AV_EDIT.av[part]=val;renderAvatarEditor();}
+function avSave(){if(!AV_EDIT)return;setAv(AV_EDIT.name,AV_EDIT.av);closeSheet();render();if(typeof renderTraining==='function')renderTraining();if(typeof fbPushLive==='function')fbPushLive();toast('Avatar opgeslagen');}
+function renderAvatarEditor(){if(!AV_EDIT)return;const a=AV_EDIT.av;
+  const sw=(part,arr)=>arr.map(c=>`<button class="av-sw ${a[part]===c?'on':''}" style="background:${c}" onclick="avPick('${part}','${c}')" aria-label="${c}"></button>`).join('');
+  document.getElementById('sheetBack').innerHTML=`<div class="sheet-back" onclick="if(event.target===this)closeSheet()"><div class="sheet"><div class="sheet-grip"></div>
+    <div class="sheet-h">Avatar — ${esc(AV_EDIT.name)}</div><div class="sheet-sub">Maak je eigen dart-poppetje</div>
+    <div class="av-preview">${charSvg(a,'throw',122)}</div>
+    <div class="av-section"><label>Shirt</label><div class="av-swatches">${sw('jersey',JERSEYS)}</div></div>
+    <div class="av-section"><label>Huid</label><div class="av-swatches">${sw('skin',SKINS)}</div></div>
+    <div class="av-section"><label>Haar</label><div class="av-swatches">${sw('hair',HAIRS)}</div></div>
+    <div class="av-section"><label>Broek</label><div class="av-swatches">${sw('pants',PANTS)}</div></div>
+    <button class="btn" onclick="avSave()">Opslaan</button><button class="btn ghost" onclick="closeSheet()">Annuleren</button></div></div>`;}
 const MONTHS=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 function curMonth(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function monthLabel(m){const [y,mo]=m.split('-');return MONTHS[(+mo)-1]+' '+y;}
@@ -935,7 +1016,7 @@ function addPlayer(){const inp=document.getElementById('newPlayer');const nm=inp
 function removePlayer(id){S.players=S.players.filter(p=>p.id!==id);save();renderPlayers();}
 function renamePlayer(id,v){const p=S.players.find(x=>x.id===id);if(p){p.name=v.trim()||p.name;save();}}
 function renderPlayers(){const list=document.getElementById('playerList');
-  list.innerHTML=S.players.map((p,i)=>`<div class="prow">${avatar(p.name,32)}<input value="${esc(p.name)}" onchange="renamePlayer('${p.id}',this.value)"><button class="del" onclick="removePlayer('${p.id}')">×</button></div>`).join('');
+  list.innerHTML=S.players.map((p,i)=>`<div class="prow"><button class="prow-av" data-n="${esc(p.name)}" onclick="openAvatarEditor(this.dataset.n)">${avatar(p.name,32)}</button><input value="${esc(p.name)}" onchange="renamePlayer('${p.id}',this.value)"><button class="del" onclick="removePlayer('${p.id}')">×</button></div>`).join('');
   document.getElementById('playerCount').textContent=S.players.length?S.players.length+(S.players.length===1?' speler':' spelers'):'';}
 function startTournament(){S.config={pouleSets:+gv('pouleSets'),pouleLegs:+gv('pouleLegs'),finaleSets:+gv('finaleSets'),finaleLegs:+gv('finaleLegs'),finalists:+gv('finalists'),startScore:+gv('tourStart'),doubleOut:gv('tourOut')==='double'};
   if(S.players.length<3){toast('Voeg minstens 3 spelers toe');return;}if(S.config.finalists>S.players.length)S.config.finalists=2;
@@ -1073,7 +1154,7 @@ function compStand(matches){const t={};C.players.forEach(p=>t[p.id]={id:p.id,pla
 function avg3(scored,darts){return darts>0?(scored/darts*3).toFixed(1):'—';}
 function renderComp(){
   const pl=document.getElementById('compPlayerList');
-  pl.innerHTML=C.players.length?C.players.map((p,i)=>`<div class="prow">${avatar(p.name,32)}<input value="${esc(p.name)}" onchange="compRename('${p.id}',this.value)"><button class="del" onclick="compRemovePlayer('${p.id}')">×</button></div>`).join('')
+  pl.innerHTML=C.players.length?C.players.map((p,i)=>`<div class="prow"><button class="prow-av" data-n="${esc(p.name)}" onclick="openAvatarEditor(this.dataset.n)">${avatar(p.name,32)}</button><input value="${esc(p.name)}" onchange="compRename('${p.id}',this.value)"><button class="del" onclick="compRemovePlayer('${p.id}')">×</button></div>`).join('')
     :'<div class="muted center" style="padding:10px 0">Voeg minstens 2 spelers toe</div>';
   document.getElementById('compPlayerCount').textContent=C.players.length?C.players.length+(C.players.length===1?' speler':' spelers'):'';
   const _gt=document.getElementById('compGreeting');if(_gt)_gt.innerHTML=`<div class="greet"><div><div class="greet-hi">Welkom terug 👋</div><div class="greet-team">${esc((S&&S.team&&S.team.trim())||'De Pijlen')}</div></div><div class="greet-badge">${monthLabel(curMonth())}</div></div>`;
@@ -1276,6 +1357,7 @@ function plc(i){const active=CO.cur===i;const last=CO.last[i];const lt=last===0?
   let legs='';for(let k=0;k<CO.lg;k++)legs+=`<i class="${k<CO.legsWon[i]?'on':''}"></i>`;
   const setsLine=CO.st>1?`<div style="font-size:12px;font-weight:800;color:var(--gold);margin-top:2px">Sets ${CO.setsWon[i]} / ${CO.st}</div>`:'';
   return `<div class="pl ${active?'active':''}"><div class="turn">Aan zet</div><div class="last ${last!=null?'show':''} ${last===0?'bust':''}">${lt}</div>
+    <div class="pl-char">${charSvg(getAv(CO.names[i]),active?'throw':'idle',54)}</div>
     <div class="pn">${esc(CO.names[i])}</div>${setsLine}<div class="legs">${legs}</div><div class="big tnum" id="big${i}">${CO.shown[i]}</div>
     <div class="avg">gem/beurt ${avg3(CO.scored[i],CO.darts[i])}</div></div>`;}
 function tweenNum(el,from,to){if(from===to){el.textContent=to;return;}const t0=performance.now(),dur=420;
@@ -1306,7 +1388,7 @@ function undoThrow(){if(!CO||!CO.history.length)return;const last=CO.history.pop
   if(!last.bust){CO.scored[p]-=last.score;if(last.score===180)CO.t180[p]=Math.max(0,CO.t180[p]-1);}CO.last[p]=null;CO.cur=p;CO.input='';renderCounter(true);}
 function abortCounter(){if(!confirm('Partij afbreken? De stand wordt niet bewaard.'))return;closeCounter();}
 function finishCounter(winnerIdx){
-  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:winnerIdx,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,t180:CO.t180,ev:CO.ev||null});}catch(e){}}
+  if(fbReady){try{DB.ref('live').set({active:true,over:true,winner:winnerIdx,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:winnerIdx,names:CO.names,avs:[getAv(CO.names[0]),getAv(CO.names[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,t180:CO.t180,ev:CO.ev||null});}catch(e){}}
   const wn=CO.names[winnerIdx],tour=CO.tour,legsW=CO.legsTotal.slice(),setsW=CO.setsWon.slice(),ids=CO.p.slice();
   if(tour){ // tornooi-wedstrijd: schrijf de uitslag terug in het tornooi
     const m=findMatch(tour.kind,tour.id);if(m){m.legs1=legsW[0];m.legs2=legsW[1];m.sets1=setsW[0];m.sets2=setsW[1];m.winner=ids[winnerIdx];}
@@ -1344,7 +1426,7 @@ addEventListener('resize',()=>{const c=document.getElementById('cfC');if(c){c.wi
 
 /* ============ FIREBASE LIVE SYNC ============ */
 const firebaseConfig={apiKey:"AIzaSyA2ROasz31AAPBBeTWvgCy2nMfprxWaAuk",authDomain:"dart-app-5a19c.firebaseapp.com",databaseURL:"https://dart-app-5a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"dart-app-5a19c",storageBucket:"dart-app-5a19c.firebasestorage.app",messagingSenderId:"38748326773",appId:"1:38748326773:web:294b6a41b5986ee3d3613c"};
-let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null,FBCONN=false,callerSeq=null,TOURDATA=null,tourPushTimer=null;
+let DB=null,fbReady=false,applyingRemote=false,IAMCTRL=false,LIVEDATA=null,compPushTimer=null,mirrorDismissTs=0,LIVEPREV=null,tvKey=null,FBCONN=false,callerSeq=null,TOURDATA=null,tourPushTimer=null,tvCele=[0,0];
 function setSyncDot(on){const el=document.getElementById('syncDot');if(el){el.style.background=on?'var(--win)':'var(--muted)';el.title=on?'Live verbonden':'Offline (lokaal)';}}
 function fbInit(){try{
   if(!window.firebase||!firebase.initializeApp){setSyncDot(false);return;}
@@ -1372,12 +1454,14 @@ function fbPushTour(){if(!fbReady||TV)return;clearTimeout(tourPushTimer);tourPus
     poule:S.pouleMatches.map(m=>({p1:nameT(m.p1),p2:nameT(m.p2),done:!!m.winner,legs1:m.legs1,legs2:m.legs2,w1:m.winner===m.p1,w2:m.winner===m.p2})),
     finale:buildFinaleSnapshot(),champion:fin&&fin.winner?nameT(fin.winner):null,next:nextM});
 }catch(e){}},250);}
-function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:CO.cur,names:CO.names,rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,t180:CO.t180,ev:CO.ev||null});}catch(e){}}
+function fbPushLive(){if(!fbReady||!IAMCTRL||!CO)return;try{DB.ref('live').set({active:true,ts:Date.now(),start:CO.start,legsTarget:CO.lg,lg:CO.lg,st:CO.st,setsWon:CO.setsWon,cur:CO.cur,names:CO.names,avs:[getAv(CO.names[0]),getAv(CO.names[1])],rem:CO.rem,legsWon:CO.legsWon,scored:CO.scored,darts:CO.darts,t180:CO.t180,ev:CO.ev||null});}catch(e){}}
 function fbClearLive(){if(!fbReady)return;try{DB.ref('live').set({active:false,ts:Date.now()});}catch(e){}}
 function dismissMirror(){mirrorDismissTs=LIVEDATA?LIVEDATA.ts:0;renderLiveMirror();}
 function tvSideHtml(i,d){const setsLine=d.st>1?`<div class="tv-sets">Sets ${(d.setsWon?d.setsWon[i]:0)} / ${d.st}</div>`:'';
+  const av=(d.avs&&d.avs[i])||getAv(d.names[i]);const sz=TV?150:94;
   return `<div class="tv-side" id="tvSide${i}"><div class="tv-aura"></div><div class="tv-tag">● Aan zet</div>
-  <div class="tv-pl-head">${avatar(d.names[i],56)}<div class="tv-name">${esc(d.names[i])}</div></div>${setsLine}
+  <div class="tv-char">${charSvg(av,'idle',sz,'tvChar'+i)}</div>
+  <div class="tv-name">${esc(d.names[i])}</div>${setsLine}
   <div class="tv-rem tnum" id="tvRem${i}">${d.rem[i]}</div>
   <div class="tv-legs" id="tvLegs${i}"></div><div class="tv-avg" id="tvAvg${i}"></div><div class="tv-throw" id="tvThrow${i}"></div></div>`;}
 function tvLegsHtml(i,d,justWon){let s='';for(let k=0;k<d.legsTarget;k++)s+=`<i class="${k<d.legsWon[i]?'on':''} ${justWon&&k===d.legsWon[i]-1?'justwon':''}"></i>`;return s;}
@@ -1438,6 +1522,7 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
   if(tvKey!==key){buildTv(host,d);tvKey=key;LIVEPREV=null;callerSeq=null;}
   [0,1].forEach(i=>{
     const side=document.getElementById('tvSide'+i);if(side)side.classList.toggle('active',d.cur===i&&!d.over);
+    const ch=document.getElementById('tvChar'+i);if(ch){let st='idle';if((d.over&&d.winner===i)||tvCele[i]>Date.now())st='celebrate';else if(d.cur===i&&!d.over)st='throw';ch.className='char '+st;}
     const remEl=document.getElementById('tvRem'+i);const prevRem=LIVEPREV?LIVEPREV.rem[i]:d.rem[i];
     if(remEl){if(prevRem!==d.rem[i])tweenNum(remEl,prevRem,d.rem[i]);else remEl.textContent=d.rem[i];}
     if(LIVEPREV&&d.rem[i]<LIVEPREV.rem[i]){const delta=LIVEPREV.rem[i]-d.rem[i];tvThrow(i,delta);if(delta===180)tv180();}
@@ -1450,7 +1535,8 @@ function renderLiveMirror(){const host=document.getElementById('liveMirror');con
   if(d.ev){if(callerSeq===null){callerSeq=d.ev.seq;if(d.ev.kind==='walkon')tvHandleEvent(d.ev,d);}else if(d.ev.seq!==callerSeq){callerSeq=d.ev.seq;tvHandleEvent(d.ev,d);}}
   LIVEPREV=JSON.parse(JSON.stringify(d));}
 function tvThrow(i,delta){const e=document.getElementById('tvThrow'+i);if(e){e.textContent='+'+delta;e.className='tv-throw'+(delta>=100?' big':'');void e.offsetWidth;e.classList.add('show');}
-  const r=document.getElementById('tvRem'+i);if(r){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');}}
+  const r=document.getElementById('tvRem'+i);if(r){r.classList.remove('flash');void r.offsetWidth;r.classList.add('flash');}
+  if(delta>=180){tvCele[i]=Date.now()+2400;const ch=document.getElementById('tvChar'+i);if(ch)ch.className='char celebrate';setTimeout(renderLiveMirror,2500);}}
 function tv180(){const fx=document.getElementById('tvFx');if(!fx)return;fx.innerHTML='<div class="big180">180</div>';const e=fx.firstChild;void e.offsetWidth;e.classList.add('go');confetti(170);
   setTimeout(()=>{if(fx&&fx.firstChild&&fx.firstChild.classList&&fx.firstChild.classList.contains('big180'))fx.innerHTML='';},1900);}
 function tvWinner(nm){const fx=document.getElementById('tvFx');if(!fx)return;
